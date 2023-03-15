@@ -1,0 +1,34 @@
+namespace FlatBuffers.Sender.Video;
+
+
+enum VideoQuality:short {Lowest = 144, Low = 360, Medium = 480, SD = 720, HD = 1080, TwoK = 1440, FourK = 2160 }
+
+table SocialInfo {
+	likes:int;
+	dislikes:int;
+	comments:int;
+	views:int;
+}
+
+table Channel {
+	name:string;
+	subscribers:int;
+	channel_id:int;
+}
+
+
+table VideoInfo {
+	duration:int;
+	description:string;
+	size:long;
+	qualities: [VideoQuality];
+}
+
+
+table Video {
+	social_info:SocialInfo;
+	video_info:VideoInfo;
+	channel:Channel;
+}
+
+root_type Video;
