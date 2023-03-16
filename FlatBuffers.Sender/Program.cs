@@ -1,3 +1,7 @@
+using FlatBuffers.Domain.Entities;
+using FlatBuffers.Receiver.VideoModel;
+using FlatBuffers.Sender;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<ISerializationService<Video, VideoEntity>, SerializationService>();
 
 var app = builder.Build();
 
