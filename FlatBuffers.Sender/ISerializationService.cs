@@ -3,10 +3,10 @@ using Google.FlatBuffers;
 
 namespace FlatBuffers.Sender
 {
-    public interface ISerializationService<T, Y> where T : IFlatbufferObject where Y : IFlatBufferSerializable
+    public interface ISerializationService<T, Y> where T : IFlatbufferObject where Y : IFlatBufferSerializable<T, Y>
     {
-        ByteBuffer Serialize(Y entity);
-
         T Deserialize(ByteBuffer buf);
+
+        ByteBuffer Serialize(Y entity);
     }
 }

@@ -4,7 +4,7 @@ using Google.FlatBuffers;
 
 namespace FlatBuffers.Sender
 {
-    public class SerializationService : ISerializationService<Video, VideoEntity>
+    public partial class SerializationService : ISerializationService<Video, VideoEntity>
     {
         private readonly FlatBufferBuilder _flatBufferBuilder;
 
@@ -22,7 +22,9 @@ namespace FlatBuffers.Sender
 
         public ByteBuffer Serialize(VideoEntity videoModel)
         {
-            var channelName = _flatBufferBuilder.CreateString("SalveDrew");
+            return videoModel.CreateBuffer(_flatBufferBuilder, videoModel);
+
+            /*var channelName = _flatBufferBuilder.CreateString("SalveDrew");
             var ch = Channel.CreateChannel(_flatBufferBuilder, channelName, 7000, 15);
 
             var si = SocialInfo.CreateSocialInfo(_flatBufferBuilder, 1_000, 1, 35, 25_000);
@@ -40,7 +42,7 @@ namespace FlatBuffers.Sender
 
             var videoBuf = _flatBufferBuilder.DataBuffer;
 
-            return videoBuf;
+            return videoBuf;*/
         }
     }
 }
