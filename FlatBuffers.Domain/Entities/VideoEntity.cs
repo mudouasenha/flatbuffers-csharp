@@ -1,9 +1,12 @@
-﻿using FlatBuffers.Domain.Interfaces;
+﻿using BenchmarkDotNet.Attributes;
+using FlatBuffers.Domain.Interfaces;
 using FlatBuffers.Receiver.VideoModel;
 using Google.FlatBuffers;
 
 namespace FlatBuffers.Domain.Entities
 {
+    [MemoryDiagnoser]
+    [CsvExporter]
     public class VideoEntity : IFlatBufferSerializable<Video, VideoEntity>
     {
         public SocialInfoEntity SocialInfoEntity { get; set; }
@@ -14,10 +17,13 @@ namespace FlatBuffers.Domain.Entities
 
         public VideoEntity GetFromBuffer(ByteBuffer buf)
         {
-            var video = Video.GetRootAsVideo(buf);
+            var video = Deserialize(buf);
 
             return FromSerializationModel(video);
         }
+
+        [Benchmark]
+        private Video Deserialize(ByteBuffer buf) => Video.GetRootAsVideo(buf);
 
         public VideoEntity FromSerializationModel(Video video) => new()
         {
@@ -26,6 +32,7 @@ namespace FlatBuffers.Domain.Entities
             VideoInfoEntity = new VideoInfoEntity().FromSerializationModel(video.VideoInfo.Value)
         };
 
+        [Benchmark]
         public ByteBuffer CreateBuffer(FlatBufferBuilder builder, VideoEntity entity)
         {
             var channelName = builder.CreateString(entity.ChannelEntity.Name);

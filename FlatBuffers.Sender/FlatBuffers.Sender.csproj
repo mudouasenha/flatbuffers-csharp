@@ -15,4 +15,8 @@
     <ProjectReference Include="..\FlatBuffers.Domain\FlatBuffers.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Benchmark\" />
+  </ItemGroup>
+
 </Project>

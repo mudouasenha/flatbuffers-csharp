@@ -5,11 +5,11 @@ using Google.FlatBuffers;
 
 namespace FlatBuffers.Domain.Services
 {
-    public partial class SerializationService : ISerializationService<Video, VideoEntity>
+    public partial class VideoSerializationService : IVideoSerializationService
     {
         private readonly FlatBufferBuilder _flatBufferBuilder;
 
-        public SerializationService()
+        public VideoSerializationService()
         {
             _flatBufferBuilder = new FlatBufferBuilder(1024);
         }

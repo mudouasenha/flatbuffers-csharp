@@ -4,7 +4,7 @@ namespace FlatBuffers.Domain.Services.Abstractions
 {
     public interface IVideoService
     {
-        Task CreateVideo(VideoEntity video);
+        VideoEntity CreateVideo(VideoEntity video = null);
 
         Task DeleteVideo(int videoId);
     }

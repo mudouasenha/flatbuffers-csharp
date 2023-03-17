@@ -1,18 +1,12 @@
 ﻿using FlatBuffers.Domain.Entities;
+using FlatBuffers.Domain.Services.Abstractions;
 using FlatBuffers.Receiver.VideoModel;
 using Google.FlatBuffers;
 
 namespace FlatBuffers.Sender
 {
-    public partial class SerializationService : ISerializationService<Video, VideoEntity>
+    public partial class SerializationService : IVideoSerializationService
     {
-        private readonly FlatBufferBuilder _flatBufferBuilder;
-
-        public SerializationService()
-        {
-            _flatBufferBuilder = new FlatBufferBuilder(1024);
-        }
-
         public Video Deserialize(ByteBuffer buf)
         {
             var video = Video.GetRootAsVideo(buf);
@@ -22,7 +16,8 @@ namespace FlatBuffers.Sender
 
         public ByteBuffer Serialize(VideoEntity videoModel)
         {
-            return videoModel.CreateBuffer(_flatBufferBuilder, videoModel);
+            var builder = new FlatBufferBuilder(1024);
+            return videoModel.CreateBuffer(builder, videoModel);
 
             /*var channelName = _flatBufferBuilder.CreateString("SalveDrew");
             var ch = Channel.CreateChannel(_flatBufferBuilder, channelName, 7000, 15);
