@@ -1,5 +1,5 @@
 ﻿using FlatBuffers.Domain.Entities;
-using FlatBuffers.Receiver.VideoModel;
+using FlatBuffers.Domain.VideoModel;
 
 namespace FlatBuffers.Domain.Services.Abstractions
 {

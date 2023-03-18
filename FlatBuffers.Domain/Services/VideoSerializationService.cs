@@ -1,6 +1,6 @@
 ﻿using FlatBuffers.Domain.Entities;
 using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Receiver.VideoModel;
+using FlatBuffers.Domain.VideoModel;
 using Google.FlatBuffers;
 
 namespace FlatBuffers.Domain.Services
