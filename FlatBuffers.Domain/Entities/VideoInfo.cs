@@ -16,7 +16,16 @@ namespace FlatBuffers.Domain.Entities
 
         public ByteBuffer CreateBuffer(FlatBufferBuilder builder, VideoInfo entity)
         {
-            throw new NotImplementedException();
+            VideoInfoFlatModel.StartVideoInfoFlatModel(builder);
+            VideoInfoFlatModel.AddDescription(builder, builder.CreateString(entity.Description));
+            VideoInfoFlatModel.AddDuration(builder, entity.Duration);
+            VideoInfoFlatModel.AddSize(builder, entity.Size);
+            VideoInfoFlatModel.AddQualities(builder, VideoInfoFlatModel.CreateQualitiesVector(builder, entity.Qualities));
+            var videoInfoOffSet = VideoInfoFlatModel.EndVideoInfoFlatModel(builder);
+
+            builder.Finish(videoInfoOffSet.Value);
+
+            return builder.DataBuffer;
         }
 
         public VideoInfo FromSerializationModel(VideoInfoFlatModel serialized) => new()
@@ -29,7 +38,7 @@ namespace FlatBuffers.Domain.Entities
 
         public VideoInfo GetFromBuffer(ByteBuffer buf)
         {
-            var videoInfo = VideoInfoFlatModel.GetRootAsVideoInfo(buf);
+            var videoInfo = VideoInfoFlatModel.GetRootAsVideoInfoFlatModel(buf);
 
             return FromSerializationModel(videoInfo);
         }

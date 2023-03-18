@@ -14,8 +14,8 @@ public struct ChannelFlatModel : IFlatbufferObject
   private Table __p;
   public ByteBuffer ByteBuffer { get { return __p.bb; } }
   public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_23_3_3(); }
-  public static ChannelFlatModel GetRootAsChannel(ByteBuffer _bb) { return GetRootAsChannel(_bb, new ChannelFlatModel()); }
-  public static ChannelFlatModel GetRootAsChannel(ByteBuffer _bb, ChannelFlatModel obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
+  public static ChannelFlatModel GetRootAsChannelFlatModel(ByteBuffer _bb) { return GetRootAsChannelFlatModel(_bb, new ChannelFlatModel()); }
+  public static ChannelFlatModel GetRootAsChannelFlatModel(ByteBuffer _bb, ChannelFlatModel obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public ChannelFlatModel __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
@@ -29,7 +29,7 @@ public struct ChannelFlatModel : IFlatbufferObject
   public int Subscribers { get { int o = __p.__offset(6); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
   public int ChannelId { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
-  public static Offset<FlatBuffers.Domain.VideoModel.ChannelFlatModel> CreateChannel(FlatBufferBuilder builder,
+  public static Offset<FlatBuffers.Domain.VideoModel.ChannelFlatModel> CreateChannelFlatModel(FlatBufferBuilder builder,
       StringOffset nameOffset = default(StringOffset),
       int subscribers = 0,
       int channel_id = 0) {
@@ -37,14 +37,14 @@ public struct ChannelFlatModel : IFlatbufferObject
     ChannelFlatModel.AddChannelId(builder, channel_id);
     ChannelFlatModel.AddSubscribers(builder, subscribers);
     ChannelFlatModel.AddName(builder, nameOffset);
-    return ChannelFlatModel.EndChannel(builder);
+    return ChannelFlatModel.EndChannelFlatModel(builder);
   }
 
-  public static void StartChannel(FlatBufferBuilder builder) { builder.StartTable(3); }
+  public static void StartChannelFlatModel(FlatBufferBuilder builder) { builder.StartTable(3); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
   public static void AddSubscribers(FlatBufferBuilder builder, int subscribers) { builder.AddInt(1, subscribers, 0); }
   public static void AddChannelId(FlatBufferBuilder builder, int channelId) { builder.AddInt(2, channelId, 0); }
-  public static Offset<FlatBuffers.Domain.VideoModel.ChannelFlatModel> EndChannel(FlatBufferBuilder builder) {
+  public static Offset<FlatBuffers.Domain.VideoModel.ChannelFlatModel> EndChannelFlatModel(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<FlatBuffers.Domain.VideoModel.ChannelFlatModel>(o);
   }

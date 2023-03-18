@@ -13,7 +13,16 @@ namespace FlatBuffers.Domain.Entities
 
         public ByteBuffer CreateBuffer(FlatBufferBuilder builder, SocialInfo entity)
         {
-            throw new NotImplementedException();
+            SocialInfoFlatModel.StartSocialInfoFlatModel(builder);
+            SocialInfoFlatModel.AddLikes(builder, entity.Likes);
+            SocialInfoFlatModel.AddDislikes(builder, entity.Dislikes);
+            SocialInfoFlatModel.AddComments(builder, entity.Comments);
+            SocialInfoFlatModel.AddViews(builder, entity.Views);
+            var videoInfoOffSet = SocialInfoFlatModel.EndSocialInfoFlatModel(builder);
+
+            builder.Finish(videoInfoOffSet.Value);
+
+            return builder.DataBuffer;
         }
 
         public SocialInfo FromSerializationModel(SocialInfoFlatModel serialized) => new()
@@ -26,7 +35,7 @@ namespace FlatBuffers.Domain.Entities
 
         public SocialInfo GetFromBuffer(ByteBuffer buf)
         {
-            var socialInfo = SocialInfoFlatModel.GetRootAsSocialInfo(buf);
+            var socialInfo = SocialInfoFlatModel.GetRootAsSocialInfoFlatModel(buf);
 
             return FromSerializationModel(socialInfo);
         }

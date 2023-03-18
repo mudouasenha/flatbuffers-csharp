@@ -16,7 +16,7 @@ namespace FlatBuffers.Domain.Services
 
         public VideoFlatModel Deserialize(ByteBuffer buf)
         {
-            var video = VideoFlatModel.GetRootAsVideo(buf);
+            var video = VideoFlatModel.GetRootAsVideoFlatModel(buf);
 
             return video;
         }

@@ -12,7 +12,15 @@ namespace FlatBuffers.Domain.Entities
 
         public ByteBuffer CreateBuffer(FlatBufferBuilder builder, Channel entity)
         {
-            throw new NotImplementedException();
+            ChannelFlatModel.StartChannelFlatModel(builder);
+            ChannelFlatModel.AddName(builder, builder.CreateString(entity.Name));
+            ChannelFlatModel.AddSubscribers(builder, entity.Subscribers);
+            ChannelFlatModel.AddChannelId(builder, entity.ChannelId);
+            var videoInfoOffSet = ChannelFlatModel.EndChannelFlatModel(builder);
+
+            builder.Finish(videoInfoOffSet.Value);
+
+            return builder.DataBuffer;
         }
 
         public Channel FromSerializationModel(ChannelFlatModel serialized) => new()
@@ -24,7 +32,7 @@ namespace FlatBuffers.Domain.Entities
 
         public Channel GetFromBuffer(ByteBuffer buf)
         {
-            var channel = ChannelFlatModel.GetRootAsChannel(buf);
+            var channel = ChannelFlatModel.GetRootAsChannelFlatModel(buf);
 
             return FromSerializationModel(channel);
         }

@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlatBuffers.Sender.Controllers
@@ -10,16 +9,8 @@ namespace FlatBuffers.Sender.Controllers
     public class BenchmarkController : ControllerBase
     {
         private readonly ILogger<BenchmarkController> _logger;
-        private readonly IVideoService _videoService;
-        private readonly ReceiverClient _receiverClient;
-        private readonly IVideoSerializationService _videoSerializationService;
 
-        public BenchmarkController(ILogger<BenchmarkController> logger, IVideoSerializationService videoSerializationService, IVideoService videoService)
-        {
-            _logger = logger;
-            _videoSerializationService = videoSerializationService;
-            _videoService = videoService;
-        }
+        public BenchmarkController(ILogger<BenchmarkController> logger) => _logger = logger;
 
         [HttpPost]
         public IActionResult Benchmark()
