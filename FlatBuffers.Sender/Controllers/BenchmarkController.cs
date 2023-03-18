@@ -26,7 +26,7 @@ namespace FlatBuffers.Sender.Controllers
         {
             try
             {
-                var summary = BenchmarkRunner.Run<IBenchMarkService<VideoEntity>>();
+                var summary = BenchmarkRunner.Run<IBenchMarkService<Video>>();
                 return Ok(summary);
             }
             catch (Exception ex)

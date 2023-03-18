@@ -1,22 +1,22 @@
 ﻿using FlatBuffers.Domain.Interfaces;
-using FlatBuffers.Receiver.VideoModel;
+using FlatBuffers.Domain.VideoModel;
 using Google.FlatBuffers;
 
 namespace FlatBuffers.Domain.Entities
 {
-    public class SocialInfoEntity : IFlatBufferSerializable<SocialInfo, SocialInfoEntity>
+    public class SocialInfo : IFlatBufferSerializable<SocialInfoFlatModel, SocialInfo>
     {
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public int Comments { get; set; }
         public int Views { get; set; }
 
-        public ByteBuffer CreateBuffer(FlatBufferBuilder builder, SocialInfoEntity entity)
+        public ByteBuffer CreateBuffer(FlatBufferBuilder builder, SocialInfo entity)
         {
             throw new NotImplementedException();
         }
 
-        public SocialInfoEntity FromSerializationModel(SocialInfo serialized) => new()
+        public SocialInfo FromSerializationModel(SocialInfoFlatModel serialized) => new()
         {
             Likes = serialized.Likes,
             Dislikes = serialized.Dislikes,
@@ -24,9 +24,9 @@ namespace FlatBuffers.Domain.Entities
             Views = serialized.Views,
         };
 
-        public SocialInfoEntity GetFromBuffer(ByteBuffer buf)
+        public SocialInfo GetFromBuffer(ByteBuffer buf)
         {
-            var socialInfo = SocialInfo.GetRootAsSocialInfo(buf);
+            var socialInfo = SocialInfoFlatModel.GetRootAsSocialInfo(buf);
 
             return FromSerializationModel(socialInfo);
         }

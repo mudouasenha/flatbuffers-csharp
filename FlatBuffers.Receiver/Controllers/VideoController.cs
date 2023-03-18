@@ -12,9 +12,9 @@ namespace FlatBuffers.Receiver.Controllers
     {
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoService _videoService;
-        private readonly ISerializationService<Video, VideoEntity> _serializationService;
+        private readonly ISerializationService<VideoFlatModel, Video> _serializationService;
 
-        public VideoController(ILogger<VideoController> logger, ISerializationService<Video, VideoEntity> serializationService, IVideoService videoService)
+        public VideoController(ILogger<VideoController> logger, ISerializationService<VideoFlatModel, Video> serializationService, IVideoService videoService)
         {
             _logger = logger;
             _serializationService = serializationService;

@@ -1,30 +1,30 @@
 ﻿using FlatBuffers.Domain.Interfaces;
-using FlatBuffers.Receiver.VideoModel;
+using FlatBuffers.Domain.VideoModel;
 using Google.FlatBuffers;
 
 namespace FlatBuffers.Domain.Entities
 {
-    public class ChannelEntity : IFlatBufferSerializable<Channel, ChannelEntity>
+    public class Channel : IFlatBufferSerializable<ChannelFlatModel, Channel>
     {
         public string Name { get; set; }
         public int Subscribers { get; set; }
         public int ChannelId { get; set; }
 
-        public ByteBuffer CreateBuffer(FlatBufferBuilder builder, ChannelEntity entity)
+        public ByteBuffer CreateBuffer(FlatBufferBuilder builder, Channel entity)
         {
             throw new NotImplementedException();
         }
 
-        public ChannelEntity FromSerializationModel(Channel serialized) => new()
+        public Channel FromSerializationModel(ChannelFlatModel serialized) => new()
         {
             Name = serialized.Name,
             Subscribers = serialized.Subscribers,
             ChannelId = serialized.ChannelId
         };
 
-        public ChannelEntity GetFromBuffer(ByteBuffer buf)
+        public Channel GetFromBuffer(ByteBuffer buf)
         {
-            var channel = Channel.GetRootAsChannel(buf);
+            var channel = ChannelFlatModel.GetRootAsChannel(buf);
 
             return FromSerializationModel(channel);
         }

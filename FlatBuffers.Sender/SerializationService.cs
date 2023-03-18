@@ -7,14 +7,14 @@ namespace FlatBuffers.Sender
 {
     public partial class SerializationService : IVideoSerializationService
     {
-        public Video Deserialize(ByteBuffer buf)
+        public VideoFlatModel Deserialize(ByteBuffer buf)
         {
-            var video = Video.GetRootAsVideo(buf);
+            var video = VideoFlatModel.GetRootAsVideo(buf);
 
             return video;
         }
 
-        public ByteBuffer Serialize(VideoEntity videoModel)
+        public ByteBuffer Serialize(Video videoModel)
         {
             var builder = new FlatBufferBuilder(1024);
             return videoModel.CreateBuffer(builder, videoModel);

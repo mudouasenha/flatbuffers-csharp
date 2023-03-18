@@ -14,14 +14,14 @@ namespace FlatBuffers.Domain.Services
             _flatBufferBuilder = new FlatBufferBuilder(1024);
         }
 
-        public Video Deserialize(ByteBuffer buf)
+        public VideoFlatModel Deserialize(ByteBuffer buf)
         {
-            var video = Video.GetRootAsVideo(buf);
+            var video = VideoFlatModel.GetRootAsVideo(buf);
 
             return video;
         }
 
-        public ByteBuffer Serialize(VideoEntity videoModel)
+        public ByteBuffer Serialize(Video videoModel)
         {
             return videoModel.CreateBuffer(_flatBufferBuilder, videoModel);
 

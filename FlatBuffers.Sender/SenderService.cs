@@ -5,7 +5,7 @@ using Google.FlatBuffers;
 
 namespace FlatBuffers.Sender
 {
-    public class SenderService : IBenchMarkService<VideoEntity>
+    public class SenderService : IBenchMarkService<Video>
     {
         private readonly ILogger<SenderService> _logger;
         private readonly IVideoService _videoService;
@@ -20,7 +20,7 @@ namespace FlatBuffers.Sender
         }
 
         [Benchmark]
-        public async Task<VideoEntity> RunBenchMark()
+        public async Task<Video> RunBenchMark()
         {
             var vid = _videoService.CreateVideo();
             var str = _videoSerializationService.Serialize(vid);
@@ -34,7 +34,7 @@ namespace FlatBuffers.Sender
 
             var videoSer = _videoSerializationService.Deserialize(new ByteBuffer(byteArrResp));
 
-            var video = new VideoEntity().FromSerializationModel(videoSer);
+            var video = new Video().FromSerializationModel(videoSer);
 
             return video;
         }
