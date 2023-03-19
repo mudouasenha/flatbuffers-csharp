@@ -1,42 +1,48 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FlatBuffers.Domain.Entities;
 using FlatBuffers.Domain.Services.Abstractions;
-using Google.FlatBuffers;
+using FlatBuffers.Domain.Services.Converters.Abstractions;
 
 namespace FlatBuffers.Sender
 {
-    public class SenderService : IBenchMarkService<VideoEntity>
+    public class SenderService : IBenchMarkService<Video>
     {
         private readonly ILogger<SenderService> _logger;
         private readonly IVideoService _videoService;
         private readonly ReceiverClient _receiverClient;
-        private readonly IVideoSerializationService _videoSerializationService;
+        private readonly IFlatBuffersVideoConverter _videoconverter;
 
-        public SenderService(ILogger<SenderService> logger, IVideoSerializationService videoSerializationService, IVideoService videoService)
+        public SenderService(ILogger<SenderService> logger, IFlatBuffersVideoConverter videoConverter, IVideoService videoService, ReceiverClient receiverClient)
         {
             _logger = logger;
-            _videoSerializationService = videoSerializationService;
+            _videoconverter = videoConverter;
             _videoService = videoService;
+            _receiverClient = receiverClient;
         }
 
         [Benchmark]
-        public async Task<VideoEntity> RunBenchMark()
+        public async Task<Video> RunBenchMark()
         {
-            var vid = _videoService.CreateVideo();
-            var str = _videoSerializationService.Serialize(vid);
-            //t1
-            var byteArr = str.ToArray(str.Position, str.Length);
+            try
+            {
+                var vid = _videoService.CreateVideo();
+                var byteArr = _videoconverter.Serialize(vid);
 
-            var resp = await _receiverClient.PostAsync("/video", byteArr);
+                var resp = await _receiverClient.PostAsync("/video", byteArr);
 
-            var ms = (MemoryStream)resp;
-            byte[] byteArrResp = ms.ToArray();
+                var ms = (MemoryStream)resp;
+                byte[] byteArrResp = ms.ToArray();
 
-            var videoSer = _videoSerializationService.Deserialize(new ByteBuffer(byteArrResp));
+                var video = _videoconverter.Deserialize(byteArrResp);
 
-            var video = new VideoEntity().FromSerializationModel(videoSer);
+                return video;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
 
-            return video;
+                throw;
+            }
         }
     }
 }
