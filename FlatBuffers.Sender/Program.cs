@@ -13,7 +13,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
-builder.Services.AddScoped<IBenchMarkService<Video>, SenderService>();
+builder.Services.AddScoped<IBenchMarkService<VideoEntity>, SenderService>();
 builder.Services.AddHttpClient<ReceiverClient>(httpClient => httpClient.BaseAddress = new Uri("https://localhost:5021"));
 builder.Services.AddHttpContextAccessor();
 

@@ -5,25 +5,25 @@ namespace FlatBuffers.Domain.Services
 {
     public class VideoService : IVideoService
     {
-        public Video CreateVideo(Video video = null)
+        public VideoEntity CreateVideo(VideoEntity video = null)
         {
             if (video == null)
-                return new Video()
+                return new VideoEntity()
                 {
-                    Channel = new Channel()
+                    ChannelEntity = new ChannelEntity()
                     {
                         ChannelId = 1,
                         Name = "Matheus's Channel",
                         Subscribers = 5000
                     },
-                    SocialInfo = new SocialInfo()
+                    SocialInfoEntity = new SocialInfoEntity()
                     {
                         Comments = 10,
                         Dislikes = 1,
                         Likes = 10000,
                         Views = 1_000_000
                     },
-                    VideoInfo = new VideoInfo()
+                    VideoInfoEntity = new VideoInfoEntity()
                     {
                         Description = "Description test",
                         Duration = 3600,

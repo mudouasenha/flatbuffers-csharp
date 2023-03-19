@@ -1,34 +1,34 @@
-namespace FlatBuffers.Domain.VideoModel;
+namespace FlatBuffers.Sender.VideoModel;
 
 
-enum VideoQualityFlatModel:short {Lowest = 144, Low = 360, Medium = 480, SD = 720, HD = 1080, TwoK = 1440, FourK = 2160 }
+enum VideoQuality:short {Lowest = 144, Low = 360, Medium = 480, SD = 720, HD = 1080, TwoK = 1440, FourK = 2160 }
 
-table SocialInfoFlatModel {
+table SocialInfo {
 	likes:int;
 	dislikes:int;
 	comments:int;
 	views:int;
 }
 
-table ChannelFlatModel {
+table Channel {
 	name:string;
 	subscribers:int;
 	channel_id:int;
 }
 
 
-table VideoInfoFlatModel {
+table VideoInfo {
 	duration:int;
 	description:string;
 	size:long;
-	qualities: [VideoQualityFlatModel];
+	qualities: [VideoQuality];
 }
 
 
-table VideoFlatModel {
-	social_info:SocialInfoFlatModel;
-	video_info:VideoInfoFlatModel;
-	channel:ChannelFlatModel;
+table Video {
+	social_info:SocialInfo;
+	video_info:VideoInfo;
+	channel:Channel;
 }
 
-root_type VideoFlatModel;
+root_type Video;

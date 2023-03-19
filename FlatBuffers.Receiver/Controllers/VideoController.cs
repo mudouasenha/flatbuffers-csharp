@@ -1,5 +1,7 @@
-﻿using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Domain.Services.Converters.Abstractions;
+﻿using FlatBuffers.Domain.Entities;
+using FlatBuffers.Domain.Services.Abstractions;
+using FlatBuffers.Receiver.VideoModel;
+using Google.FlatBuffers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlatBuffers.Receiver.Controllers
@@ -10,12 +12,12 @@ namespace FlatBuffers.Receiver.Controllers
     {
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoService _videoService;
-        private readonly IFlatBuffersVideoConverter _videoConverter;
+        private readonly ISerializationService<Video, VideoEntity> _serializationService;
 
-        public VideoController(ILogger<VideoController> logger, IFlatBuffersVideoConverter videoConverter, IVideoService videoService)
+        public VideoController(ILogger<VideoController> logger, ISerializationService<Video, VideoEntity> serializationService, IVideoService videoService)
         {
             _logger = logger;
-            _videoConverter = videoConverter;
+            _serializationService = serializationService;
             _videoService = videoService;
         }
 
@@ -27,7 +29,8 @@ namespace FlatBuffers.Receiver.Controllers
                 Response.ContentType = "application/octet-stream";
 
                 var vid = _videoService.CreateVideo();
-                var byteArr = _videoConverter.Serialize(vid);
+                var str = _serializationService.Serialize(vid);
+                var byteArr = str.ToArray(str.Position, str.Length);
 
                 return Ok(new ByteArrayContent(byteArr));
             }
@@ -40,16 +43,14 @@ namespace FlatBuffers.Receiver.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostVideo(byte[] byteArr)
+        public IActionResult PostVideo(ByteBuffer buf)
         {
             try
             {
-                var video = _videoConverter.Deserialize(byteArr);
+                var video = _serializationService.Deserialize(buf);
                 _logger.LogInformation(video.ToString());
 
-                var videoArr = _videoConverter.Serialize(video);
-
-                return Ok(new ByteArrayContent(videoArr));
+                return Ok();
             }
             catch (Exception ex)
             {
