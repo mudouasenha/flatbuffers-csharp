@@ -8,10 +8,6 @@ namespace FlatBuffers.Domain.Services.Converters
 {
     public class ChannelFlatBuffersConverter : FlatBuffersConverterBase<ChannelFlatModel, Channel>, IFlatBuffersChannelConverter
     {
-        private readonly FlatBufferBuilder _flatBufferBuilder;
-
-        public ChannelFlatBuffersConverter() => _flatBufferBuilder = new FlatBufferBuilder(1024);
-
         public override Channel Deserialize(byte[] byteArr)
         {
             var channel = GetFromBuffer(new ByteBuffer(byteArr));
@@ -19,16 +15,11 @@ namespace FlatBuffers.Domain.Services.Converters
             return channel;
         }
 
-        public override byte[] Serialize(Channel channel)
-        {
-            var buf = CreateBuffer(_flatBufferBuilder, channel);
-
-            return buf.ToFullArray();
-        }
-
         [Benchmark]
-        protected override ByteBuffer CreateBuffer(FlatBufferBuilder builder, Channel entity)
+        public override byte[] Serialize(Channel entity)
         {
+            var builder = new FlatBufferBuilder(1024);
+
             ChannelFlatModel.StartChannelFlatModel(builder);
             ChannelFlatModel.AddName(builder, builder.CreateString(entity.Name));
             ChannelFlatModel.AddSubscribers(builder, entity.Subscribers);
@@ -37,7 +28,7 @@ namespace FlatBuffers.Domain.Services.Converters
 
             builder.Finish(videoInfoOffSet.Value);
 
-            return builder.DataBuffer;
+            return builder.SizedByteArray();
         }
 
         [Benchmark]

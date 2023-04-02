@@ -30,10 +30,7 @@ namespace FlatBuffers.Sender
 
                 var resp = await _receiverClient.PostAsync("/video", byteArr);
 
-                var ms = (MemoryStream)resp;
-                byte[] byteArrResp = ms.ToArray();
-
-                var video = _videoconverter.Deserialize(byteArrResp);
+                var video = _videoconverter.Deserialize(resp);
 
                 return video;
             }

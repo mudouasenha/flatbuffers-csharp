@@ -40,10 +40,12 @@ namespace FlatBuffers.Receiver.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostVideo(byte[] byteArr)
+        public IActionResult PostVideo([FromBody] byte[] byteArr)
         {
             try
             {
+                var test = HttpContext;
+                Console.WriteLine("Received");
                 var video = _videoConverter.Deserialize(byteArr);
                 _logger.LogInformation(video.ToString());
 

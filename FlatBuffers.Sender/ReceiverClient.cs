@@ -22,15 +22,15 @@ namespace FlatBuffers.Sender
             return await response.Content.ReadAsStreamAsync();
         }
 
-        public async Task<Stream> PostAsync(string path, byte[] payload)
+        public async Task<byte[]> PostAsync(string path, byte[] payload)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, path);
             request.Content = new ByteArrayContent(payload);
             request.Content.Headers.TryAddWithoutValidation(HeaderNames.ContentType, ContentType);
 
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            var response = await _httpClient.SendAsync(request);
 
-            return await response.Content.ReadAsStreamAsync();
+            return await response.Content.ReadAsByteArrayAsync();
         }
 
         /* public async Task<Result<ServerSuccess, ServerError>> PostAsync<T>(HttpClient httpClient, string path, T payload)

@@ -9,8 +9,6 @@ namespace FlatBuffers.Domain.Services.Converters.Abstractions
 
         public abstract byte[] Serialize(Y entity);
 
-        protected abstract ByteBuffer CreateBuffer(FlatBufferBuilder builder, Y entity);
-
         protected abstract Y GetFromBuffer(ByteBuffer buf);
 
         protected abstract Y FromSerializationModel(T serialized);

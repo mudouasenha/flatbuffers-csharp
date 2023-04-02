@@ -15,17 +15,10 @@ namespace FlatBuffers.Domain.Services
             return video;
         }
 
-        public override byte[] Serialize(Video video)
+        [Benchmark]
+        public override byte[] Serialize(Video entity)
         {
             var builder = new FlatBufferBuilder(1024);
-            var buf = CreateBuffer(builder, video);
-
-            return buf.ToFullArray();
-        }
-
-        [Benchmark]
-        protected override ByteBuffer CreateBuffer(FlatBufferBuilder builder, Video entity)
-        {
             var channelName = builder.CreateString(entity.Channel.Name);
             var ch = ChannelFlatModel.CreateChannelFlatModel(builder, channelName, entity.Channel.Subscribers, entity.Channel.ChannelId);
 
@@ -42,7 +35,9 @@ namespace FlatBuffers.Domain.Services
 
             builder.Finish(video.Value);
 
-            return builder.DataBuffer;
+            var bArr = builder.SizedByteArray();
+
+            return bArr;
         }
 
         [Benchmark]

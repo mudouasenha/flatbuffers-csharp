@@ -8,10 +8,6 @@ namespace FlatBuffers.Domain.Services.Converters
 {
     public class SocialInfoFlatBuffersConverter : FlatBuffersConverterBase<SocialInfoFlatModel, SocialInfo>, IFlatBuffersSocialInfoConverter
     {
-        private readonly FlatBufferBuilder _flatBufferBuilder;
-
-        public SocialInfoFlatBuffersConverter() => _flatBufferBuilder = new FlatBufferBuilder(1024);
-
         public override SocialInfo Deserialize(byte[] byteArr)
         {
             var socialInfo = GetFromBuffer(new ByteBuffer(byteArr));
@@ -19,16 +15,10 @@ namespace FlatBuffers.Domain.Services.Converters
             return socialInfo;
         }
 
-        public override byte[] Serialize(SocialInfo socialInfo)
-        {
-            var buf = CreateBuffer(_flatBufferBuilder, socialInfo);
-
-            return buf.ToFullArray();
-        }
-
         [Benchmark]
-        protected override ByteBuffer CreateBuffer(FlatBufferBuilder builder, SocialInfo entity)
+        public override byte[] Serialize(SocialInfo entity)
         {
+            var builder = new FlatBufferBuilder(1024);
             SocialInfoFlatModel.StartSocialInfoFlatModel(builder);
             SocialInfoFlatModel.AddLikes(builder, entity.Likes);
             SocialInfoFlatModel.AddDislikes(builder, entity.Dislikes);
@@ -38,7 +28,7 @@ namespace FlatBuffers.Domain.Services.Converters
 
             builder.Finish(videoInfoOffSet.Value);
 
-            return builder.DataBuffer;
+            return builder.SizedByteArray();
         }
 
         [Benchmark]
