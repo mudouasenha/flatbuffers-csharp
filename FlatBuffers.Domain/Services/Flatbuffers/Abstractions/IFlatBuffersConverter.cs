@@ -3,7 +3,7 @@ using FlatBuffers.Domain.Interfaces;
 using FlatBuffers.Domain.VideoModel;
 using Google.FlatBuffers;
 
-namespace FlatBuffers.Domain.Services.Converters.Abstractions
+namespace FlatBuffers.Domain.Services.Flatbuffers.Abstractions
 {
     public interface IFlatBuffersConverter<T, Y> : IConverter<Y> where T : IFlatbufferObject where Y : IFlatBufferSerializable<T, Y>
     {

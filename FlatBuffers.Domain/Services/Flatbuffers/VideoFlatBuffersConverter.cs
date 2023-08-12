@@ -1,10 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services.Converters.Abstractions;
+using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
 using FlatBuffers.Domain.VideoModel;
 using Google.FlatBuffers;
 
-namespace FlatBuffers.Domain.Services
+namespace FlatBuffers.Domain.Services.Flatbuffers
 {
     public partial class VideoFlatBuffersConverter : FlatBuffersConverterBase<VideoFlatModel, Video>, IFlatBuffersVideoConverter
     {

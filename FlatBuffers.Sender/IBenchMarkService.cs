@@ -2,6 +2,7 @@
 {
     public interface IBenchMarkService<T>
     {
+        T RunBenchMarkLocal();
         Task<T> RunBenchMark();
     }
 }

@@ -26,7 +26,8 @@ namespace FlatBuffers.Sender
         {
             var request = new HttpRequestMessage(HttpMethod.Post, path);
             request.Content = new ByteArrayContent(payload);
-            request.Content.Headers.TryAddWithoutValidation(HeaderNames.ContentType, ContentType);
+            request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+            //request.Content.Headers.TryAddWithoutValidation(HeaderNames.ContentType, ContentType);
 
             var response = await _httpClient.SendAsync(request);
 

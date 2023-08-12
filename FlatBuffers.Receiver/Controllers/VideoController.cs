@@ -1,5 +1,5 @@
 ﻿using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Domain.Services.Converters.Abstractions;
+using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlatBuffers.Receiver.Controllers
@@ -24,12 +24,13 @@ namespace FlatBuffers.Receiver.Controllers
         {
             try
             {
-                Response.ContentType = "application/octet-stream";
-
                 var vid = _videoService.CreateVideo();
                 var byteArr = _videoConverter.Serialize(vid);
 
-                return Ok(new ByteArrayContent(byteArr));
+                Response.ContentType = "application/octet-stream";
+                Response.Headers.Add("Content-Length", byteArr.Length.ToString());
+
+                return Ok(new FileContentResult(byteArr, "application/octet-stream"));
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using FlatBuffers.Domain.Services;
 using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Domain.Services.Converters.Abstractions;
+using FlatBuffers.Domain.Services.Flatbuffers;
+using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FlatBuffers.Domain.Extensions
@@ -8,7 +9,7 @@ namespace FlatBuffers.Domain.Extensions
     public static class IoCDomain
     {
         public static IServiceCollection AddServices(this IServiceCollection services) =>
-            services.AddTransient<IFlatBuffersVideoConverter, VideoFlatBuffersConverter>()
+            services.AddScoped<IFlatBuffersVideoConverter, VideoFlatBuffersConverter>()
             .AddScoped<IVideoService, VideoService>();
     }
 }

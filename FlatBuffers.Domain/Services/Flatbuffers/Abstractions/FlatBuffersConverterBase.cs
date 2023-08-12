@@ -1,7 +1,7 @@
 ﻿using FlatBuffers.Domain.Interfaces;
 using Google.FlatBuffers;
 
-namespace FlatBuffers.Domain.Services.Converters.Abstractions
+namespace FlatBuffers.Domain.Services.Flatbuffers.Abstractions
 {
     public abstract class FlatBuffersConverterBase<T, Y> : IFlatBuffersConverter<T, Y> where T : IFlatbufferObject where Y : IFlatBufferSerializable<T, Y>
     {

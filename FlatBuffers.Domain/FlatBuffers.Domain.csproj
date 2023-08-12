@@ -13,4 +13,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\MessagePack\" />
+    <Folder Include="Services\ApacheAvro\" />
+    <Folder Include="Services\CapnProto\" />
+    <Folder Include="Services\ApacheThrift\" />
+    <Folder Include="Services\ProtocolBuffers\" />
+  </ItemGroup>
+
 </Project>

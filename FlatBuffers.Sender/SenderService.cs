@@ -1,45 +1,39 @@
 ﻿using BenchmarkDotNet.Attributes;
 using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Domain.Services.Converters.Abstractions;
+using FlatBuffers.Domain.Services;
+using FlatBuffers.Domain.Services.Flatbuffers;
 
 namespace FlatBuffers.Sender
 {
-    public class SenderService : IBenchMarkService<Video>
+    [MemoryDiagnoser]
+    public class SenderService
     {
-        private readonly ILogger<SenderService> _logger;
-        private readonly IVideoService _videoService;
-        private readonly ReceiverClient _receiverClient;
-        private readonly IFlatBuffersVideoConverter _videoconverter;
+        private static VideoService _videoService;
+        private static VideoFlatBuffersConverter _videoconverter;
+        private static Video vid;
+        private static byte[] vidSerialized;
 
-        public SenderService(ILogger<SenderService> logger, IFlatBuffersVideoConverter videoConverter, IVideoService videoService, ReceiverClient receiverClient)
+
+        [GlobalSetup]
+        public void GlobalSetup()
         {
-            _logger = logger;
-            _videoconverter = videoConverter;
-            _videoService = videoService;
-            _receiverClient = receiverClient;
+            _videoconverter = new VideoFlatBuffersConverter();
+            _videoService = new VideoService();
+            vid = _videoService.CreateVideo();
+            vidSerialized = _videoconverter.Serialize(vid);
         }
 
         [Benchmark]
-        public async Task<Video> RunBenchMark()
+        public Video RunBenchmarkFullProcess()
         {
-            try
-            {
-                var vid = _videoService.CreateVideo();
-                var byteArr = _videoconverter.Serialize(vid);
-
-                var resp = await _receiverClient.PostAsync("/video", byteArr);
-
-                var video = _videoconverter.Deserialize(resp);
-
-                return video;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, ex);
-
-                throw;
-            }
+            var byteArr = _videoconverter.Serialize(vid);
+            return _videoconverter.Deserialize(byteArr);
         }
+
+        [Benchmark]
+        public void RunBenchmarkSerialization() => _videoconverter.Serialize(vid);
+
+        [Benchmark]
+        public void RunBenchmarkDeSerialization() => _videoconverter.Deserialize(vidSerialized);
     }
 }

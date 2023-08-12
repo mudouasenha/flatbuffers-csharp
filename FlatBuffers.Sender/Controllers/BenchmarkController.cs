@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using FlatBuffers.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlatBuffers.Sender.Controllers
@@ -9,16 +8,16 @@ namespace FlatBuffers.Sender.Controllers
     public class BenchmarkController : ControllerBase
     {
         private readonly ILogger<BenchmarkController> _logger;
-        private readonly IBenchMarkService<Video> _senderService;
+        private readonly SenderService _senderService;
 
-        public BenchmarkController(ILogger<BenchmarkController> logger, IBenchMarkService<Video> senderService) => (_logger, _senderService) = (logger, senderService);
+        public BenchmarkController(ILogger<BenchmarkController> logger, SenderService senderService) => (_logger, _senderService) = (logger, senderService);
 
         [HttpPost]
         public IActionResult Benchmark()
         {
             try
             {
-                var summary = BenchmarkRunner.Run<IBenchMarkService<Video>>();
+                var summary = BenchmarkRunner.Run<SenderService>();
                 return Ok(summary);
             }
             catch (Exception ex)
@@ -34,8 +33,10 @@ namespace FlatBuffers.Sender.Controllers
         {
             try
             {
-                var result = await _senderService.RunBenchMark();
-                return Ok(result);
+                //BenchmarkRunner.Run<SenderService>();
+                // result = _senderService.RunBenchMarkLocal();
+                //return Ok(result);
+                return Ok();
             }
             catch (Exception ex)
             {
