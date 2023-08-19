@@ -5,7 +5,8 @@ using FlatBuffers.Domain.Services.Flatbuffers;
 
 namespace FlatBuffers.Sender
 {
-    [MemoryDiagnoser]
+    [HtmlExporter]
+    [RPlotExporter]
     public class SenderService
     {
         private static VideoService _videoService;
@@ -31,9 +32,20 @@ namespace FlatBuffers.Sender
         }
 
         [Benchmark]
-        public void RunBenchmarkSerialization() => _videoconverter.Serialize(vid);
+        public int RunBenchmarkFullProcesstest()
+        {
+            return 1;
+        }
 
         [Benchmark]
-        public void RunBenchmarkDeSerialization() => _videoconverter.Deserialize(vidSerialized);
+        public byte[] RunBenchmarkSerialization() => _videoconverter.Serialize(vid);
+
+        //[Benchmark]
+        //public void RunBenchmarkSerialization2() {
+        //    for (int i = 0; i <= 1000000; i++) _videoconverter.Serialize(vid);
+        //}
+
+        [Benchmark]
+        public Video RunBenchmarkDeSerialization() => _videoconverter.Deserialize(vidSerialized);
     }
 }

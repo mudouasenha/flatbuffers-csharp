@@ -4,7 +4,7 @@ using FlatBuffers.Domain.Services.Flatbuffers;
 using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FlatBuffers.Domain.Extensions
+namespace Serialization.Domain.Extensions
 {
     public static class IoCDomain
     {

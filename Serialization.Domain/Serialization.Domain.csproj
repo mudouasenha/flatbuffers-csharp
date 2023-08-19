@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,14 +11,6 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\MessagePack\" />
-    <Folder Include="Services\ApacheAvro\" />
-    <Folder Include="Services\CapnProto\" />
-    <Folder Include="Services\ApacheThrift\" />
-    <Folder Include="Services\ProtocolBuffers\" />
   </ItemGroup>
 
 </Project>
