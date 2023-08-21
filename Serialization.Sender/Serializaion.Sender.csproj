@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Serialization.Benchmarks\Serialization.Benchmarks.csproj" />
     <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
   </ItemGroup>
 

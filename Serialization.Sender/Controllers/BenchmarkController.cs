@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 using Microsoft.AspNetCore.Mvc;
+using Serialization.Benchmarks;
 using Serialization.Services;
 
 namespace Serializaion.Sender.Controllers
@@ -9,16 +10,16 @@ namespace Serializaion.Sender.Controllers
     public class BenchmarkController : ControllerBase
     {
         private readonly ILogger<BenchmarkController> _logger;
-        private readonly SenderService _senderService;
+        private readonly FlatBuffersBenchmark _flatBuffersBenchmark;
 
-        public BenchmarkController(ILogger<BenchmarkController> logger, SenderService senderService) => (_logger, _senderService) = (logger, senderService);
+        public BenchmarkController(ILogger<BenchmarkController> logger, FlatBuffersBenchmark senderService) => (_logger, _flatBuffersBenchmark) = (logger, senderService);
 
-        [HttpPost]
+        [HttpPost("flatbuffers")]
         public IActionResult Benchmark()
         {
             try
             {
-                var summary = BenchmarkRunner.Run<SenderService>();
+                var summary = BenchmarkRunner.Run<FlatBuffersBenchmark>();
                 return Ok(summary);
             }
             catch (Exception ex)
@@ -26,24 +27,6 @@ namespace Serializaion.Sender.Controllers
                 _logger.LogError(ex.Message, ex);
 
                 return Problem();
-            }
-        }
-
-        [HttpGet("video-result")]
-        public IActionResult Video()
-        {
-            try
-            {
-                //BenchmarkRunner.Run<SenderService>();
-                // result = _senderService.RunBenchMarkLocal();
-                //return Ok(result);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, ex);
-
-                return Problem(ex.Message);
             }
         }
     }
