@@ -1,4 +1,4 @@
-﻿namespace FlatBuffers.Domain.Services.Flatbuffers.Abstractions
+﻿namespace Serialization.Domain.Entities
 {
     public interface IConverter<Y>
     {

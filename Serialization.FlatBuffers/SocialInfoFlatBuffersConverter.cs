@@ -1,10 +1,9 @@
-﻿using BenchmarkDotNet.Attributes;
-using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
-using FlatBuffers.Domain.VideoModel;
-using Google.FlatBuffers;
+﻿using Google.FlatBuffers;
+using Serialization.Domain.Entities;
+using Serialization.Domain.FlatBuffers.VideoModel;
+using Serialization.Domain.Interfaces;
 
-namespace FlatBuffers.Domain.Services.Flatbuffers
+namespace Serialization.Serializers.FlatBuffers
 {
     public class SocialInfoFlatBuffersConverter : FlatBuffersConverterBase<SocialInfoFlatModel, SocialInfo>, IFlatBuffersSocialInfoConverter
     {
@@ -15,7 +14,6 @@ namespace FlatBuffers.Domain.Services.Flatbuffers
             return socialInfo;
         }
 
-        [Benchmark]
         public override byte[] Serialize(SocialInfo entity)
         {
             var builder = new FlatBufferBuilder(1024);
@@ -31,7 +29,6 @@ namespace FlatBuffers.Domain.Services.Flatbuffers
             return builder.SizedByteArray();
         }
 
-        [Benchmark]
         protected SocialInfoFlatModel DeserializeFlatModel(ByteBuffer buf) => SocialInfoFlatModel.GetRootAsSocialInfoFlatModel(buf);
 
         protected override SocialInfo FromSerializationModel(SocialInfoFlatModel serialized) => new()

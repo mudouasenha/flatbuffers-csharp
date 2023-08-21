@@ -1,6 +1,6 @@
-﻿using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Extensions.Logging;
 
-namespace FlatBuffers.Sender
+namespace Serialization.Services
 {
     public class ReceiverClient
     {
@@ -15,7 +15,7 @@ namespace FlatBuffers.Sender
         {
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Content = new ByteArrayContent(payload);
-            request.Content.Headers.TryAddWithoutValidation(HeaderNames.ContentType, ContentType);
+            //request.Content.Headers.TryAddWithoutValidation(HeaderNames.ContentType, ContentType);
 
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 

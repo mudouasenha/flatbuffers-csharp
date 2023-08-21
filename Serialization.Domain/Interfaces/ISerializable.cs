@@ -1,4 +1,4 @@
-﻿namespace FlatBuffers.Domain.Interfaces
+﻿namespace Serialization.Domain.Interfaces
 {
     public interface ISerializable
     {

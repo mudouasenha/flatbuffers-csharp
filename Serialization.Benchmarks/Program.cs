@@ -2,12 +2,12 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Hosting;
 using Serialization.Benchmarks;
+using Serialization.CrossCutting;
 
-Console.WriteLine("Hello, World!");
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-//HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-
-//builder.Services.AddCrossCutting();
+builder.Services.AddCrossCutting();
 var config = DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default);
 BenchmarkRunner.Run<FlatBuffersBenchmark>(config);

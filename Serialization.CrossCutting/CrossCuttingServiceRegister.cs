@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Serialization.Domain.Extensions;
+using Serialization.Services;
 
 namespace Serialization.CrossCutting
 {

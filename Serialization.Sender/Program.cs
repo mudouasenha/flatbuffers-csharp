@@ -1,7 +1,4 @@
-using BenchmarkDotNet.Running;
-using FlatBuffers.Sender;
 using Serialization.CrossCutting;
-using Serialization.Domain.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCrossCutting();
-builder.Services.AddScoped<SenderService>();
-BenchmarkRunner.Run<SenderService>();
-builder.Services.AddHttpClient<ReceiverClient>(httpClient => httpClient.BaseAddress = new Uri("https://localhost:5021"));
 builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 

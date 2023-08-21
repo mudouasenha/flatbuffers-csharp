@@ -1,9 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
-using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services;
-using FlatBuffers.Domain.Services.Flatbuffers;
+using Serialization.Domain.Entities;
+using Serialization.Serializers.FlatBuffers;
 
-namespace FlatBuffers.Sender
+namespace Serialization.Services
 {
     [HtmlExporter]
     [RPlotExporter]

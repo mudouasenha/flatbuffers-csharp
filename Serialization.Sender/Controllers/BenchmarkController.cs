@@ -1,7 +1,8 @@
 ﻿using BenchmarkDotNet.Running;
 using Microsoft.AspNetCore.Mvc;
+using Serialization.Services;
 
-namespace FlatBuffers.Sender.Controllers
+namespace Serializaion.Sender.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -29,7 +30,7 @@ namespace FlatBuffers.Sender.Controllers
         }
 
         [HttpGet("video-result")]
-        public async Task<IActionResult> Video()
+        public IActionResult Video()
         {
             try
             {

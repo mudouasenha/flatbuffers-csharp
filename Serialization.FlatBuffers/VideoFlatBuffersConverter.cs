@@ -1,10 +1,9 @@
-﻿using BenchmarkDotNet.Attributes;
-using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
-using FlatBuffers.Domain.VideoModel;
-using Google.FlatBuffers;
+﻿using Google.FlatBuffers;
+using Serialization.Domain.Entities;
+using Serialization.Domain.FlatBuffers.VideoModel;
+using Serialization.Domain.Interfaces;
 
-namespace FlatBuffers.Domain.Services.Flatbuffers
+namespace Serialization.Serializers.FlatBuffers
 {
     public partial class VideoFlatBuffersConverter : FlatBuffersConverterBase<VideoFlatModel, Video>, IFlatBuffersVideoConverter
     {
@@ -15,7 +14,6 @@ namespace FlatBuffers.Domain.Services.Flatbuffers
             return video;
         }
 
-        [Benchmark]
         public override byte[] Serialize(Video entity)
         {
             var builder = new FlatBufferBuilder(1024);
@@ -40,7 +38,6 @@ namespace FlatBuffers.Domain.Services.Flatbuffers
             return bArr;
         }
 
-        [Benchmark]
         protected VideoFlatModel DeserializeFlatModel(ByteBuffer buf) => VideoFlatModel.GetRootAsVideoFlatModel(buf);
 
         protected override Video FromSerializationModel(VideoFlatModel video) => new()

@@ -1,9 +1,8 @@
-﻿using FlatBuffers.Domain.Entities;
-using FlatBuffers.Domain.Interfaces;
-using FlatBuffers.Domain.VideoModel;
-using Google.FlatBuffers;
+﻿using Google.FlatBuffers;
+using Serialization.Domain.Entities;
+using Serialization.Domain.FlatBuffers.VideoModel;
 
-namespace FlatBuffers.Domain.Services.Flatbuffers.Abstractions
+namespace Serialization.Domain.Interfaces
 {
     public interface IFlatBuffersConverter<T, Y> : IConverter<Y> where T : IFlatbufferObject where Y : IFlatBufferSerializable<T, Y>
     {

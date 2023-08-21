@@ -1,4 +1,4 @@
-﻿namespace FlatBuffers.Domain.Entities.Enums
+﻿namespace Serialization.Domain.Entities.Enums
 {
     public enum VideoQualityEnum : short
     {

@@ -6,13 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
-    <PackageReference Include="Google.FlatBuffers" Version="23.3.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <Compile Remove="Benchmark\**" />
+    <Content Remove="Benchmark\**" />
+    <EmbeddedResource Remove="Benchmark\**" />
+    <None Remove="Benchmark\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Benchmark\" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

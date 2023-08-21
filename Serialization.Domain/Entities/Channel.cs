@@ -1,7 +1,7 @@
-﻿using FlatBuffers.Domain.Interfaces;
-using FlatBuffers.Domain.VideoModel;
+﻿using Serialization.Domain.FlatBuffers.VideoModel;
+using Serialization.Domain.Interfaces;
 
-namespace FlatBuffers.Domain.Entities
+namespace Serialization.Domain.Entities
 {
     public class Channel : IFlatBufferSerializable<ChannelFlatModel, Channel>
     {

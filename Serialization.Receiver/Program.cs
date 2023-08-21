@@ -1,6 +1,4 @@
 using Serialization.CrossCutting;
-using Serialization.Domain.Extensions;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 

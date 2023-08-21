@@ -1,8 +1,7 @@
-﻿using FlatBuffers.Domain.Services.Abstractions;
-using FlatBuffers.Domain.Services.Flatbuffers.Abstractions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Serialization.Domain.Interfaces;
 
-namespace FlatBuffers.Receiver.Controllers
+namespace Serialization.Receiver.Controllers
 {
     [ApiController]
     [Route("[controller]")]
