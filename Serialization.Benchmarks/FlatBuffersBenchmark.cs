@@ -26,6 +26,7 @@ namespace Serialization.Benchmarks
 
         private VideoService _videoService = new();
         private VideoFlatBuffersConverter _videoconverter = new();
+        private MemoryStream serializedStream;
         private Video vid;
         private byte[] vidSerialized;
 
@@ -44,22 +45,19 @@ namespace Serialization.Benchmarks
         public void Serialization() => _videoconverter.Serialize(vid);
 
         [Benchmark]
-        //[Arguments(1_000)]
-        //[Arguments(100_000)]
-        //[Arguments(1_000_000)]
         public void Serialization_Multiple()
         {
             for (int i = 0; i <= NumObjects; i++) _videoconverter.Serialize(vid);
         }
 
-        //[Benchmark]
-        //public void Serialization_1_000_000()
-        //{
-        //    for (int i = 0; i <= 1_000_000; i++) _videoconverter.Serialize(vid);
-        //}
+        [Benchmark]
+        public void Deserialization_Multiple()
+        {
+            for (int i = 0; i <= NumObjects; i++) _videoconverter.Deserialize(vidSerialized);
+        }
 
         [Benchmark]
-        public void DeSerialization() => _videoconverter.Deserialize(vidSerialized);
+        public void Deserialization() => _videoconverter.Deserialize(vidSerialized);
 
 
         private class AntiVirusFriendlyConfig : ManualConfig

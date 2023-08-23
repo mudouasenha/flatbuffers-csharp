@@ -20,9 +20,12 @@ namespace Serialization.Serializers.FlatBuffers
             var channelName = builder.CreateString(entity.Channel.Name);
             var ch = ChannelFlatModel.CreateChannelFlatModel(builder, channelName, entity.Channel.Subscribers, entity.Channel.ChannelId);
 
-            var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, entity.SocialInfo.Comments, entity.SocialInfo.Views);
 
-            var vqs = VideoInfoFlatModel.CreateQualitiesVector(builder, new VideoQualityFlatModel[] { VideoQualityFlatModel.Lowest, VideoQualityFlatModel.Low, VideoQualityFlatModel.Medium, VideoQualityFlatModel.SD, VideoQualityFlatModel.HD, VideoQualityFlatModel.TwoK, VideoQualityFlatModel.FourK });
+            // TODO: Ajustar, é necessário compilar novamente FlatModels 
+            var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, entity.SocialInfo.Comments, entity.SocialInfo.Views);
+            //var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, entity.SocialInfo.CommentsCount, entity.SocialInfo.Views);
+
+            var vqs = VideoInfoFlatModel.CreateQualitiesVector(builder, entity.VideoInfo.Qualities);
             var vi = VideoInfoFlatModel.CreateVideoInfoFlatModel(builder, entity.VideoInfo.Duration, builder.CreateString(entity.VideoInfo.Description), entity.VideoInfo.Size, vqs);
 
             VideoFlatModel.StartVideoFlatModel(builder);

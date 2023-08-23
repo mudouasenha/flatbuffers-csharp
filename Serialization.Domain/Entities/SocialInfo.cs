@@ -8,6 +8,7 @@ namespace Serialization.Domain.Entities
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public int Comments { get; set; }
+        //public IEnumerable<string> Comments { get; set; }
         public int Views { get; set; }
 
         public static SocialInfo FromSerializationModel(SocialInfoFlatModel serialized) => new()
