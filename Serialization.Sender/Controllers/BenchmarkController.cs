@@ -1,12 +1,11 @@
 ﻿using BenchmarkDotNet.Running;
 using Microsoft.AspNetCore.Mvc;
 using Serialization.Benchmarks;
-using Serialization.Services;
 
 namespace Serializaion.Sender.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("sender/[controller]")]
     public class BenchmarkController : ControllerBase
     {
         private readonly ILogger<BenchmarkController> _logger;

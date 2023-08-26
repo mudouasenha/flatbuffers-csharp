@@ -9,6 +9,7 @@ namespace Serialization.Benchmarks
     {
         private VideoService _videoService = new();
         private VideoFlatBuffersConverter _videoconverter = new();
+        private SenderService _senderService = new();
         private readonly Video vid;
         private const string Name = "FlatBuffers";
         private byte[] vidSerialized;
@@ -59,7 +60,37 @@ namespace Serialization.Benchmarks
             Console.WriteLine($"{Name}.{action.Method.Name} - Elapsed Time: {FormatElapsedTime(stopwatch.Elapsed)}");
             Console.WriteLine($"{Name}.{action.Method.Name} - Memory used: {currentProcess.WorkingSet64 / 1024} KB");
 
-            if (multiple == true) Console.WriteLine($"{Name}.{action.Method.Name} - CPU Usage: {cpuTime.TotalMilliseconds / stopwatch.ElapsedMilliseconds * 100:F2}% \n");
+            //if (multiple == true) Console.WriteLine($"{Name}.{action.Method.Name} - CPU Usage: {cpuTime.TotalMilliseconds / stopwatch.ElapsedMilliseconds * 100:F2}% \n");
+        }
+
+
+        public static void ExecuteMethodParallel(Action action, int numThreads = 4, int iterCount = 1000)
+        {
+            int numberOfThreads = numThreads;
+            int numberOfIterationsPerThread = iterCount;
+
+            Thread[] threads = new Thread[numberOfThreads];
+
+            for (int i = 0; i < numberOfThreads; i++)
+            {
+                threads[i] = new Thread(() =>
+                {
+                    for (int j = 0; j < numberOfIterationsPerThread; j++)
+                    {
+                        ExecuteMethod(action, multiple: true);
+                    }
+                });
+            }
+
+            foreach (Thread thread in threads)
+            {
+                thread.Start();
+            }
+
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
         }
 
         static string FormatElapsedTime(TimeSpan elapsedTime)

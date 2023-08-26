@@ -4,7 +4,7 @@ using Serialization.Domain.Interfaces;
 namespace Serialization.Receiver.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("receiver/[controller]")]
     public class VideoController : ControllerBase
     {
         private readonly ILogger<VideoController> _logger;
@@ -44,14 +44,14 @@ namespace Serialization.Receiver.Controllers
         {
             try
             {
-                var test = HttpContext;
                 Console.WriteLine("Received");
                 var video = _videoConverter.Deserialize(byteArr);
-                _logger.LogInformation(video.ToString());
+                //_logger.LogInformation(video.ToString());
 
-                var videoArr = _videoConverter.Serialize(video);
+                //var videoArr = _videoConverter.Serialize(video);
 
-                return Ok(new ByteArrayContent(videoArr));
+                return Ok();
+                //return Ok(new ByteArrayContent(videoArr));
             }
             catch (Exception ex)
             {

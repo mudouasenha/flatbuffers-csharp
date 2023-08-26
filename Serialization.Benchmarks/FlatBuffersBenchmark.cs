@@ -1,35 +1,24 @@
-﻿
-using BenchmarkDotNet.Analysers;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Serialization.Domain.Entities;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 
 namespace Serialization.Benchmarks
 {
-    [RPlotExporter]
-    [Config(typeof(AntiVirusFriendlyConfig))]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    [MemoryDiagnoser]
-    [ThreadingDiagnoser]
     public class FlatBuffersBenchmark
     {
-        public IEnumerable<int> NumObjectsConfig => new[] { 10, 1000, 1000000 };
-
-        [ParamsSource(nameof(NumObjectsConfig))]
-        public int NumObjects { get; set; }
+        [Params(10, 1000, 1000000)]
+        public int IterationCount { get; set; }
 
 
         private VideoService _videoService = new();
         private VideoFlatBuffersConverter _videoconverter = new();
-        private MemoryStream serializedStream;
+        private RestClient client = new();
         private Video vid;
         private byte[] vidSerialized;
-
+        private IServiceProvider serviceProvider;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -47,34 +36,19 @@ namespace Serialization.Benchmarks
         [Benchmark]
         public void Serialization_Multiple()
         {
-            for (int i = 0; i <= NumObjects; i++) _videoconverter.Serialize(vid);
+            for (int i = 0; i <= IterationCount; i++) _videoconverter.Serialize(vid);
         }
+
+        [Benchmark]
+        public async Task MeasureRestLatency() => await client.PostAsync("receiver/video", vidSerialized);
 
         [Benchmark]
         public void Deserialization_Multiple()
         {
-            for (int i = 0; i <= NumObjects; i++) _videoconverter.Deserialize(vidSerialized);
+            for (int i = 0; i <= IterationCount; i++) _videoconverter.Deserialize(vidSerialized);
         }
 
         [Benchmark]
         public void Deserialization() => _videoconverter.Deserialize(vidSerialized);
-
-
-        private class AntiVirusFriendlyConfig : ManualConfig
-        {
-            public AntiVirusFriendlyConfig()
-            {
-                //AddJob(Job.MediumRun.WithMinIterationCount(10).WithMaxIterationCount(1_000_000).WithToolchain(InProcessNoEmitToolchain.Instance));
-                AddJob(Job.MediumRun.WithToolchain(InProcessNoEmitToolchain.Instance));
-
-                AddAnalyser(EnvironmentAnalyser.Default);
-            }
-
-            //public AntiVirusFriendlyConfig()
-            //{
-            //    AddJob(Job.MediumRun
-            //        .WithToolchain(InProcessNoEmitToolchain.Instance));
-            //}
-        }
     }
 }

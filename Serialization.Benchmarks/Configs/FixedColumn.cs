@@ -1,0 +1,60 @@
+﻿using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Reports;
+using BenchmarkDotNet.Running;
+using System.Globalization;
+using System.Reflection;
+
+namespace Serialization.Benchmarks.Configs
+{
+    /// <summary>
+	/// A simple column having one defined value for all cells
+	/// Helpful when merging different csvs to still being able to distinguish them in e.g. their version or os
+	/// By default it is set to not always show, since its main use case is to show metadata
+	/// </summary>
+	public class FixedColumn : IColumn
+    {
+        /// <summary>
+        /// Column showing the application version
+        /// </summary>
+        public static readonly FixedColumn VersionColumn =
+            new FixedColumn("Version", Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
+
+        /// <summary>
+        /// Column showing the used operating system
+        /// </summary>
+        public static readonly FixedColumn OperatingSystemColumn =
+            new FixedColumn("OS", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
+
+        /// <summary>
+        /// Column with the current date and time in an invariant culture format
+        /// </summary>
+        public static readonly FixedColumn DateTimeColumn =
+            new FixedColumn("DateTime", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+
+        public string Id { get; }
+        public string ColumnName { get; }
+
+        private readonly string cellValue;
+
+        public FixedColumn(string columnName, string cellValue)
+        {
+            this.cellValue = cellValue;
+            ColumnName = columnName;
+            Id = nameof(FixedColumn) + "." + ColumnName;
+        }
+
+        public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => cellValue;
+        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
+
+        public bool IsAvailable(Summary summary) => true;
+
+        public bool AlwaysShow { get; set; } = false;
+        public ColumnCategory Category => ColumnCategory.Custom;
+        public int PriorityInCategory { get; set; } = 0;
+        public bool IsNumeric => false;
+        public UnitType UnitType => UnitType.Dimensionless;
+        public string Legend => $"Fixed column with value {cellValue}";
+        public override string ToString() => ColumnName;
+    }
+}
