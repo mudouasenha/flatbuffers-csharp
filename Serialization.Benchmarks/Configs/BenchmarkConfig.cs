@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
@@ -27,6 +28,8 @@ namespace Serialization.Benchmarks.Configs
                 .WithToolchain(InProcessNoEmitToolchain.Instance));
 
             AddAnalyser(EnvironmentAnalyser.Default);
+
+            AddDiagnoser(MemoryDiagnoser.Default);
 
             //AddColumn(new DataSizeColumn());
             ConfigHelper.AddDefaultColumns(this);

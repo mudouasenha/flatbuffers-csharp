@@ -1,24 +1,25 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Order;
 using Serialization.Domain.Entities;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 
 namespace Serialization.Benchmarks
 {
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class FlatBuffersBenchmark
     {
-        [Params(10, 1000, 1000000)]
+        [Params(1, 10, 1_000, 100_000)]
         public int IterationCount { get; set; }
 
+        [Params(2, 4, 8)] // Number of concurrent threads
+        public int ThreadCount { get; set; }
+
+        private object _lock = new object();
 
         private VideoService _videoService = new();
         private VideoFlatBuffersConverter _videoconverter = new();
         private RestClient client = new();
         private Video vid;
         private byte[] vidSerialized;
-        private IServiceProvider serviceProvider;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -34,13 +35,16 @@ namespace Serialization.Benchmarks
         public void Serialization() => _videoconverter.Serialize(vid);
 
         [Benchmark]
+        public void Deserialization() => _videoconverter.Deserialize(vidSerialized);
+
+        [Benchmark]
+        public byte[] MeasureRestLatency() => client.PostAsync("receiver/video", vidSerialized).Result;
+
+        [Benchmark]
         public void Serialization_Multiple()
         {
             for (int i = 0; i <= IterationCount; i++) _videoconverter.Serialize(vid);
         }
-
-        [Benchmark]
-        public async Task MeasureRestLatency() => await client.PostAsync("receiver/video", vidSerialized);
 
         [Benchmark]
         public void Deserialization_Multiple()
@@ -49,6 +53,15 @@ namespace Serialization.Benchmarks
         }
 
         [Benchmark]
-        public void Deserialization() => _videoconverter.Deserialize(vidSerialized);
+        public void HighWorkloadSerialization()
+        {
+            Parallel.For(0, ThreadCount, _ =>
+            {
+                lock (_lock)
+                {
+                    _videoconverter.Serialize(vid);
+                }
+            });
+        }
     }
 }

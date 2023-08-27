@@ -11,6 +11,9 @@ builder.Services.AddCrossCutting().AddScoped<FlatBuffersBenchmarkSimple>();
 
 
 var config = new BenchmarkConfig();
+Thread.Sleep(TimeSpan.FromSeconds(10));
+
+
 BenchmarkRunner.Run<FlatBuffersBenchmark>(config);
 
 
