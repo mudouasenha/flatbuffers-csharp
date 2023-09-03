@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Serialization.Serializers.SystemTextJson
 {
-    public class VideoSytemTextJsonSerializer : BaseDirectSerializer<MemoryStream>
+    public class SytemTextJsonSerializer : BaseDirectSerializer<MemoryStream>
     {
         protected override MemoryStream Serialize<T>(T original, out long messageSize)
         {

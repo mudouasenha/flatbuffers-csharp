@@ -25,7 +25,7 @@ namespace Serialization.Benchmarks
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
             new VideoFlatBuffersSerializer(),
-            new VideoSytemTextJsonSerializer()
+            new SytemTextJsonSerializer()
         };
 
         public IEnumerable<ISerializable> Targets => new ISerializable[]
