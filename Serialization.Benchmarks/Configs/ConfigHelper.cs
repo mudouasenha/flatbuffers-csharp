@@ -5,6 +5,7 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Reports;
 using Perfolizer.Horology;
+using Serialization.Benchmarks.Configs.Columns;
 using System.Globalization;
 
 namespace Serialization.Benchmarks.Configs

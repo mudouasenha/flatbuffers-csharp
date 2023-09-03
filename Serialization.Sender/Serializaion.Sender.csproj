@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+	<TargetFramework>net6.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Benchmark\**" />
-    <Content Remove="Benchmark\**" />
-    <EmbeddedResource Remove="Benchmark\**" />
-    <None Remove="Benchmark\**" />
+	<Compile Remove="Benchmark\**" />
+	<Content Remove="Benchmark\**" />
+	<EmbeddedResource Remove="Benchmark\**" />
+	<None Remove="Benchmark\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Serialization.Benchmarks\Serialization.Benchmarks.csproj" />
-    <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
+	<ProjectReference Include="..\Serialization.Benchmarks\Serialization.Benchmarks.csproj" />
+	<ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
   </ItemGroup>
 
 </Project>

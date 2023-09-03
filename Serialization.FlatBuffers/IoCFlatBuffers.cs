@@ -6,7 +6,7 @@ namespace Serialization.Serializers.FlatBuffers
     public static class IoCFlatBuffers
     {
         public static IServiceCollection AddFlatBuffers(this IServiceCollection services) =>
-            services.AddScoped<IFlatBuffersVideoConverter, VideoFlatBuffersConverter>();
+            services.AddScoped<IFlatBuffersVideoSerializer, VideoFlatBuffersSerializer>();
     }
 
 }

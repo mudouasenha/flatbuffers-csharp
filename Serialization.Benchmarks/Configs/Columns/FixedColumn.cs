@@ -4,7 +4,7 @@ using BenchmarkDotNet.Running;
 using System.Globalization;
 using System.Reflection;
 
-namespace Serialization.Benchmarks.Configs
+namespace Serialization.Benchmarks.Configs.Columns
 {
     /// <summary>
 	/// A simple column having one defined value for all cells

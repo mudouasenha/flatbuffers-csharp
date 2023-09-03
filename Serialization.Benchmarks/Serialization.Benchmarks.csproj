@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+	<Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
+    <ProjectReference Include="..\Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj" />
   </ItemGroup>
 
 </Project>

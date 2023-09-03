@@ -1,67 +1,54 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Serialization.Domain.Entities;
+using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
 
 namespace Serialization.Benchmarks
 {
-    public class FlatBuffersBenchmark
+    [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn]
+    public class FlatBuffersBenchmark : ISerializableBenchmark
     {
-        [Params(1, 10, 1_000, 100_000)]
-        public int IterationCount { get; set; }
+        [ParamsSource(nameof(Serializers))]
+        public ISerializer<Video> Serializer { get; set; }
 
-        [Params(2, 4, 8)] // Number of concurrent threads
-        public int ThreadCount { get; set; }
-
-        private object _lock = new object();
-
-        private VideoService _videoService = new();
-        private VideoFlatBuffersConverter _videoconverter = new();
+        private VideoFlatBuffersSerializer _videoconverter = new();
         private RestClient client = new();
         private Video vid;
         private byte[] vidSerialized;
 
+        public IEnumerable<ISerializer<Video>> Serializers => new ISerializer<Video>[]
+        {
+            new VideoFlatBuffersSerializer(),
+            new VideoSytemTextJsonSerializer()
+        };
+
         [GlobalSetup]
         public void GlobalSetup()
         {
-            vid = _videoService.CreateVideo();
-            vidSerialized = _videoconverter.Serialize(vid);
+            vid = new VideoService().CreateVideo();
+            vidSerialized = Serializer.Serialize(vid);
         }
 
         [Benchmark]
-        public void FullProcess() => _videoconverter.Deserialize(_videoconverter.Serialize(vid));
+        public void FullProcess() => Serializer.Deserialize(Serializer.Serialize(vid));
 
         [Benchmark]
-        public void Serialization() => _videoconverter.Serialize(vid);
+        public void Serialization() => Serializer.Serialize(vid);
 
         [Benchmark]
-        public void Deserialization() => _videoconverter.Deserialize(vidSerialized);
+        public void Deserialization() => Serializer.Deserialize(vidSerialized);
 
         [Benchmark]
-        public byte[] MeasureRestLatency() => client.PostAsync("receiver/video", vidSerialized).Result;
-
-        [Benchmark]
-        public void Serialization_Multiple()
+        public void Rest_FullProcess_Multiple()
         {
-            for (int i = 0; i <= IterationCount; i++) _videoconverter.Serialize(vid);
+            client.PostAsync("receiver/video", Serializer.Serialize(vid)).GetAwaiter().GetResult();
+            Thread.Sleep(TimeSpan.FromSeconds(0.1));
         }
 
         [Benchmark]
-        public void Deserialization_Multiple()
-        {
-            for (int i = 0; i <= IterationCount; i++) _videoconverter.Deserialize(vidSerialized);
-        }
+        public void Rest_FullProcess() => client.PostAsync("receiver/video", Serializer.Serialize(vid)).GetAwaiter().GetResult();
 
-        [Benchmark]
-        public void HighWorkloadSerialization()
-        {
-            Parallel.For(0, ThreadCount, _ =>
-            {
-                lock (_lock)
-                {
-                    _videoconverter.Serialize(vid);
-                }
-            });
-        }
     }
 }

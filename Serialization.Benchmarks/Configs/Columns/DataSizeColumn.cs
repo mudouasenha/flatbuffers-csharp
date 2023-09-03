@@ -1,4 +1,4 @@
-﻿namespace Serialization.Benchmarks.Configs
+﻿namespace Serialization.Benchmarks.Configs.Columns
 {
     //public class DataSizeColumn : IColumn
     //{

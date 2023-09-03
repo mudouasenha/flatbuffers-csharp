@@ -3,7 +3,7 @@ using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using System.Runtime.InteropServices;
 
-namespace Serialization.Benchmarks.Configs
+namespace Serialization.Benchmarks.Configs.Columns
 {
     /// <summary>
 	/// Static column presenting the value of an environment variable of the system.
@@ -21,16 +21,16 @@ namespace Serialization.Benchmarks.Configs
         {
             this.environmentVariableKey = environmentVariableKey;
             ColumnName = columnName;
-            this.cellValue = Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.Process);
+            cellValue = Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.Process);
 
             // Fallbacks for windows
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                this.cellValue ??= Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.User);
-                this.cellValue ??= Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.Machine);
+                cellValue ??= Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.User);
+                cellValue ??= Environment.GetEnvironmentVariable(environmentVariableKey, EnvironmentVariableTarget.Machine);
             }
 
-            this.cellValue ??= defaultValue;
+            cellValue ??= defaultValue;
 
             Id = nameof(EnvironmentVariableColumn) + "." + ColumnName;
         }

@@ -5,7 +5,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public class SocialInfoFlatBuffersConverter : FlatBuffersConverterBase<SocialInfoFlatModel, SocialInfo>, IFlatBuffersSocialInfoConverter
+    public class SocialInfoFlatBuffersSerializer : FlatBuffersSerializerBase<SocialInfoFlatModel, SocialInfo>, IFlatBuffersSocialInfoSerializer
     {
         public override SocialInfo Deserialize(byte[] byteArr)
         {

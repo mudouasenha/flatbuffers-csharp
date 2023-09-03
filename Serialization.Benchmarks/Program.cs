@@ -10,14 +10,14 @@ HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddCrossCutting().AddScoped<FlatBuffersBenchmarkSimple>();
 
 
-var config = new BenchmarkConfig();
+
 Thread.Sleep(TimeSpan.FromSeconds(10));
 
-
+var config = new BenchmarkConfig();
 BenchmarkRunner.Run<FlatBuffersBenchmark>(config);
 
 
 //var host = builder.Build();
-////var myService = host.Services.GetRequiredService<FlatBuffersBenchmarkSimple>();
-////myService.Initialize();
+//var myService = host.Services.GetRequiredService<FlatBuffersBenchmarkSimple>();
+//await myService.Initialize();
 //host.Run();

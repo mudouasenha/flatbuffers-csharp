@@ -5,7 +5,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public class ChannelFlatBuffersConverter : FlatBuffersConverterBase<ChannelFlatModel, Channel>, IFlatBuffersChannelConverter
+    public class ChannelFlatBuffersSerializer : FlatBuffersSerializerBase<ChannelFlatModel, Channel>, IFlatBuffersChannelSerializer
     {
         public override Channel Deserialize(byte[] byteArr)
         {

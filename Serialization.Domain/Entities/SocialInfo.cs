@@ -18,5 +18,15 @@ namespace Serialization.Domain.Entities
             Comments = serialized.Comments,
             Views = serialized.Views,
         };
+
+        public long Deserialize(ISerializer serializer)
+        {
+            return serializer.Deserialize(this);
+        }
+
+        public long Serialize(ISerializer serializer)
+        {
+            return serializer.Serialize(this);
+        }
     }
 }

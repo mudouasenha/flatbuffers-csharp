@@ -1,4 +1,5 @@
 ﻿using Google.FlatBuffers;
+using Serialization.Domain.Entities;
 
 namespace Serialization.Domain.Interfaces
 {

@@ -1,4 +1,5 @@
 using Serialization.CrossCutting;
+using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,21 +11,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCrossCutting();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SenderService>();
 
 
-var app = builder.Build();
+var sp = builder.Services.BuildServiceProvider();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+var myService = sp.GetRequiredService<SenderService>();
 
-app.UseHttpsRedirection();
+await myService.RunParallelProcessingAsync();
 
-app.UseAuthorization();
+//var app = builder.Build();
 
-app.MapControllers();
+//// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
 
-app.Run();
+//app.UseHttpsRedirection();
+
+//app.UseAuthorization();
+
+//app.MapControllers();
+
+//app.Run();

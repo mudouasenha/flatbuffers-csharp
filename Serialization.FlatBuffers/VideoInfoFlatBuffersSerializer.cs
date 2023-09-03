@@ -5,7 +5,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public class VideoInfoFlatBuffersConverter : FlatBuffersConverterBase<VideoInfoFlatModel, VideoInfo>, IFlatBuffersVideoInfoConverter
+    public class VideoInfoFlatBuffersSerializer : FlatBuffersSerializerBase<VideoInfoFlatModel, VideoInfo>, IFlatBuffersVideoInfoSerializer
     {
         public override VideoInfo Deserialize(byte[] byteArr)
         {

@@ -9,9 +9,9 @@ namespace Serialization.Receiver.Controllers
     {
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoService _videoService;
-        private readonly IFlatBuffersVideoConverter _videoConverter;
+        private readonly IFlatBuffersVideoSerializer _videoConverter;
 
-        public VideoController(ILogger<VideoController> logger, IFlatBuffersVideoConverter videoConverter, IVideoService videoService)
+        public VideoController(ILogger<VideoController> logger, IFlatBuffersVideoSerializer videoConverter, IVideoService videoService)
         {
             _logger = logger;
             _videoConverter = videoConverter;
