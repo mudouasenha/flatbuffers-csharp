@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.FlatBuffers;
 
 namespace Serialization.Receiver.Controllers
 {
@@ -9,9 +10,9 @@ namespace Serialization.Receiver.Controllers
     {
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoService _videoService;
-        private readonly IFlatBuffersVideoSerializer _videoConverter;
+        private readonly VideoFlatBuffersSerializer _videoConverter;
 
-        public VideoController(ILogger<VideoController> logger, IFlatBuffersVideoSerializer videoConverter, IVideoService videoService)
+        public VideoController(ILogger<VideoController> logger, VideoFlatBuffersSerializer videoConverter, IVideoService videoService)
         {
             _logger = logger;
             _videoConverter = videoConverter;

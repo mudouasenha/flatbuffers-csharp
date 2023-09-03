@@ -3,7 +3,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class SocialInfo : IFlatBufferSerializable<SocialInfoFlatModel, SocialInfo>
+    public class SocialInfo : ISerializable
     {
         public int Likes { get; set; }
         public int Dislikes { get; set; }
@@ -19,14 +19,19 @@ namespace Serialization.Domain.Entities
             Views = serialized.Views,
         };
 
-        public long Deserialize(ISerializer serializer)
+        public ISerializable Deserialize(ISerializer serializer)
         {
-            return serializer.Deserialize(this);
+            throw new NotImplementedException();
         }
 
-        public long Serialize(ISerializer serializer)
+        public bool Equals(ISerializable other)
         {
-            return serializer.Serialize(this);
+            throw new NotImplementedException();
+        }
+
+        public T Serialize<T>(ISerializer serializer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

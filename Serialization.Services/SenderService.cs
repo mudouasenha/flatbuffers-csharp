@@ -7,7 +7,7 @@ namespace Serialization.Services
     {
         private readonly IVideoService _videoService;
         private static readonly RestClient _restClient = new();
-        private static readonly VideoFlatBuffersConverter _videoconverter = new();
+        private static readonly VideoFlatBuffersSerializer _videoconverter = new();
 
         public SenderService(IVideoService videoService)
         {

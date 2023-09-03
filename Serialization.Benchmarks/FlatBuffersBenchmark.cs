@@ -1,9 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Bogus;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
+using System.Numerics;
 
 namespace Serialization.Benchmarks
 {
@@ -11,44 +13,51 @@ namespace Serialization.Benchmarks
     public class FlatBuffersBenchmark : ISerializableBenchmark
     {
         [ParamsSource(nameof(Serializers))]
-        public ISerializer<Video> Serializer { get; set; }
+        public ISerializer Serializer { get; set; }
 
-        private VideoFlatBuffersSerializer _videoconverter = new();
+        [ParamsSource(nameof(Targets))]
+        public ISerializable Target { get; set; }
+
         private RestClient client = new();
         private Video vid;
-        private byte[] vidSerialized;
+        private ISerializable vidSerialized;
 
-        public IEnumerable<ISerializer<Video>> Serializers => new ISerializer<Video>[]
+        public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
             new VideoFlatBuffersSerializer(),
             new VideoSytemTextJsonSerializer()
+        };
+
+        public IEnumerable<ISerializable> Targets => new ISerializable[]
+        {
+            new VideoService().CreateVideo()
         };
 
         [GlobalSetup]
         public void GlobalSetup()
         {
             vid = new VideoService().CreateVideo();
-            vidSerialized = Serializer.Serialize(vid);
+            vidSerialized = vid.Serialize<ISerializable>(Serializer);
         }
 
         [Benchmark]
-        public void FullProcess() => Serializer.Deserialize(Serializer.Serialize(vid));
+        public void FullProcess() => vid.Serialize<ISerializable>(Serializer).Deserialize(Serializer);
 
         [Benchmark]
-        public void Serialization() => Serializer.Serialize(vid);
+        public void Serialization() => vid.Serialize<ISerializable>(Serializer);
 
         [Benchmark]
-        public void Deserialization() => Serializer.Deserialize(vidSerialized);
+        public void Deserialization() => vidSerialized.Deserialize(Serializer);
 
         [Benchmark]
         public void Rest_FullProcess_Multiple()
         {
-            client.PostAsync("receiver/video", Serializer.Serialize(vid)).GetAwaiter().GetResult();
+            client.PostAsync("receiver/video", vid.Serialize<byte[]>(Serializer)).GetAwaiter().GetResult();
             Thread.Sleep(TimeSpan.FromSeconds(0.1));
         }
 
         [Benchmark]
-        public void Rest_FullProcess() => client.PostAsync("receiver/video", Serializer.Serialize(vid)).GetAwaiter().GetResult();
+        public void Rest_FullProcess() => client.PostAsync("receiver/video", vid.Serialize<byte[]>(Serializer)).GetAwaiter().GetResult();
 
     }
 }

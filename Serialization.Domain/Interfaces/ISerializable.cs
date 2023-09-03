@@ -2,9 +2,9 @@
 {
     public interface ISerializable : IEquatable<ISerializable>
     {
-        long Deserialize(ISerializer<ISerializable> serializer);
+        ISerializable Deserialize(ISerializer serializer);
 
-        long Serialize(ISerializer<ISerializable> serializer);
+        T Serialize<T>(ISerializer serializer);
 
         Type GetType();
     }

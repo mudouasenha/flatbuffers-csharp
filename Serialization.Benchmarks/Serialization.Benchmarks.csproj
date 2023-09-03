@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
-    <ProjectReference Include="..\Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj" />
   </ItemGroup>
 
 </Project>

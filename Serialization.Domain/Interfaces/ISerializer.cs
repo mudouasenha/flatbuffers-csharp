@@ -1,13 +1,9 @@
 ﻿namespace Serialization.Domain.Interfaces
 {
-    public interface ISerializer<Y>
+    public interface ISerializer
     {
-        public Y Deserialize(byte[] buf);
+        public Y Deserialize<Y, T>(object buf) where Y : ISerializable;
 
-        public byte[] Serialize(Y entity);
-
-        protected abstract Y Serialize<T>(T original, out long messageSize);
-
-        protected abstract byte[] Deserialize<T>(T serializedObject) where T : ISerializable;
+        public T Serialize<Y, T>(Y entity) where Y : ISerializable;
     }
 }

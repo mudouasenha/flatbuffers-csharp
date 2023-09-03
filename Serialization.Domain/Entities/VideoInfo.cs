@@ -3,7 +3,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class VideoInfo : IFlatBufferSerializable<VideoInfoFlatModel, VideoInfo>
+    public class VideoInfo : ISerializable
     {
         public int Duration { get; set; }
 
@@ -20,5 +20,20 @@ namespace Serialization.Domain.Entities
             Size = serialized.Size,
             Qualities = serialized.GetQualitiesArray()
         };
+
+        public ISerializable Deserialize(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Equals(ISerializable other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Serialize<T>(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

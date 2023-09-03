@@ -3,7 +3,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class Channel : IFlatBufferSerializable<ChannelFlatModel, Channel>
+    public class Channel : ISerializable
     {
         public string Name { get; set; }
         public int Subscribers { get; set; }
@@ -15,5 +15,20 @@ namespace Serialization.Domain.Entities
             Subscribers = serialized.Subscribers,
             ChannelId = serialized.ChannelId
         };
+
+        public ISerializable Deserialize(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Equals(ISerializable other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Serialize<T>(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

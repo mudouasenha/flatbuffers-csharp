@@ -3,7 +3,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class Video : IFlatBufferSerializable<VideoFlatModel, Video>
+    public class Video : ISerializable
     {
         public SocialInfo SocialInfo { get; set; }
 
@@ -17,5 +17,20 @@ namespace Serialization.Domain.Entities
             Channel = Channel.FromSerializationModel(video.Channel.Value),
             VideoInfo = VideoInfo.FromSerializationModel(video.VideoInfo.Value)
         };
+
+        public ISerializable Deserialize(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Equals(ISerializable other)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Serialize<T>(ISerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

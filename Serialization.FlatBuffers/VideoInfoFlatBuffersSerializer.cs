@@ -1,20 +1,19 @@
 ﻿using Google.FlatBuffers;
 using Serialization.Domain.Entities;
 using Serialization.Domain.FlatBuffers.VideoModel;
-using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public class VideoInfoFlatBuffersSerializer : FlatBuffersSerializerBase<VideoInfoFlatModel, VideoInfo>, IFlatBuffersVideoInfoSerializer
+    public class VideoInfoFlatBuffersSerializer : FlatBuffersSerializerBase<byte[], VideoInfoFlatModel>
     {
-        public override VideoInfo Deserialize(byte[] byteArr)
+        public VideoInfo Deserialize(byte[] byteArr)
         {
             var videoInfo = GetFromBuffer(new ByteBuffer(byteArr));
 
             return videoInfo;
         }
 
-        public override byte[] Serialize(VideoInfo entity)
+        public byte[] Serialize(VideoInfo entity)
         {
             var builder = new FlatBufferBuilder(1024);
 
@@ -30,9 +29,14 @@ namespace Serialization.Serializers.FlatBuffers
             return builder.SizedByteArray();
         }
 
+        protected override IFlatbufferObject Deserialize(Type type, byte[] serializedObject)
+        {
+            throw new NotImplementedException();
+        }
+
         protected VideoInfoFlatModel DeserializeFlatModel(ByteBuffer buf) => VideoInfoFlatModel.GetRootAsVideoInfoFlatModel(buf);
 
-        protected override VideoInfo FromSerializationModel(VideoInfoFlatModel serialized) => new()
+        protected VideoInfo FromSerializationModel(VideoInfoFlatModel serialized) => new()
         {
             Duration = serialized.Duration,
             Description = serialized.Description,
@@ -40,11 +44,16 @@ namespace Serialization.Serializers.FlatBuffers
             Qualities = serialized.GetQualitiesArray()
         };
 
-        protected override VideoInfo GetFromBuffer(ByteBuffer buf)
+        protected VideoInfo GetFromBuffer(ByteBuffer buf)
         {
             var videoInfo = DeserializeFlatModel(buf);
 
             return FromSerializationModel(videoInfo);
+        }
+
+        protected override byte[] Serialize(Type type, byte[] original, out long messageSize)
+        {
+            throw new NotImplementedException();
         }
     }
 }
