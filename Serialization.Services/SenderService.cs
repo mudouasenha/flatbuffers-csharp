@@ -1,24 +1,18 @@
 ﻿using Serialization.Domain.Interfaces;
-using Serialization.Serializers.FlatBuffers;
 
 namespace Serialization.Services
 {
     public class SenderService
     {
         private bool _executing;
-        private readonly IVideoService _videoService;
+        private readonly VideoService _videoService = new();
         private static readonly RestClient _restClient = new();
 
-        public SenderService(IVideoService videoService)
-        {
-            _videoService = videoService;
-        }
-
-        public async Task RunParallelProcessingAsync(int numThreads = 10, ISerializer serializer)
+        public async Task RunParallelProcessingAsync(ISerializer serializer, int numThreads = 10, int messagesPerSecond = 10)
         {
             if (_executing)
             {
-                _executing = false; // Para o serviço anterior antes de iniciar um novo
+                _executing = false;
                 Thread.Sleep(200);
             }
 
@@ -49,8 +43,10 @@ namespace Serialization.Services
                     Console.WriteLine($"Thread {threadId} started");
 
                     var vid = _videoService.CreateVideo();
-                    var vidSerialized = vid.Serialize<byte[]>(serializer);
-                    var result = await _restClient.PostAsync("receiver/video", vidSerialized);
+                    vid.Serialize(serializer);
+                    object result;
+                    if (serializer.GetSerializationResult(vid.GetType(), out var serializationObject))
+                        result = _restClient.PostAsync("receiver/video", serializationObject).Result;
                     await Task.Delay(100);
 
                     Console.WriteLine($"Thread {threadId} finished");

@@ -6,6 +6,7 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
 using Perfolizer.Horology;
+using Serialization.Benchmarks.Configs.Columns;
 
 namespace Serialization.Benchmarks.Configs
 {
@@ -15,23 +16,23 @@ namespace Serialization.Benchmarks.Configs
         {
             Add(DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default));
 
-            AddJob(Job.MediumRun
-                .WithUnrollFactor(8)
+            var baseJob = new Job(Job.MediumRun
+                .WithUnrollFactor(1)
                 .WithWarmupCount(3)
-                .WithIterationTime(TimeInterval.FromMilliseconds(250))
-                .WithMinIterationCount(1)
-                .WithMaxIterationCount(100000)
-                //.WithGcServer(true)
-                //.WithGcConcurrent(true)
-                //.WithGcForce(false)
+                .WithIterationTime(TimeInterval.FromMilliseconds(100))
                 .WithRuntime(CoreRuntime.Core60)
                 .WithToolchain(InProcessNoEmitToolchain.Instance));
+
+            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1).WithId("JOB-SINGLE"));
+            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1000).WithId("JOB-MULTIPLE-LIGHT"));
+            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(10000).WithId("JOB-MULTIPLE-MEDIUM"));
+            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1000000).WithId("JOB-MULTIPLE-HEAVY"));
 
             AddAnalyser(EnvironmentAnalyser.Default);
 
             AddDiagnoser(MemoryDiagnoser.Default);
 
-            //AddColumn(new DataSizeColumn());
+            AddColumn(new DataSizeColumn());
             ConfigHelper.AddDefaultColumns(this);
         }
     }

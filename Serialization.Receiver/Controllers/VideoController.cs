@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.MessagePack;
 
 namespace Serialization.Receiver.Controllers
 {
@@ -10,12 +11,18 @@ namespace Serialization.Receiver.Controllers
     {
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoService _videoService;
-        private readonly VideoFlatBuffersSerializer _videoConverter;
+        private readonly ISerializer serializer;
+        private readonly Dictionary<string, ISerializer> serializers = new()
+        {
+            {  "flatbuffers", new VideoFlatBuffersSerializer() } ,
+            //{  "systemtextjson", new SytemTextJsonSerializer() } ,
+            {  "messagepack", new MessagePackCSharpSerializer() } ,
+        };
 
-        public VideoController(ILogger<VideoController> logger, VideoFlatBuffersSerializer videoConverter, IVideoService videoService)
+        public VideoController(ILogger<VideoController> logger, ISerializer serializer, IVideoService videoService)
         {
             _logger = logger;
-            _videoConverter = videoConverter;
+            this.serializer = serializer;
             _videoService = videoService;
         }
 
@@ -25,12 +32,17 @@ namespace Serialization.Receiver.Controllers
             try
             {
                 var vid = _videoService.CreateVideo();
-                var byteArr = _videoConverter.Serialize(vid);
+                var size = vid.Serialize(serializer);
 
-                Response.ContentType = "application/octet-stream";
-                Response.Headers.Add("Content-Length", byteArr.Length.ToString());
+                if (serializer.GetDeserializationResult(vid.GetType(), out var result))
+                {
+                    Response.ContentType = "application/octet-stream";
+                    Response.Headers.Add("Content-Length", size.ToString());
 
-                return Ok(new FileContentResult(byteArr, "application/octet-stream"));
+                    return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
+                }
+
+                return BadRequest();
             }
             catch (Exception ex)
             {
@@ -40,19 +52,72 @@ namespace Serialization.Receiver.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult PostVideo([FromBody] byte[] byteArr)
+        [HttpPost("flatbuffers")]
+        public IActionResult PostFlatBuffers([FromBody] ISerializationTarget requestData)
         {
             try
             {
-                Console.WriteLine("Received");
-                var video = _videoConverter.Deserialize(byteArr);
-                //_logger.LogInformation(video.ToString());
+                requestData.Deserialize(serializer);
+                var size = requestData.Serialize(serializer);
 
-                //var videoArr = _videoConverter.Serialize(video);
+                if (serializer.GetDeserializationResult(requestData.GetType(), out var result))
+                {
+                    Response.ContentType = "application/octet-stream";
+                    Response.Headers.Add("Content-Length", size.ToString());
 
-                return Ok();
-                //return Ok(new ByteArrayContent(videoArr));
+                    return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+
+                return Problem();
+            }
+        }
+
+        [HttpPost("messagepack")]
+        public IActionResult PostMessagePack([FromBody] ISerializationTarget requestData)
+        {
+            try
+            {
+                requestData.Deserialize(serializer);
+                var size = requestData.Serialize(serializer);
+
+                if (serializer.GetDeserializationResult(requestData.GetType(), out var result))
+                {
+                    Response.ContentType = "application/octet-stream";
+                    Response.Headers.Add("Content-Length", size.ToString());
+
+                    return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+
+                return Problem();
+            }
+        }
+
+        [HttpPost("systemtextjson")]
+        public IActionResult PostSystemTextJson([FromBody] ISerializationTarget requestData)
+        {
+            try
+            {
+                requestData.Deserialize(serializer);
+                var size = requestData.Serialize(serializer);
+
+                if (serializer.GetDeserializationResult(requestData.GetType(), out var result))
+                {
+                    Response.ContentType = "application/octet-stream";
+                    Response.Headers.Add("Content-Length", size.ToString());
+
+                    return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
+                }
+                return BadRequest();
             }
             catch (Exception ex)
             {

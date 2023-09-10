@@ -1,34 +1,39 @@
-﻿using Serialization.Domain.FlatBuffers.VideoModel;
+﻿using MessagePack;
 using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class Channel : ISerializable
+
+    [MessagePackObject]
+    public class Channel : ISerializationTarget
     {
+        public Channel(string name, int subscribers, int channelId)
+        {
+            Name = name;
+            Subscribers = subscribers;
+            ChannelId = channelId;
+        }
+
+        [Key(0)]
         public string Name { get; set; }
+
+        [Key(1)]
         public int Subscribers { get; set; }
+
+        [Key(2)]
         public int ChannelId { get; set; }
 
-        public static Channel FromSerializationModel(ChannelFlatModel serialized) => new()
-        {
-            Name = serialized.Name,
-            Subscribers = serialized.Subscribers,
-            ChannelId = serialized.ChannelId
-        };
+        public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
 
-        public ISerializable Deserialize(ISerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
+        public long Deserialize(ISerializer serializer) => serializer.BenchmarkDeserialize(this);
 
-        public bool Equals(ISerializable other)
-        {
-            throw new NotImplementedException();
-        }
+        public bool Equals(Channel other) => Name.Equals(other.Name) && Subscribers.Equals(other.Subscribers) && ChannelId.Equals(other.ChannelId);
 
-        public T Serialize<T>(ISerializer serializer)
+        public bool Equals(ISerializationTarget other) => other is Channel otherChannel && Equals(otherChannel);
+
+        public override string ToString()
         {
-            throw new NotImplementedException();
+            return "Channel";
         }
     }
 }

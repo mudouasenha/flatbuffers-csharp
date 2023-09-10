@@ -1,7 +1,7 @@
 ﻿using AutoBogus;
 using Bogus;
+using FlatBuffersModels;
 using Serialization.Domain.Entities;
-using Serialization.Domain.FlatBuffers.VideoModel;
 
 namespace Serialization.Domain.Builders
 {

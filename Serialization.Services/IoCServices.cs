@@ -10,7 +10,8 @@ namespace Serialization.Services
         public static IServiceCollection AddServices(this IServiceCollection services) =>
             services.AddFlatBuffers()
             .AddSystemTextJsonSerializer()
-            .AddScoped<IVideoService, VideoService>()
+            .AddMessagePack()
+            .AddScoped<VideoService>()
             .AddScoped<SenderService>();
     }
 }

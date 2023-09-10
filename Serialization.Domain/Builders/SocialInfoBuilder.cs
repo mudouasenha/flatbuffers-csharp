@@ -12,7 +12,7 @@ namespace Serialization.Domain.Builders
             RuleFor(v => v.Dislikes, f => faker.Random.Int(min: 0));
             RuleFor(v => v.Likes, f => faker.Random.Int(min: 0));
             RuleFor(v => v.Views, f => faker.Random.Int(min: 0));
-            RuleFor(v => v.Comments, f => faker.Random.Int(min: 0));
+            RuleFor(v => v.Comments, f => faker.Random.WordsArray(10, 1000));
         }
 
 
@@ -34,9 +34,15 @@ namespace Serialization.Domain.Builders
             return this;
         }
 
-        public SocialInfoBuilder WithComments(int comments)
+        public SocialInfoBuilder WithComments(string[] comments)
         {
             RuleFor(x => x.Comments, comments);
+            return this;
+        }
+
+        public SocialInfoBuilder WithSeveralComments(int min, int max)
+        {
+            RuleFor(x => x.Comments, f => new Faker().Random.WordsArray(min, max));
             return this;
         }
     }

@@ -1,24 +1,113 @@
 ﻿namespace Serialization.Domain.Interfaces
 {
-    public abstract class BaseSerializer<ISerializationObject, IDeserializationObject> : ISerializer
+    public class SerializationResult<TSerialization>
     {
-        protected abstract ISerializationObject Serialize<T>(T original, out long messageSize) where T : ISerializationObject;
-        protected abstract ISerializationObject Serialize(Type type, ISerializationObject original, out long messageSize);
-        protected abstract IDeserializationObject Deserialize<T>(ISerializationObject serializedObject) where T : ISerializationObject;
-        protected abstract IDeserializationObject Deserialize(Type type, ISerializationObject serializedObject);
+        public readonly TSerialization Result;
+        public readonly long ByteSize;
 
-        public Y Deserialize<Y, T>(object buf) where Y : Interfaces.ISerializable
+        public SerializationResult(TSerialization result, long byteSize)
         {
-            throw new NotImplementedException();
-        }
-
-        public T Serialize<Y, T>(Y entity) where Y : Interfaces.ISerializable
-        {
-            throw new NotImplementedException();
+            Result = result;
+            ByteSize = byteSize;
         }
     }
 
-    public abstract class BaseDirectSerializer<TSerialization> : BaseSerializer<TSerialization, ISerializable>
+    public abstract class BaseSerializer<TSerialization, TDeserialization> : ISerializer
     {
+        protected readonly Dictionary<Type, SerializationResult<TSerialization>> SerializationResults;
+        protected readonly Dictionary<Type, TDeserialization> DeserializationResults;
+
+        public Type SerializationOutputType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        protected BaseSerializer()
+        {
+            SerializationResults = new Dictionary<Type, SerializationResult<TSerialization>>();
+            DeserializationResults = new Dictionary<Type, TDeserialization>();
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkSerialize<T>(T original) where T : ISerializationTarget
+        {
+            var result = Serialize(original, out long messageSize);
+            SerializationResults[typeof(T)] = new SerializationResult<TSerialization>(result, messageSize);
+            return messageSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkSerialize(Type type, ISerializationTarget original)
+        {
+            var result = Serialize(type, original, out long messageSize);
+            SerializationResults[type] = new SerializationResult<TSerialization>(result, messageSize);
+            return messageSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkDeserialize<T>(T original) where T : ISerializationTarget
+        {
+            var type = typeof(T);
+            var target = SerializationResults[type];
+            var copy = Deserialize<T>(target.Result);
+            DeserializationResults[type] = copy;
+
+            return target.ByteSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkDeserialize(Type type, ISerializationTarget original)
+        {
+            var target = SerializationResults[type];
+            var copy = Deserialize(type, target.Result);
+            DeserializationResults[type] = copy;
+
+            return target.ByteSize;
+        }
+
+        /// <inheritdoc />
+        public bool Validate(Type type, ISerializationTarget original)
+        {
+            if (GetDeserializationResult(type, out ISerializationTarget result))
+            {
+                var isValid = EqualityComparer<ISerializationTarget>.Default.Equals(original, result);
+                return isValid;
+            }
+
+            Console.WriteLine($"Serialized result with type {type} not found!");
+            return false;
+        }
+
+        public abstract bool GetDeserializationResult(Type type, out ISerializationTarget result);
+
+        public abstract bool GetSerializationResult(Type type, out object result);
+
+        #region Serialization
+
+        protected abstract TSerialization Serialize<T>(T original, out long messageSize) where T : ISerializationTarget;
+        protected abstract TSerialization Serialize(Type type, ISerializationTarget original, out long messageSize);
+
+        #endregion
+
+        #region Deserialization
+
+
+        protected abstract TDeserialization Deserialize<T>(TSerialization serializedObject) where T : ISerializationTarget;
+        protected abstract TDeserialization Deserialize(Type type, TSerialization serializedObject);
+
+        #endregion
+
+        /// <inheritdoc />
+        public virtual void Cleanup()
+        {
+            SerializationResults.Clear();
+            DeserializationResults.Clear();
+        }
+
+        public abstract Type GetSerializationOutPutType();
+
+        //public bool GetSerializationResult<T>(Type type, out T result) where T : class => GetSerializationResult(type, out result);
+    }
+
+    public abstract class BaseDirectSerializer<ISerializationObject> : BaseSerializer<ISerializationObject, ISerializationTarget>
+    {
+        public override bool GetDeserializationResult(Type type, out ISerializationTarget result) => DeserializationResults.TryGetValue(type, out result);
     }
 }

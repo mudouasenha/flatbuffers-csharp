@@ -1,4 +1,5 @@
 using Serialization.CrossCutting;
+using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +14,9 @@ builder.Services.AddCrossCutting();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<SenderService>();
 
+var myService = new SenderService();
 
-var sp = builder.Services.BuildServiceProvider();
-
-var myService = sp.GetRequiredService<SenderService>();
-
-await myService.RunParallelProcessingAsync();
+await myService.RunParallelProcessingAsync(new VideoFlatBuffersSerializer(), 10);
 
 //var app = builder.Build();
 

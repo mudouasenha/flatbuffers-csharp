@@ -12,7 +12,6 @@ namespace Serialization.Domain.Builders
             RuleFor(v => v.SocialInfo, f => new SocialInfoBuilder().Generate());
         }
 
-
         public VideoBuilder WithVideoInfo(VideoInfo videoInfo)
         {
             RuleFor(x => x.VideoInfo, videoInfo);

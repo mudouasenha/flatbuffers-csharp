@@ -4,16 +4,12 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Services
 {
-    public class VideoService : IVideoService
+    public class VideoService
     {
         private readonly VideoBuilder videoBuilder = new();
+
         public Video CreateVideo() => videoBuilder.Generate();
 
         public IEnumerable<Video> CreateVideos(int quantity) => videoBuilder.Generate(quantity).ToList();
-
-        public Task DeleteVideo(int videoId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

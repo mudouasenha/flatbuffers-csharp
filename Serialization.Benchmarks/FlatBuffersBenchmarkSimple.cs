@@ -1,4 +1,5 @@
 ﻿using Serialization.Domain.Entities;
+using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 using System.Diagnostics;
@@ -13,49 +14,60 @@ namespace Serialization.Benchmarks
         private RestClient client = new();
         private readonly Video vid;
         private const string Name = "FlatBuffers";
-        private byte[] vidSerialized;
+        private ISerializationTarget vidSerialized;
 
         public FlatBuffersBenchmarkSimple()
         {
             vid = _videoService.CreateVideo();
-            vidSerialized = _videoconverter.Serialize(vid);
+            vid.Serialize(_videoconverter);
+
+            if (_videoconverter.GetDeserializationResult(vid.GetType(), out vidSerialized))
+                return;
         }
 
 
-        public async Task Initialize()
+        public void Initialize()
         {
             ExecuteMethod(FullProcess);
             ExecuteMethod(Serialization);
             ExecuteMethod(Serialization_1000, true);
             ExecuteMethod(Serialization_1_000_000, true);
             ExecuteMethod(DeSerialization);
-            await Rest_POST_FullProcess();
+            ExecuteMethod(Rest_POST_FullProcess);
             //ExecuteMethodParallel(Serialization_1_000_000, 4, 1000);
-
         }
 
-        public void FullProcess() => _videoconverter.Deserialize(_videoconverter.Serialize(vid));
+        public void FullProcess()
+        {
+            vid.Serialize(_videoconverter);
+            vid.Deserialize(_videoconverter);
+        }
 
-        public void Serialization() => _videoconverter.Serialize(vid);
+        public void Serialization() => vid.Serialize(_videoconverter);
+
+        public void Deserialization() => vid.Deserialize(_videoconverter);
 
         public void Serialization_1000()
         {
-            for (int i = 0; i <= 10000; i++) _videoconverter.Serialize(vid);
+            for (int i = 0; i <= 10000; i++) vid.Serialize(_videoconverter);
         }
 
         public void Serialization_1_000_000()
         {
-            for (int i = 0; i <= 1_000_000; i++) _videoconverter.Serialize(vid);
+            for (int i = 0; i <= 1_000_000; i++) vid.Serialize(_videoconverter);
         }
 
-        public void DeSerialization() => _videoconverter.Deserialize(vidSerialized);
+        public void DeSerialization() => vid.Deserialize(_videoconverter);
 
-        public async Task Rest_POST_FullProcess()
+        public void Rest_POST_FullProcess()
         {
             Process currentProcess = Process.GetCurrentProcess();
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            var res = client.PostAsync("receiver/video", vidSerialized).Result;
+            object res;
+            vid.Serialize(_videoconverter);
+            if (_videoconverter.GetDeserializationResult(vid.GetType(), out vidSerialized))
+                res = client.PostAsync("receiver/video", vidSerialized).Result;
             stopwatch.Stop();
 
             TimeSpan cpuTime = currentProcess.TotalProcessorTime;

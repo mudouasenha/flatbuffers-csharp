@@ -5,6 +5,7 @@ namespace Serialization.Benchmarks
     public interface ISerializableBenchmark
     {
         ISerializer Serializer { get; set; }
-        ISerializable Target { get; set; }
+        ISerializationTarget Target { get; set; }
+        long Serialize();
     }
 }

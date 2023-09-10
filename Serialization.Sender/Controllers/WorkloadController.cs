@@ -1,7 +1,6 @@
-﻿using BenchmarkDotNet.Running;
-using Microsoft.AspNetCore.Mvc;
-using Serialization.Benchmarks;
+﻿using Microsoft.AspNetCore.Mvc;
 using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.MessagePack;
 using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
 
@@ -21,8 +20,28 @@ namespace Serializaion.Sender.Controllers
         {
             try
             {
-                _senderService.RunParallelProcessingAsync(numThreads, new VideoFlatBuffersSerializer());
-                return Ok("Service initiated");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _senderService.RunParallelProcessingAsync(new VideoFlatBuffersSerializer(), numThreads);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                return Ok($"Parallel Processing Async Service for {nameof(FlatBuffers)} initiated");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+
+                return Problem();
+            }
+        }
+
+        [HttpPost("mesagepack")]
+        public IActionResult MessagePack([FromQuery] int numThreads = 10)
+        {
+            try
+            {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _senderService.RunParallelProcessingAsync(new MessagePackCSharpSerializer(), numThreads);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                return Ok($"Parallel Processing Async Service for {nameof(MessagePack)} initiated");
             }
             catch (Exception ex)
             {
@@ -37,8 +56,10 @@ namespace Serializaion.Sender.Controllers
         {
             try
             {
-                _senderService.RunParallelProcessingAsync(numThreads, new SytemTextJsonSerializer());
-                return Ok("Service initiated");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                _senderService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), numThreads);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                return Ok($"Parallel Processing Async Service for {nameof(SystemTextJson)} initiated");
             }
             catch (Exception ex)
             {

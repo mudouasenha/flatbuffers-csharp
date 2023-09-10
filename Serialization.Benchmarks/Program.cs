@@ -14,7 +14,7 @@ builder.Services.AddCrossCutting().AddScoped<FlatBuffersBenchmarkSimple>();
 Thread.Sleep(TimeSpan.FromSeconds(10));
 
 var config = new BenchmarkConfig();
-BenchmarkRunner.Run<FlatBuffersBenchmark>(config);
+BenchmarkRunner.Run<SerializationBenchmark>(config);
 
 
 //var host = builder.Build();

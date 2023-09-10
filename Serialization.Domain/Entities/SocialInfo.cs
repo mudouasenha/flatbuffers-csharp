@@ -1,37 +1,43 @@
-﻿using Serialization.Domain.FlatBuffers.VideoModel;
+﻿using MessagePack;
 using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
 {
-    public class SocialInfo : ISerializable
+
+    [MessagePackObject]
+    public class SocialInfo : ISerializationTarget
     {
+        public SocialInfo(int likes, int dislikes, string[] comments, int views)
+        {
+            Likes = likes;
+            Dislikes = dislikes;
+            Comments = comments;
+            Views = views;
+        }
+
+        [Key(0)]
         public int Likes { get; set; }
+
+        [Key(1)]
         public int Dislikes { get; set; }
-        public int Comments { get; set; }
-        //public IEnumerable<string> CommentsList { get; set; } = new List<string>();
+
+        [Key(2)]
+        public string[] Comments { get; set; }
+
+        [Key(3)]
         public int Views { get; set; }
 
-        public static SocialInfo FromSerializationModel(SocialInfoFlatModel serialized) => new()
-        {
-            Likes = serialized.Likes,
-            Dislikes = serialized.Dislikes,
-            Comments = serialized.Comments,
-            Views = serialized.Views,
-        };
+        public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
 
-        public ISerializable Deserialize(ISerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
+        public long Deserialize(ISerializer serializer) => serializer.BenchmarkDeserialize(this);
 
-        public bool Equals(ISerializable other)
-        {
-            throw new NotImplementedException();
-        }
+        public bool Equals(SocialInfo other) => Likes.Equals(other.Likes) && Dislikes.Equals(other.Dislikes) && Comments.Equals(other.Comments) && Views.Equals(other.Views);
 
-        public T Serialize<T>(ISerializer serializer)
+        public bool Equals(ISerializationTarget other) => other is SocialInfo otherSocialInfo && Equals(otherSocialInfo);
+
+        public override string ToString()
         {
-            throw new NotImplementedException();
+            return "SocialInfo";
         }
     }
 }

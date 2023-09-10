@@ -1,66 +1,79 @@
-﻿using Google.FlatBuffers;
+﻿using FlatBuffersModels;
+using Google.FlatBuffers;
 using Serialization.Domain.Entities;
-using Serialization.Domain.FlatBuffers.VideoModel;
+using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public partial class VideoFlatBuffersSerializer : FlatBuffersSerializerBase<byte[], VideoFlatModel>
+    public class VideoFlatBuffersSerializer : FlatBuffersSerializerBase<byte[], Video, VideoFlatModel>
     {
-        public IFlatbufferObject Deserialize(byte[] byteArr)
-        {
-            var video = GetFromBuffer(new ByteBuffer(byteArr));
+        internal static FlatBufferBuilder builder = new(1);
 
-            return video;
+        public override bool GetDeserializationResult(Type type, out ISerializationTarget result)
+        {
+            if (type == typeof(Video))
+            {
+                result = FromSerializationModel((VideoFlatModel)DeserializationResults[typeof(VideoFlatModel)]);
+                return true;
+            }
+            throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
-        public byte[] Serialize(Video entity)
+        public override bool GetSerializationResult(Type type, out object result)
+        {
+            if (type == typeof(Video))
+            {
+                result = SerializationResults[typeof(Video)].Result;
+                return true;
+            }
+            throw new NotImplementedException($"Conversion for type {type} not implemented!");
+        }
+
+        protected override IFlatbufferObject Deserialize(Type type, byte[] serializedObject)
+        {
+            if (type == typeof(Video))
+            {
+                var buf = new ByteBuffer(serializedObject);
+                var offset = buf.GetInt(buf.Position) + buf.Position;
+                var video = new VideoFlatModel().__assign(offset, buf);
+                return video;
+            }
+            throw new NotImplementedException($"Deserialization for type {type} not implemented!");
+        }
+
+        protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize) =>
+            type == typeof(Video) ? Serialize((Video)original, out messageSize) : throw new NotImplementedException($"Serialization for type {type} not implemented!");
+
+        private static byte[] Serialize(Video entity, out long messageSize)
         {
             var builder = new FlatBufferBuilder(1024);
+            var stringOffSets = entity.SocialInfo.Comments.Select(c => builder.CreateString(c)).ToArray();
             var channelName = builder.CreateString(entity.Channel.Name);
+            var videoInfoDescription = builder.CreateString(entity.VideoInfo.Description);
+            var socialInfoComments = SocialInfoFlatModel.CreateCommentsVector(builder, stringOffSets);
+
             var ch = ChannelFlatModel.CreateChannelFlatModel(builder, channelName, entity.Channel.Subscribers, entity.Channel.ChannelId);
-
-            var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, entity.SocialInfo.Comments, entity.SocialInfo.Views);
-
+            var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, socialInfoComments, entity.SocialInfo.Views);
             var vqs = VideoInfoFlatModel.CreateQualitiesVector(builder, entity.VideoInfo.Qualities);
-            var vi = VideoInfoFlatModel.CreateVideoInfoFlatModel(builder, entity.VideoInfo.Duration, builder.CreateString(entity.VideoInfo.Description), entity.VideoInfo.Size, vqs);
+            var vi = VideoInfoFlatModel.CreateVideoInfoFlatModel(builder, entity.VideoInfo.Duration, videoInfoDescription, entity.VideoInfo.Size, vqs);
 
             VideoFlatModel.StartVideoFlatModel(builder);
             VideoFlatModel.AddSocialInfo(builder, si);
             VideoFlatModel.AddChannel(builder, ch);
             VideoFlatModel.AddVideoInfo(builder, vi);
+
             var video = VideoFlatModel.EndVideoFlatModel(builder);
 
             builder.Finish(video.Value);
 
-            var bArr = builder.SizedByteArray();
+            messageSize = GetSize();
 
-            return bArr;
+            var byteArray = builder.SizedByteArray();
+            builder.Clear();
+            return byteArray;
         }
 
-        protected VideoFlatModel DeserializeFlatModel(ByteBuffer buf) => VideoFlatModel.GetRootAsVideoFlatModel(buf);
-
-        protected Video FromSerializationModel(VideoFlatModel video) => new()
-        {
-            SocialInfo = SocialInfo.FromSerializationModel(video.SocialInfo.Value),
-            Channel = Channel.FromSerializationModel(video.Channel.Value),
-            VideoInfo = VideoInfo.FromSerializationModel(video.VideoInfo.Value)
-        };
-
-        protected IFlatbufferObject GetFromBuffer(ByteBuffer buf)
-        {
-            var video = DeserializeFlatModel(buf);
-
-            return video;
-        }
-
-        protected override IFlatbufferObject Deserialize(Type type, byte[] serializedObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override byte[] Serialize(Type type, byte[] original, out long messageSize)
-        {
-            throw new NotImplementedException();
-        }
+        protected static Video FromSerializationModel(VideoFlatModel video) =>
+            new(SocialInfoFlatBuffersSerializer.FromSerializationModel(video.SocialInfo.Value), ChannelFlatBuffersSerializer.FromSerializationModel(video.Channel.Value), VideoInfoFlatBuffersSerializer.FromSerializationModel(video.VideoInfo.Value));
     }
 }

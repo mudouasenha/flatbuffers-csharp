@@ -2,8 +2,19 @@
 {
     public interface ISerializer
     {
-        public Y Deserialize<Y, T>(object buf) where Y : ISerializable;
+        Type GetSerializationOutPutType();
+        long BenchmarkSerialize<T>(T original) where T : ISerializationTarget;
 
-        public T Serialize<Y, T>(Y entity) where Y : ISerializable;
+        long BenchmarkSerialize(Type type, ISerializationTarget original);
+
+        long BenchmarkDeserialize<T>(T original) where T : ISerializationTarget;
+
+        long BenchmarkDeserialize(Type type, ISerializationTarget original);
+
+        bool GetDeserializationResult(Type type, out ISerializationTarget result);
+
+        bool GetSerializationResult(Type type, out object result);
+
+        void Cleanup();
     }
 }

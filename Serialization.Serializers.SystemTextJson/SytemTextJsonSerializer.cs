@@ -17,17 +17,17 @@ namespace Serialization.Serializers.SystemTextJson
             return stream;
         }
 
-        protected override ISerializable Deserialize<T>(MemoryStream buf)
+        protected override ISerializationTarget Deserialize<T>(MemoryStream buf)
         {
             T copy;
             using var reader = new StreamReader(buf, Encoding.UTF8);
             var jsonString = reader.ReadToEnd();
             copy = JsonSerializer.Deserialize<T>(jsonString);
 
-            return (ISerializable)copy;
+            return copy;
         }
 
-        protected override MemoryStream Serialize(Type type, MemoryStream original, out long messageSize)
+        protected override MemoryStream Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             var jsonString = JsonSerializer.Serialize(original); // TODO: resolve type
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
@@ -38,14 +38,21 @@ namespace Serialization.Serializers.SystemTextJson
             return stream;
         }
 
-        protected override ISerializable Deserialize(Type type, MemoryStream serializedObject)
+        protected override ISerializationTarget Deserialize(Type type, MemoryStream serializedObject)
         {
             object copy;
             using var reader = new StreamReader(serializedObject, Encoding.UTF8);
             var jsonString = reader.ReadToEnd();
             copy = JsonSerializer.Deserialize(jsonString, type);
 
-            return (ISerializable)copy;
+            return (ISerializationTarget)copy;
         }
+
+        public override bool GetSerializationResult(Type type, out object result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Type GetSerializationOutPutType() => typeof(MemoryStream);
     }
 }
