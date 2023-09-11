@@ -1,50 +1,52 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Diagnostics.Windows.Configs;
+using Serialization.Benchmarks.Abstractions;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
 using Serialization.Services;
 
-
-namespace Serialization.Benchmarks
+namespace Serialization.Benchmarks.Benchmarks
 {
-    [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn, PerfCollectProfiler, EtwProfiler]
-    public class SerializationBenchmark : ISerializableBenchmark
+    [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn]
+    public class ConcurrencySerializationBenchmark : ISerializableBenchmark
     {
+        private SenderService parallelService => new();
+
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
+
+        [Params(2, 4, 8, 12)]
+        public int NumThreads { get; set; }
+
+        [Params(10, 10, 1000)]
+        public int MessagesPerSecond { get; set; }
 
         [ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        private RestClient client = new();
-        private object SerializedTarget;
-
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            //new VideoFlatBuffersSerializer(),
-            new VideoInfoFlatBuffersSerializer(),
-            //new SocialInfoFlatBuffersSerializer(),
-            //new ChannelFlatBuffersSerializer(),
+            new FlatBuffersSerializerBase(),
             new MessagePackCSharpSerializer()
-
-
             //new SytemTextJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
-            //new VideoBuilder().Generate(),
-            //new SocialInfoBuilder().Generate(),
-            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            new VideoBuilder().Generate(),
+            new SocialInfoBuilder().Generate(),
+            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
             new VideoInfoBuilder().Generate(),
-            //new ChannelBuilder().Generate()
+            new ChannelBuilder().Generate()
         };
 
         [GlobalSetup(Target = nameof(Deserialize))]
-        public void GlobalSetup() => Serialize();
-
+        public async void GlobalSetup()
+        {
+            await parallelService.RunParallelProcessingAsync(Serializer, NumThreads, MessagesPerSecond);
+            Serialize();
+        }
 
         [Benchmark]
         public void RoundTripTime()

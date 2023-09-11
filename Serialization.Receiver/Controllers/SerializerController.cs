@@ -7,19 +7,19 @@ namespace Serialization.Receiver.Controllers
 {
     [ApiController]
     [Route("receiver/[controller]")]
-    public class VideoController : ControllerBase
+    public class SerializerController : ControllerBase
     {
-        private readonly ILogger<VideoController> _logger;
+        private readonly ILogger<SerializerController> _logger;
         private readonly IVideoService _videoService;
         private readonly ISerializer serializer;
         private readonly Dictionary<string, ISerializer> serializers = new()
         {
-            {  "flatbuffers", new VideoFlatBuffersSerializer() } ,
+            {  "FlatBuffers", new FlatBuffersSerializerBase() } ,
             //{  "systemtextjson", new SytemTextJsonSerializer() } ,
-            {  "messagepack", new MessagePackCSharpSerializer() } ,
+            {  "MessagePack", new MessagePackCSharpSerializer() } ,
         };
 
-        public VideoController(ILogger<VideoController> logger, ISerializer serializer, IVideoService videoService)
+        public SerializerController(ILogger<SerializerController> logger, ISerializer serializer, IVideoService videoService)
         {
             _logger = logger;
             this.serializer = serializer;
@@ -52,7 +52,7 @@ namespace Serialization.Receiver.Controllers
             }
         }
 
-        [HttpPost("flatbuffers")]
+        [HttpPost("FlatBuffers")]
         public IActionResult PostFlatBuffers([FromBody] ISerializationTarget requestData)
         {
             try
@@ -77,7 +77,7 @@ namespace Serialization.Receiver.Controllers
             }
         }
 
-        [HttpPost("messagepack")]
+        [HttpPost("MessagePack")]
         public IActionResult PostMessagePack([FromBody] ISerializationTarget requestData)
         {
             try

@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Parameters;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
+using Serialization.Benchmarks.Abstractions;
 
 namespace Serialization.Benchmarks.Configs.Columns
 {

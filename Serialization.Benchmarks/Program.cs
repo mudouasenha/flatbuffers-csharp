@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Running;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Serialization.Benchmarks;
+using Serialization.Benchmarks.Benchmarks;
 using Serialization.Benchmarks.Configs;
 using Serialization.CrossCutting;
 

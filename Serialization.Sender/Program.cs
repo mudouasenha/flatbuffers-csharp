@@ -16,7 +16,7 @@ builder.Services.AddScoped<SenderService>();
 
 var myService = new SenderService();
 
-await myService.RunParallelProcessingAsync(new VideoFlatBuffersSerializer(), 10);
+await myService.RunParallelProcessingAsync(new FlatBuffersSerializerBase(), 10);
 
 //var app = builder.Build();
 

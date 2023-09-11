@@ -1,39 +1,45 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Diagnostics.Windows.Configs;
+using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
 
-namespace Serialization.Benchmarks
+namespace Serialization.Benchmarks.Benchmarks
 {
-    [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn, PerfCollectProfiler, EtwProfiler]
+    [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn] //, PerfCollectProfiler, EtwProfiler]
     public class SerializationNetworkingBenchmark // : ISerializableBenchmark
     {
+        private RestClient client = new();
+        private object SerializedTarget;
+
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
 
         [ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        private RestClient client = new();
-        private object SerializedTarget;
-
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new VideoFlatBuffersSerializer(),
-            new SytemTextJsonSerializer(),
+            new FlatBuffersSerializerBase(),
             new MessagePackCSharpSerializer()
+            //new SytemTextJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
-            new VideoService().CreateVideo()
+            new VideoBuilder().Generate(),
+            new SocialInfoBuilder().Generate(),
+            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            new VideoInfoBuilder().Generate(),
+            new ChannelBuilder().Generate()
         };
 
+        [GlobalSetup(Target = nameof(RoundTripTime))]
+        public async void GlobalSetup() => await client.PostAsync($"receiver/{Serializer}", SerializedTarget);
+
         [Benchmark]
-        public void Rest_FullProcess_Multiple()
+        public void RoundTripTime()
         {
             Target.Serialize(Serializer);
 
@@ -41,15 +47,6 @@ namespace Serialization.Benchmarks
                 client.PostAsync("receiver/video", SerializedTarget).GetAwaiter().GetResult();
 
             Thread.Sleep(TimeSpan.FromSeconds(0.1));
-        }
-
-        [Benchmark]
-        public void Rest_FullProcess()
-        {
-            Target.Serialize(Serializer);
-
-            if (Serializer.GetSerializationResult(Target.GetType(), out SerializedTarget))
-                client.PostAsync("receiver/video", SerializedTarget).GetAwaiter().GetResult();
         }
 
         [GlobalCleanup]

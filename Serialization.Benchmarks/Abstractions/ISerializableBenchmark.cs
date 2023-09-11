@@ -1,6 +1,6 @@
 ﻿using Serialization.Domain.Interfaces;
 
-namespace Serialization.Benchmarks
+namespace Serialization.Benchmarks.Abstractions
 {
     public interface ISerializableBenchmark
     {
