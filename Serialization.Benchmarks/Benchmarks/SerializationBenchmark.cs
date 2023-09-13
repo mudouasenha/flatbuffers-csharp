@@ -2,9 +2,7 @@
 using Serialization.Benchmarks.Abstractions;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
-
+using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
@@ -19,9 +17,9 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializerBase(),
-            new MessagePackCSharpSerializer()
-            //new SytemTextJsonSerializer(),
+            //new FlatBuffersSerializerBase(),
+            //new MessagePackCSharpSerializer()
+            new SytemTextJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]

@@ -5,7 +5,7 @@ using Serialization.Domain.Interfaces;
 
 namespace Serialization.Serializers.FlatBuffers
 {
-    public class FlatBuffersSerializerBase : BaseSerializer<byte[], IFlatbufferObject>
+    public class FlatBuffersSerializer : BaseSerializer<byte[], IFlatbufferObject>
     {
         internal static FlatBufferBuilder builder = new(1);
         private static string Name = "FlatBuffers";

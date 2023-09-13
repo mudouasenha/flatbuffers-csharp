@@ -30,7 +30,7 @@ namespace Serialization.Serializers.FlatBuffers
 
             builder.Finish(video.Value);
 
-            messageSize = FlatBuffersSerializerBase.GetSize();
+            messageSize = FlatBuffersSerializer.GetSize();
 
             var byteArray = builder.SizedByteArray();
             builder.Clear();

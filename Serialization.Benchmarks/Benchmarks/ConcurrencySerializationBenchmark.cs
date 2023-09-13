@@ -27,7 +27,7 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializerBase(),
+            new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer()
             //new SytemTextJsonSerializer(),
         };

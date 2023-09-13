@@ -8,7 +8,7 @@ namespace Serialization.Services
         private readonly VideoService _videoService = new();
         private static readonly RestClient _restClient = new();
 
-        public async Task RunParallelProcessingAsync(ISerializer serializer, int numThreads = 10, int messagesPerSecond = 10)
+        public async Task RunParallelProcessingAsync(ISerializer serializer, int numThreads = 100, int numMessages = 100)
         {
             if (_executing)
             {
@@ -24,7 +24,7 @@ namespace Serialization.Services
 
             for (int i = 0; i < numThreads; i++)
             {
-                tasks.Add(ProcessAsync(semaphore, i, serializer));
+                tasks.Add(ProcessAsync(semaphore, i, serializer, numMessages));
             }
 
             await Task.WhenAll(tasks);
@@ -32,7 +32,7 @@ namespace Serialization.Services
             Console.WriteLine("All tasks completed.");
         }
 
-        private async Task ProcessAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer)
+        private async Task ProcessAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer, int numMessages)
         {
             while (_executing)
             {
@@ -42,11 +42,14 @@ namespace Serialization.Services
                 {
                     Console.WriteLine($"Thread {threadId} started");
 
-                    var vid = _videoService.CreateVideo();
-                    vid.Serialize(serializer);
-                    object result;
-                    if (serializer.GetSerializationResult(vid.GetType(), out var serializationObject))
-                        result = _restClient.PostAsync("receiver/video", serializationObject).Result;
+                    for (int i = 0; i < numMessages; i++)
+                    {
+                        var vid = _videoService.CreateVideo();
+                        vid.Serialize(serializer);
+                        object result;
+                        if (serializer.GetSerializationResult(vid.GetType(), out var serializationObject))
+                            result = _restClient.PostAsync("receiver/video", serializationObject).Result;
+                    }
                     await Task.Delay(100);
 
                     Console.WriteLine($"Thread {threadId} finished");

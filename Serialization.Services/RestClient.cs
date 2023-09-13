@@ -14,6 +14,21 @@
             return await response.Content.ReadAsStreamAsync();
         }
 
+        public async Task<object> PostAsync(string path, object payload)
+        {
+            if (payload is byte[] byteArrayPayload)
+            {
+                return await PostAsync(path, byteArrayPayload);
+            }
+
+            if (payload is MemoryStream memoryStreamPayload)
+            {
+                return await PostAsync(path, memoryStreamPayload);
+            }
+
+            throw new NotImplementedException($"Deserialization for payload not implemented!");
+        }
+
         private async Task<byte[]> PostAsync(string path, byte[] payload)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, BaseUrl + path);
@@ -25,14 +40,17 @@
             return await response.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task<object> PostAsync(string path, object payload)
+        private async Task<byte[]> PostAsync(string path, MemoryStream payload)
         {
-            if (payload is byte[] byteArrayPayload)
-            {
-                return await PostAsync(path, byteArrayPayload);
-            }
+            var request = new HttpRequestMessage(HttpMethod.Post, BaseUrl + path);
+            request.Content = new StreamContent(payload);
+            request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(OctetStreamContentType);
 
-            throw new NotImplementedException($"Deserialization for payload not implemented!");
+            var response = await _httpClient.SendAsync(request);
+
+            return await response.Content.ReadAsByteArrayAsync();
         }
+
+
     }
 }

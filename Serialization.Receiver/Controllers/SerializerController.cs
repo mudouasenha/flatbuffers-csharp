@@ -14,7 +14,7 @@ namespace Serialization.Receiver.Controllers
         private readonly ISerializer serializer;
         private readonly Dictionary<string, ISerializer> serializers = new()
         {
-            {  "FlatBuffers", new FlatBuffersSerializerBase() } ,
+            {  "FlatBuffers", new FlatBuffersSerializer() } ,
             //{  "systemtextjson", new SytemTextJsonSerializer() } ,
             {  "MessagePack", new MessagePackCSharpSerializer() } ,
         };

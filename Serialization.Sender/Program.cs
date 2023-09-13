@@ -1,5 +1,5 @@
 using Serialization.CrossCutting;
-using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +16,7 @@ builder.Services.AddScoped<SenderService>();
 
 var myService = new SenderService();
 
-await myService.RunParallelProcessingAsync(new FlatBuffersSerializerBase(), 10);
+await myService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), 100, 1000);
 
 //var app = builder.Build();
 
