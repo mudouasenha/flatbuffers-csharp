@@ -1,4 +1,6 @@
-﻿namespace Serialization.Services
+﻿using System.Text;
+
+namespace Serialization.Services
 {
     public class RestClient
     {
@@ -43,12 +45,21 @@
         private async Task<byte[]> PostAsync(string path, MemoryStream payload)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, BaseUrl + path);
-            request.Content = new StreamContent(payload);
+            Stream requestStream = null;
+            payload.Seek(0, SeekOrigin.Begin);
+
+            payload.WriteTo(requestStream);
+            request.Content = new StreamContent(requestStream);
             request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(OctetStreamContentType);
 
-            var response = await _httpClient.SendAsync(request);
+            requestStream.Flush();
+            requestStream.Close();
 
-            return await response.Content.ReadAsByteArrayAsync();
+            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var result = await response.Content.ReadAsStreamAsync();
+
+
+            return Encoding.UTF8.GetBytes(result.ToString());
         }
 
 

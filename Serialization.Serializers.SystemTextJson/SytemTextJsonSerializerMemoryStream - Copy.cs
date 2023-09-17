@@ -5,9 +5,9 @@ using System.Text.Json;
 
 namespace Serialization.Serializers.SystemTextJson
 {
-    public class SytemTextJsonSerializer : BaseDirectSerializer<byte[]>
+    public class SytemTextJsonSerializerMemoryStream : BaseDirectSerializer<MemoryStream>
     {
-        protected override byte[] Serialize<T>(T original, out long messageSize)
+        protected override MemoryStream Serialize<T>(T original, out long messageSize)
         {
             var jsonString = JsonSerializer.Serialize(original);
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
@@ -15,20 +15,20 @@ namespace Serialization.Serializers.SystemTextJson
             writer.Flush();
 
             messageSize = stream.Position;
-            return stream.ToArray();
+            return stream;
         }
 
-        protected override ISerializationTarget Deserialize<T>(byte[] buf)
+        protected override ISerializationTarget Deserialize<T>(MemoryStream buf)
         {
             T copy;
-            //using var reader = new StreamReader(buf, Encoding.UTF8);
-            var jsonString = Encoding.UTF8.GetString(buf);
+            using var reader = new StreamReader(buf, Encoding.UTF8);
+            var jsonString = reader.ReadToEnd();
             copy = JsonSerializer.Deserialize<T>(jsonString);
 
             return copy;
         }
 
-        protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
+        protected override MemoryStream Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             var jsonString = JsonSerializer.Serialize(original); // TODO: resolve type
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
@@ -36,14 +36,14 @@ namespace Serialization.Serializers.SystemTextJson
             writer.Flush();
 
             messageSize = stream.Position;
-            return stream.ToArray();
+            return stream;
         }
 
-        protected override ISerializationTarget Deserialize(Type type, byte[] serializedObject)
+        protected override ISerializationTarget Deserialize(Type type, MemoryStream serializedObject)
         {
             object copy;
-            //using var reader = new StreamReader(serializedObject, Encoding.UTF8);
-            var jsonString = Encoding.UTF8.GetString(serializedObject);
+            using var reader = new StreamReader(serializedObject, Encoding.UTF8);
+            var jsonString = reader.ReadToEnd();
             copy = JsonSerializer.Deserialize(jsonString, type);
 
             return (ISerializationTarget)copy;
@@ -74,6 +74,6 @@ namespace Serialization.Serializers.SystemTextJson
             throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
-        public override Type GetSerializationOutPutType() => typeof(byte[]);
+        public override Type GetSerializationOutPutType() => typeof(MemoryStream);
     }
 }

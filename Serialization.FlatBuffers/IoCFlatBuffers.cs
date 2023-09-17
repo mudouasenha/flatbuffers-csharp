@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Serialization.Serializers.FlatBuffers.SerializationHelpers;
 
 namespace Serialization.Serializers.FlatBuffers
 {

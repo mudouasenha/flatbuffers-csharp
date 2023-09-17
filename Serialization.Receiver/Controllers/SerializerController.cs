@@ -2,6 +2,7 @@
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
+using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Receiver.Controllers
 {
@@ -15,7 +16,7 @@ namespace Serialization.Receiver.Controllers
         private readonly Dictionary<string, ISerializer> serializers = new()
         {
             {  "FlatBuffers", new FlatBuffersSerializer() } ,
-            //{  "systemtextjson", new SytemTextJsonSerializer() } ,
+            {  "systemtextjson", new SytemTextJsonSerializer() } ,
             {  "MessagePack", new MessagePackCSharpSerializer() } ,
         };
 

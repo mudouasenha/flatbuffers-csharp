@@ -40,7 +40,7 @@ namespace Serialization.Services
 
                 try
                 {
-                    Console.WriteLine($"Thread {threadId} started");
+                    Console.WriteLine($"Thread {threadId} loop started");
 
                     for (int i = 0; i < numMessages; i++)
                     {
@@ -53,6 +53,10 @@ namespace Serialization.Services
                     await Task.Delay(100);
 
                     Console.WriteLine($"Thread {threadId} finished");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
                 }
                 finally
                 {

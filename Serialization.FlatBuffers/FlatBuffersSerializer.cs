@@ -2,6 +2,7 @@
 using Google.FlatBuffers;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.FlatBuffers.SerializationHelpers;
 
 namespace Serialization.Serializers.FlatBuffers
 {

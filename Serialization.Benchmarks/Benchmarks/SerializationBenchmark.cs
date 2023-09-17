@@ -2,6 +2,8 @@
 using Serialization.Benchmarks.Abstractions;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.MessagePack;
 using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Benchmarks.Benchmarks
@@ -17,8 +19,8 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            //new FlatBuffersSerializerBase(),
-            //new MessagePackCSharpSerializer()
+            new FlatBuffersSerializer(),
+            new MessagePackCSharpSerializer(),
             new SytemTextJsonSerializer(),
         };
 
@@ -26,9 +28,9 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
-            new VideoInfoBuilder().Generate(),
-            new ChannelBuilder().Generate()
+            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            //new VideoInfoBuilder().Generate(),
+            //new ChannelBuilder().Generate()
         };
 
         [GlobalSetup(Target = nameof(Deserialize))]

@@ -2,7 +2,7 @@
 using Google.FlatBuffers;
 using Serialization.Domain.Entities;
 
-namespace Serialization.Serializers.FlatBuffers
+namespace Serialization.Serializers.FlatBuffers.SerializationHelpers
 {
     public class SocialInfoFlatBuffersSerializer
     {

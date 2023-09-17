@@ -1,6 +1,5 @@
 ﻿using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
-using Serialization.Domain.Interfaces;
 
 namespace Serialization.Services
 {

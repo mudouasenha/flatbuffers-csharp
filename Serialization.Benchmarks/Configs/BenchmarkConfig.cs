@@ -25,8 +25,8 @@ namespace Serialization.Benchmarks.Configs
 
             AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1).WithId("JOB-SINGLE"));
             AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1000).WithId("JOB-MULTIPLE-LIGHT"));
-            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(10000).WithId("JOB-MULTIPLE-MEDIUM"));
-            AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1000000).WithId("JOB-MULTIPLE-HEAVY"));
+            //AddJob(baseJob.WithIterationCount(30).WithInvocationCount(10000).WithId("JOB-MULTIPLE-MEDIUM"));
+            //AddJob(baseJob.WithIterationCount(30).WithInvocationCount(1000000).WithId("JOB-MULTIPLE-HEAVY"));
 
             AddAnalyser(EnvironmentAnalyser.Default);
 
