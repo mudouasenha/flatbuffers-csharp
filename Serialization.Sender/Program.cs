@@ -1,5 +1,5 @@
 using Serialization.CrossCutting;
-using Serialization.Serializers.SystemTextJson;
+using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,13 +12,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCrossCutting();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<SenderService>();
+builder.Services.AddScoped<WorkloadService>();
 
-var myService = new SenderService();
+var myService = new WorkloadService();
 
-await myService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), 100, 1000);
+await myService.RunParallelRestAsync(new FlatBuffersSerializer(), 100, 1000);
 
-//var app = builder.Build();
+var app = builder.Build();
 
 //// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
@@ -33,4 +33,4 @@ await myService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), 100, 1
 
 //app.MapControllers();
 
-//app.Run();
+app.Run();

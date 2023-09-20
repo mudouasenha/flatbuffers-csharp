@@ -11,16 +11,16 @@ namespace Serialization.Benchmarks.Benchmarks
     [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn]
     public class ConcurrencySerializationBenchmark : ISerializableBenchmark
     {
-        private SenderService parallelService => new();
+        private WorkloadService parallelService => new();
 
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
 
-        [Params(2, 4, 8, 12)]
+        [Params(4, 8/*, 12*/)]
         public int NumThreads { get; set; }
 
-        [Params(10, 10, 1000)]
-        public int MessagesPerSecond { get; set; }
+        [Params(10/*, 100, 1000*/)]
+        public int NumMessages { get; set; }
 
         [ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
@@ -28,25 +28,24 @@ namespace Serialization.Benchmarks.Benchmarks
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
             new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer()
+            new MessagePackCSharpSerializer(),
             //new SytemTextJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
             new VideoBuilder().Generate(),
-            new SocialInfoBuilder().Generate(),
+            //new SocialInfoBuilder().Generate(),
             new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
-            new VideoInfoBuilder().Generate(),
-            new ChannelBuilder().Generate()
+            //new VideoInfoBuilder().Generate(),
+            //new ChannelBuilder().Generate()
         };
 
+        [GlobalSetup]
+        public void GlobalSetup() => parallelService.RunParallelProcessingAsync(Serializer, NumThreads, NumMessages);
+
         [GlobalSetup(Target = nameof(Deserialize))]
-        public async void GlobalSetup()
-        {
-            await parallelService.RunParallelProcessingAsync(Serializer, NumThreads, MessagesPerSecond);
-            Serialize();
-        }
+        public void SetupDeserialize() => Serialize();
 
         [Benchmark]
         public void RoundTripTime()

@@ -2,7 +2,6 @@
 {
     public interface ISerializer
     {
-        Type GetSerializationOutPutType();
         long BenchmarkSerialize<T>(T original) where T : ISerializationTarget;
 
         long BenchmarkSerialize(Type type, ISerializationTarget original);

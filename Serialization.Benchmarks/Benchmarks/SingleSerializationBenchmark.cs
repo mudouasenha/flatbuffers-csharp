@@ -4,12 +4,11 @@ using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
     [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn] //, PerfCollectProfiler, EtwProfiler]
-    public class SerializationBenchmark : ISerializableBenchmark
+    public class SingleSerializationBenchmark : ISerializableBenchmark
     {
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
@@ -21,21 +20,20 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
-            new SytemTextJsonSerializer(),
+            //new SytemTextJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
-            //new VideoInfoBuilder().Generate(),
-            //new ChannelBuilder().Generate()
+            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            new VideoInfoBuilder().Generate(),
+            new ChannelBuilder().Generate()
         };
 
         [GlobalSetup(Target = nameof(Deserialize))]
-        public void GlobalSetup() => Serialize();
-
+        public void SetupDeserialize() => Serialize();
 
         [Benchmark]
         public void RoundTripTime()

@@ -11,19 +11,26 @@ namespace Serializaion.Sender.Controllers
     public class WorkloadController : ControllerBase
     {
         private readonly ILogger<WorkloadController> _logger;
-        private readonly SenderService _senderService;
+        private readonly WorkloadService _workloadService;
 
-        public WorkloadController(ILogger<WorkloadController> logger, SenderService senderService) => (_logger, _senderService) = (logger, senderService);
+        public WorkloadController(ILogger<WorkloadController> logger, WorkloadService senderService) => (_logger, _workloadService) = (logger, senderService);
 
-        [HttpPost("flatbuffers")]
-        public IActionResult FlatBuffers([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10)
+        [HttpPost("FlatBuffers")]
+        public IActionResult FlatBuffers([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10, [FromQuery] bool rest = false)
         {
             try
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _senderService.RunParallelProcessingAsync(new FlatBuffersSerializer(), numThreads, numMessages);
+                if (rest)
+                {
+                    _workloadService.RunParallelRestAsync(new FlatBuffersSerializer(), numThreads, numMessages);
+                }
+                else
+                {
+                    _workloadService.RunParallelProcessingAsync(new FlatBuffersSerializer(), numThreads, numMessages);
+                }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                return Ok($"Parallel Processing Async Service for {nameof(FlatBuffers)} initiated");
+                return Ok($"Parallel Processing Async Service for {nameof(FlatBuffers)} initiated. TYPE = REST? {rest}");
             }
             catch (Exception ex)
             {
@@ -33,15 +40,22 @@ namespace Serializaion.Sender.Controllers
             }
         }
 
-        [HttpPost("mesagepack")]
-        public IActionResult MessagePack([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10)
+        [HttpPost("MessagePack")]
+        public IActionResult MessagePack([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10, [FromQuery] bool rest = false)
         {
             try
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _senderService.RunParallelProcessingAsync(new MessagePackCSharpSerializer(), numThreads, numMessages);
+                if (rest)
+                {
+                    _workloadService.RunParallelRestAsync(new MessagePackCSharpSerializer(), numThreads, numMessages);
+                }
+                else
+                {
+                    _workloadService.RunParallelProcessingAsync(new MessagePackCSharpSerializer(), numThreads, numMessages);
+                }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                return Ok($"Parallel Processing Async Service for {nameof(MessagePack)} initiated");
+                return Ok($"Parallel Processing Async Service for {nameof(MessagePack)} initiated. TYPE = REST? {rest}");
             }
             catch (Exception ex)
             {
@@ -51,15 +65,22 @@ namespace Serializaion.Sender.Controllers
             }
         }
 
-        [HttpPost("system-text-json")]
-        public IActionResult SystemTextJson([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10)
+        [HttpPost("systemtextjson")]
+        public IActionResult SystemTextJson([FromQuery] int numThreads = 10, [FromQuery] int numMessages = 10, [FromQuery] bool rest = false)
         {
             try
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                _senderService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), numThreads, numMessages);
+                if (rest)
+                {
+                    _workloadService.RunParallelRestAsync(new SytemTextJsonSerializer(), numThreads, numMessages);
+                }
+                else
+                {
+                    _workloadService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), numThreads, numMessages);
+                }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                return Ok($"Parallel Processing Async Service for {nameof(SystemTextJson)} initiated");
+                return Ok($"Workload Processing Service for {nameof(SystemTextJson)} initiated. TYPE = REST? {rest}");
             }
             catch (Exception ex)
             {

@@ -11,7 +11,7 @@ namespace Serialization.Domain.Builders
             var faker = new Faker();
             RuleFor(v => v.Name, f => faker.Person.FullName);
             RuleFor(v => v.ChannelId, f => faker.UniqueIndex);
-            RuleFor(v => v.Subscribers, f => faker.Random.Int());
+            RuleFor(v => v.Subscribers, f => faker.Random.Int(0));
         }
 
         public ChannelBuilder WithChannelId(int channelId)

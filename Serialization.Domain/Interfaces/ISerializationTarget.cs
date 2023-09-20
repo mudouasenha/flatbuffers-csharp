@@ -2,14 +2,10 @@
 {
     public interface ISerializationTarget : IEquatable<ISerializationTarget>
     {
-		Type GetType();
+        Type GetType();
 
         long Serialize(ISerializer serializer);
 
-        //long Serialize(ref byte[] target);
-
         long Deserialize(ISerializer serializer);
-
-        //long Deserialize(ref byte[] target);
     }
 }

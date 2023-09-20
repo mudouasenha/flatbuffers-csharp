@@ -27,31 +27,31 @@ namespace Serialization.Receiver.Controllers
             _videoService = videoService;
         }
 
-        [HttpGet]
-        public IActionResult GetVideos()
-        {
-            try
-            {
-                var vid = _videoService.CreateVideo();
-                var size = vid.Serialize(serializer);
+        //[HttpGet]
+        //public IActionResult GetVideos()
+        //{
+        //    try
+        //    {
+        //        var vid = _videoService.CreateVideo();
+        //        var size = vid.Serialize(serializer);
 
-                if (serializer.GetDeserializationResult(vid.GetType(), out var result))
-                {
-                    Response.ContentType = "application/octet-stream";
-                    Response.Headers.Add("Content-Length", size.ToString());
+        //        if (serializer.GetDeserializationResult(vid.GetType(), out var result))
+        //        {
+        //            Response.ContentType = "application/octet-stream";
+        //            Response.Headers.Add("Content-Length", size.ToString());
 
-                    return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
-                }
+        //            return Ok(new FileContentResult((byte[])(object)result, "application/octet-stream"));
+        //        }
 
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message, ex);
+        //        return BadRequest();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message, ex);
 
-                return Problem();
-            }
-        }
+        //        return Problem();
+        //    }
+        //}
 
         [HttpPost("FlatBuffers")]
         public IActionResult PostFlatBuffers([FromBody] ISerializationTarget requestData)

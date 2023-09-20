@@ -12,6 +12,6 @@ namespace Serialization.Services
             .AddSystemTextJsonSerializer()
             .AddMessagePack()
             .AddScoped<VideoService>()
-            .AddScoped<SenderService>();
+            .AddScoped<WorkloadService>();
     }
 }
