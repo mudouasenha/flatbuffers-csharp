@@ -23,7 +23,7 @@ namespace Serialization.Serializers.FlatBuffers.SerializationHelpers
             var videoInfoOffSet = VideoInfoFlatModel.EndVideoInfoFlatModel(builder);
 
             builder.Finish(videoInfoOffSet.Value);
-            messageSize = FlatBuffersSerializer.GetSize();
+            messageSize = builder.Offset;
             var byteArray = builder.SizedByteArray();
             builder.Clear();
             return byteArray;

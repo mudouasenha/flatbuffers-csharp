@@ -12,8 +12,8 @@ builder.Services.AddCrossCutting();
 
 Thread.Sleep(TimeSpan.FromSeconds(10));
 
-var config = new RESTSerializationBenchmarkConfig();
-BenchmarkRunner.Run<RESTSerializationBenchmark>(config);
+var config = new ConcurrencySerializationBenchmarkConfig();
+BenchmarkRunner.Run<ConcurrencySerializationBenchmark>(config);
 
 
 //var host = builder.Build();

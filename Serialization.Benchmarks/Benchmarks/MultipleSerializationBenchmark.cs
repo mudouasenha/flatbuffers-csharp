@@ -4,6 +4,7 @@ using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
+using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
@@ -20,14 +21,14 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
-            //new SytemTextJsonSerializer(),
+            new NewtonsoftJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
             new VideoInfoBuilder().Generate(),
             new ChannelBuilder().Generate()
         };
@@ -35,12 +36,12 @@ namespace Serialization.Benchmarks.Benchmarks
         [GlobalSetup(Target = nameof(Deserialize))]
         public void SetupDeserialize() => Serialize();
 
-        [Benchmark]
-        public void RoundTripTime()
-        {
-            Serializer.BenchmarkSerialize(Target.GetType(), Target);
-            Serializer.BenchmarkDeserialize(Target.GetType(), Target);
-        }
+        //[Benchmark]
+        //public void RoundTripTime()
+        //{
+        //    Serializer.BenchmarkSerialize(Target.GetType(), Target);
+        //    Serializer.BenchmarkDeserialize(Target.GetType(), Target);
+        //}
 
         [Benchmark]
         public long Serialize() => Serializer.BenchmarkSerialize(Target.GetType(), Target);

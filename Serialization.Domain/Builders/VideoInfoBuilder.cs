@@ -10,8 +10,8 @@ namespace Serialization.Domain.Builders
         public VideoInfoBuilder()
         {
             var faker = new Faker();
-            RuleFor(v => v.Description, f => faker.Lorem.Paragraph(30));
-            RuleFor(v => v.Duration, f => faker.Random.Number(0));
+            RuleFor(v => v.Description, f => faker.Random.String2(50, 1000));
+            RuleFor(v => v.Duration, f => faker.Random.Number(0, 864_000_000));
             RuleFor(v => v.Size, f => faker.Random.Long(0));
             RuleFor(v => v.Qualities, f => f.Make(f.Random.Number(1, 5), () => f.Random.Enum<VideoQualityFlatModel>()).ToArray());
         }

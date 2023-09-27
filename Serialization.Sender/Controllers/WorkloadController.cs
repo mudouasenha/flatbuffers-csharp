@@ -27,7 +27,7 @@ namespace Serializaion.Sender.Controllers
                 }
                 else
                 {
-                    _workloadService.RunParallelProcessingAsync(new FlatBuffersSerializer(), numThreads, numMessages);
+                    _workloadService.RunParallelAsync(new FlatBuffersSerializer(), numThreads, numMessages);
                 }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return Ok($"Parallel Processing Async Service for {nameof(FlatBuffers)} initiated. TYPE = REST? {rest}");
@@ -52,7 +52,7 @@ namespace Serializaion.Sender.Controllers
                 }
                 else
                 {
-                    _workloadService.RunParallelProcessingAsync(new MessagePackCSharpSerializer(), numThreads, numMessages);
+                    _workloadService.RunParallelAsync(new MessagePackCSharpSerializer(), numThreads, numMessages);
                 }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return Ok($"Parallel Processing Async Service for {nameof(MessagePack)} initiated. TYPE = REST? {rest}");
@@ -73,11 +73,11 @@ namespace Serializaion.Sender.Controllers
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 if (rest)
                 {
-                    _workloadService.RunParallelRestAsync(new SytemTextJsonSerializer(), numThreads, numMessages);
+                    _workloadService.RunParallelRestAsync(new NewtonsoftJsonSerializer(), numThreads, numMessages);
                 }
                 else
                 {
-                    _workloadService.RunParallelProcessingAsync(new SytemTextJsonSerializer(), numThreads, numMessages);
+                    _workloadService.RunParallelAsync(new NewtonsoftJsonSerializer(), numThreads, numMessages);
                 }
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return Ok($"Workload Processing Service for {nameof(SystemTextJson)} initiated. TYPE = REST? {rest}");

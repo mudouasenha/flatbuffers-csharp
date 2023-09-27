@@ -1,4 +1,5 @@
-﻿using Serialization.Domain.Interfaces;
+﻿using Flurl;
+using Serialization.Domain.Interfaces;
 
 namespace Serialization.Services
 {
@@ -6,7 +7,41 @@ namespace Serialization.Services
     {
         private bool _executing;
         private readonly VideoService _videoService = new();
-        private static readonly RestClient _restClient = new();
+        private readonly HttpClient _httpClient = new();
+        private readonly RestClient _restClient = new();
+        private const string SenderBaseUrl = "http://localhost:5011/";
+
+        public async Task DispatchAsync(ISerializer serializer, int numHosts = 100, int messagedPerSecond = 100, bool rest = false)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, SenderBaseUrl + $"workload/"
+                    .AppendPathSegment(serializer.ToString())
+                    .SetQueryParam("numHosts", numHosts)
+                    .SetQueryParam("messagedPerSecond", messagedPerSecond)
+                    .SetQueryParam("rest", rest));
+
+                var response = await _httpClient.PostAsync(request.RequestUri, null);
+
+                // Handle the response as needed.
+                if (response.IsSuccessStatusCode)
+                {
+                    // Successfully received a response.
+                    var content = await response.Content.ReadAsStringAsync();
+                    // Process the content.
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions.
+                throw ex;
+            }
+        }
+
 
         public async Task RunParallelRestAsync(ISerializer serializer, int numHosts = 100, int messagedPerSecond = 100)
         {
@@ -29,7 +64,7 @@ namespace Serialization.Services
             Console.WriteLine("All tasks completed.");
         }
 
-        public async Task RunParallelProcessingAsync(ISerializer serializer, int numThreads = 100, int numMessages = 100)
+        public async Task RunParallelAsync(ISerializer serializer, int numThreads = 100, int numMessages = 100)
         {
             if (_executing)
             {
@@ -115,39 +150,6 @@ namespace Serialization.Services
             }
         }
 
-
-        //private async Task ProcessSerializationRestAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer, int numMessages)
-        //{
-        //    while (_executing)
-        //    {
-        //        await semaphore.WaitAsync();
-
-        //        try
-        //        {
-        //            Console.WriteLine($"Thread {threadId} loop started");
-
-        //            for (int i = 0; i < numMessages; i++)
-        //            {
-        //                var vid = _videoService.CreateVideo();
-        //                vid.Serialize(serializer);
-        //                object result;
-        //                if (serializer.GetSerializationResult(vid.GetType(), out var serializationObject))
-        //                    result = _restClient.PostAsync("receiver/video", serializationObject).Result;
-        //            }
-        //            await Task.Delay(100);
-
-        //            Console.WriteLine($"Thread {threadId} finished");
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            throw ex;
-        //        }
-        //        finally
-        //        {
-        //            semaphore.Release();
-        //        }
-        //    }
-        //}
 
     }
 }

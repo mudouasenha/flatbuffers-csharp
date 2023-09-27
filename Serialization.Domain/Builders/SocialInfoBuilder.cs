@@ -9,10 +9,10 @@ namespace Serialization.Domain.Builders
         public SocialInfoBuilder()
         {
             var faker = new Faker();
-            RuleFor(v => v.Dislikes, f => faker.Random.Int(min: 0));
-            RuleFor(v => v.Likes, f => faker.Random.Int(min: 0));
-            RuleFor(v => v.Views, f => faker.Random.Int(min: 0));
-            RuleFor(v => v.Comments, f => faker.Make(faker.Random.Number(1, 5), () => faker.Lorem.Paragraph(5)).ToArray());
+            RuleFor(v => v.Dislikes, f => faker.Random.Int(min: 0, max: 1_000_000_000));
+            RuleFor(v => v.Likes, f => faker.Random.Int(min: 0, max: 1_000_000_000));
+            RuleFor(v => v.Views, f => faker.Random.Int(min: 0, max: 1_000_000_000));
+            RuleFor(v => v.Comments, f => faker.Make(faker.Random.Number(1, 10), () => faker.Random.String2(5, 300)).ToArray());
         }
 
 

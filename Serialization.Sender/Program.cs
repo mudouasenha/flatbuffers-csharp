@@ -1,5 +1,4 @@
 using Serialization.CrossCutting;
-using Serialization.Serializers.FlatBuffers;
 using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +15,7 @@ builder.Services.AddScoped<WorkloadService>();
 
 var myService = new WorkloadService();
 
-await myService.RunParallelRestAsync(new FlatBuffersSerializer(), 100, 1000);
+//await myService.RunParallelAsync(new Serialization.Serializers.SystemTextJson.NewtonsoftJsonSerializer(), 100, 1000);
 
 var app = builder.Build();
 
@@ -27,10 +26,10 @@ var app = builder.Build();
 //    app.UseSwaggerUI();
 //}
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-//app.UseAuthorization();
+app.UseAuthorization();
 
-//app.MapControllers();
+app.MapControllers();
 
 app.Run();

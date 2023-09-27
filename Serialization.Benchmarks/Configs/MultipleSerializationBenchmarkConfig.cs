@@ -23,9 +23,19 @@ namespace Serialization.Benchmarks.Configs
                 .WithRuntime(CoreRuntime.Core60)
                 .WithToolchain(InProcessNoEmitToolchain.Instance));
 
-            AddJob(baseJob.WithInvocationCount(1000).WithId("JOB-MULTIPLE-LIGHT"));
-            //AddJob(baseJob.WithInvocationCount(10000).WithId("JOB-MULTIPLE-MEDIUM"));
-            //AddJob(baseJob.WithInvocationCount(1000000).WithId("JOB-MULTIPLE-HEAVY"));
+            AddJob(baseJob.WithInvocationCount(10).WithId("JOB-MULTIPLE-LIGHT"));
+            AddJob(baseJob.WithInvocationCount(100).WithId("JOB-MULTIPLE-MEDIUM"));
+            AddJob(baseJob.WithInvocationCount(1000).WithId("JOB-MULTIPLE-HEAVY"));
+
+            //// Check the OS platform and set the profiler accordingly
+            //if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            //{
+            //    AddDiagnoser(new EtwProfiler());
+            //}
+            //else if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+            //{
+            //    AddDiagnoser(new PerfCollectProfiler(new PerfCollectProfilerConfig(false)));
+            //}
 
             AddAnalyser(EnvironmentAnalyser.Default);
             AddDiagnoser(MemoryDiagnoser.Default);

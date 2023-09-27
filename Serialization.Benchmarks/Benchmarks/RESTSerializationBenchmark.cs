@@ -41,7 +41,7 @@ namespace Serialization.Benchmarks.Benchmarks
         };
 
         [GlobalSetup]
-        public void GlobalSetup() => parallelService.RunParallelProcessingAsync(Serializer, NumHosts, MessagesPerSecond);
+        public void GlobalSetup() => parallelService.RunParallelAsync(Serializer, NumHosts, MessagesPerSecond);
 
         [Benchmark]
         public void RoundTripTime()

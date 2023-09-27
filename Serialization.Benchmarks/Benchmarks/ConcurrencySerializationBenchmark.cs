@@ -16,10 +16,10 @@ namespace Serialization.Benchmarks.Benchmarks
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
 
-        [Params(4, 8/*, 12*/)]
+        [Params(2, 4, 8)]
         public int NumThreads { get; set; }
 
-        [Params(10/*, 100, 1000*/)]
+        [Params(1000, 10000, 1000000)]
         public int NumMessages { get; set; }
 
         [ParamsSource(nameof(Targets))]
@@ -29,30 +29,30 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
-            //new SytemTextJsonSerializer(),
+            //new NewtonsoftJsonSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
             new VideoBuilder().Generate(),
-            //new SocialInfoBuilder().Generate(),
-            new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
-            //new VideoInfoBuilder().Generate(),
-            //new ChannelBuilder().Generate()
+            new SocialInfoBuilder().Generate(),
+            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
+            new VideoInfoBuilder().Generate(),
+            new ChannelBuilder().Generate()
         };
 
-        [GlobalSetup]
-        public void GlobalSetup() => parallelService.RunParallelProcessingAsync(Serializer, NumThreads, NumMessages);
+        //[GlobalSetup]
+        //public async Task GlobalSetup() => await parallelService.DispatchAsync(Serializer, NumThreads, NumMessages);
 
         [GlobalSetup(Target = nameof(Deserialize))]
         public void SetupDeserialize() => Serialize();
 
-        [Benchmark]
-        public void RoundTripTime()
-        {
-            Serializer.BenchmarkSerialize(Target.GetType(), Target);
-            Serializer.BenchmarkDeserialize(Target.GetType(), Target);
-        }
+        //[Benchmark]
+        //public void RoundTripTime()
+        //{
+        //    Serializer.BenchmarkSerialize(Target.GetType(), Target);
+        //    Serializer.BenchmarkDeserialize(Target.GetType(), Target);
+        //}
 
         [Benchmark]
         public long Serialize() => Serializer.BenchmarkSerialize(Target.GetType(), Target);

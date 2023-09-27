@@ -9,9 +9,9 @@ namespace Serialization.Domain.Builders
         public ChannelBuilder()
         {
             var faker = new Faker();
-            RuleFor(v => v.Name, f => faker.Person.FullName);
+            RuleFor(v => v.Name, f => faker.Random.String2(10, 80));
             RuleFor(v => v.ChannelId, f => faker.UniqueIndex);
-            RuleFor(v => v.Subscribers, f => faker.Random.Int(0));
+            RuleFor(v => v.Subscribers, f => faker.Random.Int(0, 100_000_000));
         }
 
         public ChannelBuilder WithChannelId(int channelId)
