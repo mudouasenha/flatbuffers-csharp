@@ -5,8 +5,11 @@ namespace Serialization.Domain.Entities
 {
 
     [MessagePackObject]
+    [Serializable]
     public class SocialInfo : ISerializationTarget
     {
+        public SocialInfo() { }
+
         public SocialInfo(int likes, int dislikes, string[] comments, int views)
         {
             Likes = likes;
@@ -38,6 +41,16 @@ namespace Serialization.Domain.Entities
         public override string ToString()
         {
             return "SocialInfo";
+        }
+
+        public long Serialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long Deserialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
         }
     }
 }

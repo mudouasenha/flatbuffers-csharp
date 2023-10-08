@@ -4,7 +4,7 @@ using Serialization.Domain.Entities;
 
 namespace Serialization.Domain.Builders
 {
-    public class ChannelBuilder : AutoFaker<Channel>
+    public class ChannelBuilder : AutoFaker<Channel>, ISerializationTargetBuilder
     {
         public ChannelBuilder()
         {

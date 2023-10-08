@@ -5,8 +5,11 @@ namespace Serialization.Domain.Entities
 {
 
     [MessagePackObject]
+    [Serializable]
     public class Video : ISerializationTarget
     {
+        public Video() { }
+
         public Video(SocialInfo socialInfo, Channel channel, VideoInfo videoInfo)
         {
             SocialInfo = socialInfo;
@@ -34,6 +37,16 @@ namespace Serialization.Domain.Entities
         public override string ToString()
         {
             return "Video";
+        }
+
+        public long Serialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long Deserialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
         }
     }
 }

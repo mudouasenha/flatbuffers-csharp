@@ -19,7 +19,7 @@ namespace Serialization.Serializers.SystemTextJson
         protected override MemoryStream Serialize<T>(T original, out long messageSize)
         {
             var stream = new MemoryStream();
-            using var tw = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+            using var tw = new StreamWriter(stream, Encoding.UTF8, 4096, true);
             using var jw = new JsonTextWriter(tw);
             jsonSerializer.Serialize(jw, original);
 
@@ -33,7 +33,7 @@ namespace Serialization.Serializers.SystemTextJson
         protected override MemoryStream Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             var stream = new MemoryStream();
-            using var tw = new StreamWriter(stream, Encoding.UTF8, 1024, true);
+            using var tw = new StreamWriter(stream, Encoding.UTF8, 4096, true);
             using var jw = new JsonTextWriter(tw);
             jsonSerializer.Serialize(jw, original, type);
 
@@ -53,7 +53,7 @@ namespace Serialization.Serializers.SystemTextJson
         {
             T copy;
             stream.Position = 0;
-            using var tr = new StreamReader(stream, Encoding.UTF8, false, 1024, true);
+            using var tr = new StreamReader(stream, Encoding.UTF8, false, 4096, true);
             using var jr = new JsonTextReader(tr);
             copy = jsonSerializer.Deserialize<T>(jr);
 
@@ -64,7 +64,7 @@ namespace Serialization.Serializers.SystemTextJson
         {
             object copy;
             stream.Position = 0;
-            using var tr = new StreamReader(stream, Encoding.UTF8, false, 1024, true);
+            using var tr = new StreamReader(stream, Encoding.UTF8, false, 4096, true);
             using var jr = new JsonTextReader(tr);
             copy = jsonSerializer.Deserialize(jr, type);
 

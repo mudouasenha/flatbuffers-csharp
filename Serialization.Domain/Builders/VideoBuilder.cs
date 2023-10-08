@@ -3,7 +3,7 @@ using Serialization.Domain.Entities;
 
 namespace Serialization.Domain.Builders
 {
-    public class VideoBuilder : AutoFaker<Video>
+    public class VideoBuilder : AutoFaker<Video>, ISerializationTargetBuilder
     {
         public VideoBuilder()
         {

@@ -19,13 +19,17 @@ namespace Serialization.Benchmarks.Configs
                 .WithUnrollFactor(1)
                 .WithWarmupCount(3)
                 .WithIterationTime(TimeInterval.FromMilliseconds(100))
-                .WithIterationCount(30)
+                .WithIterationCount(2)
+                .WithInvocationCount(1)
+                .WithId("JOB-MULTIPLE")
                 .WithRuntime(CoreRuntime.Core60)
                 .WithToolchain(InProcessNoEmitToolchain.Instance));
 
-            AddJob(baseJob.WithInvocationCount(10).WithId("JOB-MULTIPLE-LIGHT"));
-            AddJob(baseJob.WithInvocationCount(100).WithId("JOB-MULTIPLE-MEDIUM"));
-            AddJob(baseJob.WithInvocationCount(1000).WithId("JOB-MULTIPLE-HEAVY"));
+            AddJob(baseJob);
+
+            //AddJob(baseJob.WithInvocationCount(10).WithId("JOB-MULTIPLE-LIGHT"));
+            //AddJob(baseJob.WithInvocationCount(100).WithId("JOB-MULTIPLE-MEDIUM"));
+            //AddJob(baseJob.WithInvocationCount(1000).WithId("JOB-MULTIPLE-HEAVY"));
 
             //// Check the OS platform and set the profiler accordingly
             //if (Environment.OSVersion.Platform == PlatformID.Win32NT)

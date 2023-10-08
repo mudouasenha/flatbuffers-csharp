@@ -12,8 +12,11 @@ builder.Services.AddCrossCutting();
 
 Thread.Sleep(TimeSpan.FromSeconds(10));
 
-var config = new ConcurrencySerializationBenchmarkConfig();
-BenchmarkRunner.Run<ConcurrencySerializationBenchmark>(config);
+//var config = new MultipleSerializationBenchmarkConfig();
+//BenchmarkRunner.Run<MultipleSerializationBenchmark>(config);
+
+var config2 = new SingleSerializationBenchmarkConfig();
+BenchmarkRunner.Run<SingleSerializationBenchmark>(config2);
 
 
 //var host = builder.Build();

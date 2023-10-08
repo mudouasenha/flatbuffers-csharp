@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Serialiazation.Serializers.Manual;
 using Serialization.Benchmarks.Abstractions;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
@@ -22,6 +23,7 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
+            new ManualSerializer()
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]

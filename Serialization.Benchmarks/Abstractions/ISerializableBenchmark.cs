@@ -8,4 +8,10 @@ namespace Serialization.Benchmarks.Abstractions
         ISerializationTarget Target { get; set; }
         long Serialize();
     }
+
+    public interface IMultipleSerializableBenchmark
+    {
+        ISerializer Serializer { get; set; }
+        ISerializationTarget[] TargetList { get; set; }
+    }
 }

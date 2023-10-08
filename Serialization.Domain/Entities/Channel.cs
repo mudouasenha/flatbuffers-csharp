@@ -5,8 +5,10 @@ namespace Serialization.Domain.Entities
 {
 
     [MessagePackObject]
+    [Serializable]
     public class Channel : ISerializationTarget
     {
+        public Channel() { }
         public Channel(string name, int subscribers, int channelId)
         {
             Name = name;
@@ -34,6 +36,16 @@ namespace Serialization.Domain.Entities
         public override string ToString()
         {
             return "Channel";
+        }
+
+        public long Serialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long Deserialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
         }
     }
 }

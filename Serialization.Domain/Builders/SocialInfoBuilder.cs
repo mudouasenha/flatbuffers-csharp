@@ -4,7 +4,7 @@ using Serialization.Domain.Entities;
 
 namespace Serialization.Domain.Builders
 {
-    public class SocialInfoBuilder : AutoFaker<SocialInfo>
+    public class SocialInfoBuilder : AutoFaker<SocialInfo>, ISerializationTargetBuilder
     {
         public SocialInfoBuilder()
         {

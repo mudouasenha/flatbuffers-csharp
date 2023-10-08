@@ -6,8 +6,11 @@ namespace Serialization.Domain.Entities
 {
 
     [MessagePackObject]
+    [Serializable]
     public class VideoInfo : ISerializationTarget
     {
+        public VideoInfo() { }
+
         public VideoInfo(int duration, string description, long size, VideoQualityFlatModel[] qualities)
         {
             Duration = duration;
@@ -39,6 +42,16 @@ namespace Serialization.Domain.Entities
         public override string ToString()
         {
             return "VideoInfo";
+        }
+
+        public long Serialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long Deserialize(ref byte[] target)
+        {
+            throw new NotImplementedException();
         }
     }
 }

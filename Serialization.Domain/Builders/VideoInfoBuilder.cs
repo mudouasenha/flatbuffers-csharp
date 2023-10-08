@@ -5,7 +5,7 @@ using Serialization.Domain.Entities;
 
 namespace Serialization.Domain.Builders
 {
-    public class VideoInfoBuilder : AutoFaker<VideoInfo>
+    public class VideoInfoBuilder : AutoFaker<VideoInfo>, ISerializationTargetBuilder
     {
         public VideoInfoBuilder()
         {

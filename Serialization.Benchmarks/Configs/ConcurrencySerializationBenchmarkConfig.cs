@@ -19,7 +19,7 @@ namespace Serialization.Benchmarks.Configs
                 .WithUnrollFactor(1)
                 .WithWarmupCount(3)
                 .WithIterationTime(TimeInterval.FromMilliseconds(100))
-                .WithIterationCount(30)
+                .WithIterationCount(2)
                 .WithInvocationCount(1)
                 .WithId("JOB-CONCURRENCY")
                 .WithRuntime(CoreRuntime.Core60)
