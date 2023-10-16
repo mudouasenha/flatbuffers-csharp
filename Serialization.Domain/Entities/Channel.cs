@@ -1,4 +1,6 @@
-﻿using MessagePack;
+﻿using Google.Protobuf;
+using MessagePack;
+using ProtoBuf;
 using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
@@ -6,10 +8,14 @@ namespace Serialization.Domain.Entities
 
     [MessagePackObject]
     [Serializable]
+    [ProtoContract]
     public class Channel : ISerializationTarget
     {
+        [NonSerialized]
+        private IMessage<ProtoObjects.Channel> protoObject;
+
         public Channel() { }
-        public Channel(string name, int subscribers, int channelId)
+        public Channel(string name, int subscribers, string channelId)
         {
             Name = name;
             Subscribers = subscribers;
@@ -17,13 +23,16 @@ namespace Serialization.Domain.Entities
         }
 
         [Key(0)]
+        [ProtoMember(1)]
         public string Name { get; set; }
 
         [Key(1)]
+        [ProtoMember(2)]
         public int Subscribers { get; set; }
 
         [Key(2)]
-        public int ChannelId { get; set; }
+        [ProtoMember(4)]
+        public string ChannelId { get; set; }
 
         public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
 
@@ -38,14 +47,19 @@ namespace Serialization.Domain.Entities
             return "Channel";
         }
 
-        public long Serialize(ref byte[] target)
+        public void CreateProtobufMessage()
         {
-            throw new NotImplementedException();
+            protoObject = new ProtoObjects.Channel()
+            {
+                ChannelId = ChannelId,
+                Name = Name,
+                Subscribers = (uint)Subscribers
+            };
         }
 
-        public long Deserialize(ref byte[] target)
+        public IMessage GetProtobufMessage()
         {
-            throw new NotImplementedException();
+            return protoObject;
         }
     }
 }

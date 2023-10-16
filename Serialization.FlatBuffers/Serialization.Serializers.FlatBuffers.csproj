@@ -14,4 +14,8 @@
 	  <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="FlatBuffersModels\" />
+	</ItemGroup>
+
 </Project>

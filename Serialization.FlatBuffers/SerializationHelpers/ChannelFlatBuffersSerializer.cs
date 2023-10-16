@@ -12,11 +12,12 @@ namespace Serialization.Serializers.FlatBuffers.SerializationHelpers
         {
             var builder = new FlatBufferBuilder(1024);
             var name = builder.CreateString(entity.Name);
+            var channelIdOffSet = builder.CreateString(entity.ChannelId);
 
             ChannelFlatModel.StartChannelFlatModel(builder);
             ChannelFlatModel.AddName(builder, name);
             ChannelFlatModel.AddSubscribers(builder, entity.Subscribers);
-            ChannelFlatModel.AddChannelId(builder, entity.ChannelId);
+            ChannelFlatModel.AddChannelId(builder, channelIdOffSet);
 
             var videoInfoOffSet = ChannelFlatModel.EndChannelFlatModel(builder);
 

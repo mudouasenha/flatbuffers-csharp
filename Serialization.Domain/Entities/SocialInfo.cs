@@ -1,4 +1,6 @@
-﻿using MessagePack;
+﻿using Google.Protobuf;
+using MessagePack;
+using ProtoBuf;
 using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
@@ -6,8 +8,12 @@ namespace Serialization.Domain.Entities
 
     [MessagePackObject]
     [Serializable]
+    [ProtoContract]
     public class SocialInfo : ISerializationTarget
     {
+        [NonSerialized]
+        private IMessage<ProtoObjects.SocialInfo> protoObject;
+
         public SocialInfo() { }
 
         public SocialInfo(int likes, int dislikes, string[] comments, int views)
@@ -19,15 +25,19 @@ namespace Serialization.Domain.Entities
         }
 
         [Key(0)]
+        [ProtoMember(1)]
         public int Likes { get; set; }
 
         [Key(1)]
+        [ProtoMember(2)]
         public int Dislikes { get; set; }
 
         [Key(2)]
+        [ProtoMember(3)]
         public string[] Comments { get; set; }
 
         [Key(3)]
+        [ProtoMember(4)]
         public int Views { get; set; }
 
         public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
@@ -43,14 +53,20 @@ namespace Serialization.Domain.Entities
             return "SocialInfo";
         }
 
-        public long Serialize(ref byte[] target)
+        public void CreateProtobufMessage()
         {
-            throw new NotImplementedException();
+            protoObject = new ProtoObjects.SocialInfo()
+            {
+                Dislikes = (uint)Dislikes,
+                Likes = (uint)Likes,
+                Views = (uint)Views,
+                Comments = { Comments }
+            };
         }
 
-        public long Deserialize(ref byte[] target)
+        public IMessage GetProtobufMessage()
         {
-            throw new NotImplementedException();
+            return protoObject;
         }
     }
 }

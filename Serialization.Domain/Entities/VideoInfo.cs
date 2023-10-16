@@ -1,5 +1,8 @@
 ﻿using FlatBuffersModels;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
 using MessagePack;
+using ProtoBuf;
 using Serialization.Domain.Interfaces;
 
 namespace Serialization.Domain.Entities
@@ -7,11 +10,15 @@ namespace Serialization.Domain.Entities
 
     [MessagePackObject]
     [Serializable]
+    [ProtoContract]
     public class VideoInfo : ISerializationTarget
     {
+        [NonSerialized]
+        private IMessage<ProtoObjects.VideoInfo> protoObject;
+
         public VideoInfo() { }
 
-        public VideoInfo(int duration, string description, long size, VideoQualityFlatModel[] qualities)
+        public VideoInfo(long duration, string description, long size, VideoQualityFlatModel[] qualities)
         {
             Duration = duration;
             Description = description;
@@ -20,15 +27,19 @@ namespace Serialization.Domain.Entities
         }
 
         [Key(0)]
-        public int Duration { get; set; }
+        [ProtoMember(1)]
+        public long Duration { get; set; }
 
         [Key(1)]
+        [ProtoMember(2)]
         public string Description { get; set; }
 
         [Key(2)]
+        [ProtoMember(3)]
         public long Size { get; set; }
 
         [Key(3)]
+        [ProtoMember(4)]
         public VideoQualityFlatModel[] Qualities { get; set; }
 
         public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
@@ -44,14 +55,23 @@ namespace Serialization.Domain.Entities
             return "VideoInfo";
         }
 
-        public long Serialize(ref byte[] target)
+        public void CreateProtobufMessage()
         {
-            throw new NotImplementedException();
+            var qualities = new RepeatedField<ProtoObjects.VideoInfo.Types.VideoQualities>();
+            qualities.AddRange(Qualities.ToArray().Select(x => (ProtoObjects.VideoInfo.Types.VideoQualities)x));
+
+            protoObject = new ProtoObjects.VideoInfo()
+            {
+                Duration = (ulong)Duration,
+                Description = Description,
+                Size = (ulong)Size,
+                Qualities = { qualities }
+            };
         }
 
-        public long Deserialize(ref byte[] target)
+        public IMessage GetProtobufMessage()
         {
-            throw new NotImplementedException();
+            return protoObject;
         }
     }
 }

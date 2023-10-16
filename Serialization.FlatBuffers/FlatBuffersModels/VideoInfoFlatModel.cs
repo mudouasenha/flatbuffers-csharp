@@ -19,8 +19,8 @@ public struct VideoInfoFlatModel : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public VideoInfoFlatModel __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int Duration { get { int o = __p.__offset(4); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
-  public bool MutateDuration(int duration) { int o = __p.__offset(4); if (o != 0) { __p.bb.PutInt(o + __p.bb_pos, duration); return true; } else { return false; } }
+  public long Duration { get { int o = __p.__offset(4); return o != 0 ? __p.bb.GetLong(o + __p.bb_pos) : (long)0; } }
+  public bool MutateDuration(long duration) { int o = __p.__offset(4); if (o != 0) { __p.bb.PutLong(o + __p.bb_pos, duration); return true; } else { return false; } }
   public string Description { get { int o = __p.__offset(6); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
 #if ENABLE_SPAN_T
   public Span<byte> GetDescriptionBytes() { return __p.__vector_as_span<byte>(6, 1); }
@@ -41,20 +41,20 @@ public struct VideoInfoFlatModel : IFlatbufferObject
   public bool MutateQualities(int j, FlatBuffersModels.VideoQualityFlatModel qualities) { int o = __p.__offset(10); if (o != 0) { __p.bb.PutShort(__p.__vector(o) + j * 2, (short)qualities); return true; } else { return false; } }
 
   public static Offset<FlatBuffersModels.VideoInfoFlatModel> CreateVideoInfoFlatModel(FlatBufferBuilder builder,
-      int duration = 0,
+      long duration = 0,
       StringOffset descriptionOffset = default(StringOffset),
       long size = 0,
       VectorOffset qualitiesOffset = default(VectorOffset)) {
     builder.StartTable(4);
     VideoInfoFlatModel.AddSize(builder, size);
+    VideoInfoFlatModel.AddDuration(builder, duration);
     VideoInfoFlatModel.AddQualities(builder, qualitiesOffset);
     VideoInfoFlatModel.AddDescription(builder, descriptionOffset);
-    VideoInfoFlatModel.AddDuration(builder, duration);
     return VideoInfoFlatModel.EndVideoInfoFlatModel(builder);
   }
 
   public static void StartVideoInfoFlatModel(FlatBufferBuilder builder) { builder.StartTable(4); }
-  public static void AddDuration(FlatBufferBuilder builder, int duration) { builder.AddInt(0, duration, 0); }
+  public static void AddDuration(FlatBufferBuilder builder, long duration) { builder.AddLong(0, duration, 0); }
   public static void AddDescription(FlatBufferBuilder builder, StringOffset descriptionOffset) { builder.AddOffset(1, descriptionOffset.Value, 0); }
   public static void AddSize(FlatBufferBuilder builder, long size) { builder.AddLong(2, size, 0); }
   public static void AddQualities(FlatBufferBuilder builder, VectorOffset qualitiesOffset) { builder.AddOffset(3, qualitiesOffset.Value, 0); }
@@ -75,7 +75,7 @@ static public class VideoInfoFlatModelVerify
   static public bool Verify(Google.FlatBuffers.Verifier verifier, uint tablePos)
   {
     return verifier.VerifyTableStart(tablePos)
-      && verifier.VerifyField(tablePos, 4 /*Duration*/, 4 /*int*/, 4, false)
+      && verifier.VerifyField(tablePos, 4 /*Duration*/, 8 /*long*/, 8, false)
       && verifier.VerifyString(tablePos, 6 /*Description*/, false)
       && verifier.VerifyField(tablePos, 8 /*Size*/, 8 /*long*/, 8, false)
       && verifier.VerifyVectorOfData(tablePos, 10 /*Qualities*/, 2 /*FlatBuffersModels.VideoQualityFlatModel*/, false)

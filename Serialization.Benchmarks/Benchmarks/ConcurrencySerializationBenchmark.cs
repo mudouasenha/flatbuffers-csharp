@@ -24,7 +24,8 @@ namespace Serialization.Benchmarks.Benchmarks
         [Params(2, 4, 8, 16)]
         public int NumThreads { get; set; }
 
-        [Params(128, 512, 4096, 6400, 12800, 32768, 40960, 64000, 102400, 128000)]
+        [Params(64000, 128000, 192000, 256000, 320000, 384000, 448000, 512000, 576000, 640000)]
+        //[Params(128, 512, 4096, 6400, 12800, 32768, 40960, 64000, 102400, 128000)]
         //[Params(4096, 6400, 32768, 64000, 102400, 262144, 409600, 655360, 1376256, 2097152)]
         public int NumMessages { get; set; }
 
@@ -45,23 +46,106 @@ namespace Serialization.Benchmarks.Benchmarks
             new ChannelBuilder().Generate()
         };
 
-        [GlobalSetup(Target = nameof(DeserializeParallelMakespan))]
+        [IterationSetup(Target = nameof(DeserializeParallelMakespan))]
         public void SetupDeserialize()
         {
-            TargetList = new List<ISerializationTarget>();
-            TargetList = GenerateSerializationTargets(NumMessages);
+            SetupSerialize();
             SerializeParallel(TargetList);
         }
 
-        [GlobalSetup(Target = nameof(SerializeParallelMakespan))]
+        [IterationSetup(Target = nameof(SerializeParallelMakespan))]
         public void SetupSerialize()
         {
             TargetList = new List<ISerializationTarget>();
             TargetList = GenerateSerializationTargets(NumMessages);
+            GenerateProtobufMessages();
         }
 
-        //[Benchmark]
-        //public long Serialize() => Serializer.BenchmarkSerialize(Target.GetType(), Target);
+        [Benchmark]
+        public long DeserializeParallelMakespan()
+        {
+            var tasks = new List<Task>();
+
+            var stopwatch = Stopwatch.StartNew();
+
+            foreach (var partition in PartitionList(TargetList, NumThreads))
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    foreach (var message in partition)
+                    {
+                        Serializer.BenchmarkDeserialize(message.GetType(), message);
+                    }
+                }));
+            }
+
+            Task.WhenAll(tasks).Wait();
+
+            stopwatch.Stop();
+
+            return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
+        }
+
+
+        [Benchmark]
+        public long SerializeParallelMakespan()
+        {
+            var tasks = new List<Task>();
+
+            var stopwatch = Stopwatch.StartNew();
+
+            foreach (var partition in PartitionList(TargetList, NumThreads))
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    foreach (var message in partition)
+                    {
+                        Serializer.BenchmarkSerialize(message.GetType(), message);
+                    }
+                }));
+            }
+
+            Task.WhenAll(tasks).Wait();
+
+            stopwatch.Stop();
+
+            return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
+        }
+
+        [IterationCleanup]
+        public void IterationCleanup() => Serializer.Cleanup();
+
+        private static List<List<T>> PartitionList<T>(List<T> list, int partitions)
+        {
+            List<List<T>> result = new List<List<T>>();
+            int itemsPerPartition = list.Count / partitions;
+
+            for (int i = 0; i < partitions; i++)
+            {
+                int startIndex = i * itemsPerPartition;
+                int endIndex = (i == partitions - 1) ? list.Count : startIndex + itemsPerPartition;
+                result.Add(list.GetRange(startIndex, endIndex - startIndex));
+            }
+
+            return result;
+        }
+
+        private void SerializeParallel(List<ISerializationTarget> targets)
+        {
+            var tasks = new List<Task>();
+            foreach (var partition in PartitionList(targets, NumThreads))
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    foreach (var message in partition)
+                    {
+                        Serializer.BenchmarkSerialize(message.GetType(), message);
+                    }
+                }));
+            }
+
+            Task.WhenAll(tasks).Wait();
+        }
 
         private List<ISerializationTarget> GenerateSerializationTargets(int count)
         {
@@ -85,126 +169,12 @@ namespace Serialization.Benchmarks.Benchmarks
             return targets;
         }
 
-        [Benchmark]
-        public long DeserializeParallelMakespan()
+        private void GenerateProtobufMessages()
         {
-            var tasks = new List<Task>();
-
-            //var targets = GenerateSerializationTargets(NumMessages);
-            //SerializeParallel(targets);
-
-            var stopwatch = Stopwatch.StartNew();
-
-            List<List<ISerializationTarget>> partitions = PartitionList(TargetList, NumThreads);
-
-            foreach (var partition in partitions)
+            foreach (var target in TargetList)
             {
-                tasks.Add(Task.Run(() =>
-                {
-                    foreach (var message in partition)
-                    {
-                        Serializer.BenchmarkDeserialize(message.GetType(), message);
-                    }
-                }));
+                target.CreateProtobufMessage();
             }
-
-            Task.WhenAll(tasks).Wait();
-
-            stopwatch.Stop();
-
-            return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
-        }
-
-
-
-        [Benchmark]
-        public long SerializeParallelMakespan()
-        {
-            var tasks = new List<Task>();
-
-            //var targets = GenerateSerializationTargets(NumMessages);
-            //SerializeParallel(targets);
-
-            var stopwatch = Stopwatch.StartNew();
-
-            List<List<ISerializationTarget>> partitions = PartitionList(TargetList, NumThreads);
-
-            foreach (var partition in partitions)
-            {
-                tasks.Add(Task.Run(() =>
-                {
-                    foreach (var message in partition)
-                    {
-                        Serializer.BenchmarkSerialize(message.GetType(), message);
-                    }
-                }));
-            }
-
-            Task.WhenAll(tasks).Wait();
-
-            stopwatch.Stop();
-
-            return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
-        }
-
-        //[Benchmark]
-        //public void SerializeParallelMakespan()
-        //{
-        //    var tasks = new List<Task>();
-
-        //    int messagesPerThread = NumMessages / NumThreads;
-
-        //    for (int i = 0; i < NumThreads; i++)
-        //    {
-        //        tasks.Add(Task.Run(() =>
-        //        {
-        //            for (int j = 0; j < messagesPerThread; j++)
-        //            {
-        //                Serializer.BenchmarkSerialize(Target.GetType(), Target);
-        //            }
-        //        }));
-        //    }
-
-        //    Task.WhenAll(tasks).Wait();
-        //}
-
-
-
-        [GlobalCleanup]
-        public void GlobalCleanup() => Serializer.Cleanup();
-
-        private static List<List<T>> PartitionList<T>(List<T> list, int partitions)
-        {
-            List<List<T>> result = new List<List<T>>();
-            int itemsPerPartition = list.Count / partitions;
-
-            for (int i = 0; i < partitions; i++)
-            {
-                int startIndex = i * itemsPerPartition;
-                int endIndex = (i == partitions - 1) ? list.Count : startIndex + itemsPerPartition;
-                result.Add(list.GetRange(startIndex, endIndex - startIndex));
-            }
-
-            return result;
-        }
-
-        public void SerializeParallel(List<ISerializationTarget> targets)
-        {
-            var tasks = new List<Task>();
-            List<List<ISerializationTarget>> partitions = PartitionList(targets, NumThreads);
-
-            foreach (var partition in partitions)
-            {
-                tasks.Add(Task.Run(() =>
-                {
-                    foreach (var message in partition)
-                    {
-                        Serializer.BenchmarkSerialize(message.GetType(), message);
-                    }
-                }));
-            }
-
-            Task.WhenAll(tasks).Wait();
         }
     }
 }

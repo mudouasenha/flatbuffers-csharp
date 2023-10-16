@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Serialiazation.Serializers.Manual;
 using Serialization.Benchmarks.Abstractions;
+using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
@@ -23,7 +24,8 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
-            new ManualSerializer()
+            new ManualSerializer(),
+            new ProtobufSerializer()
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -35,8 +37,15 @@ namespace Serialization.Benchmarks.Benchmarks
             new ChannelBuilder().Generate()
         };
 
-        [GlobalSetup(Target = nameof(Deserialize))]
-        public void SetupDeserialize() => Serialize();
+        [IterationSetup(Target = nameof(Serialize))]
+        public void SetupSerialize() => Target.CreateProtobufMessage();
+
+        [IterationSetup(Target = nameof(Deserialize))]
+        public void SetupDeserialize()
+        {
+            SetupSerialize();
+            Serialize();
+        }
 
         [Benchmark]
         public void RoundTripTime()
@@ -51,7 +60,7 @@ namespace Serialization.Benchmarks.Benchmarks
         [Benchmark]
         public long Deserialize() => Serializer.BenchmarkDeserialize(Target.GetType(), Target);
 
-        [GlobalCleanup]
+        [IterationSetup]
         public void GlobalCleanup() => Serializer.Cleanup();
     }
 }

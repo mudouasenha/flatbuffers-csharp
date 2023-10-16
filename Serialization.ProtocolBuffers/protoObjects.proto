@@ -1,0 +1,41 @@
+syntax = "proto3";
+package protoObjects;
+
+message Channel {
+	string Name = 1;
+	uint32 Subscribers = 2;
+	string ChannelId = 3;
+}
+
+message SocialInfo {
+	uint32 Likes = 1;
+	uint32 Dislikes = 2;
+	repeated string Comments = 3;
+	uint32 Views = 4;
+}
+
+message VideoInfo {
+	enum VideoQualities {
+		Undefined = 0;
+	    Lowest = 144;
+		Low = 360;
+		Medium = 480;
+		SD = 720;
+		HD = 1080;
+		TwoK = 1440;
+		FourK = 2160;
+	}
+
+	uint64 Duration = 1;
+	string Description = 2;
+	uint64 Size = 3;
+	repeated VideoQualities Qualities = 4;
+}
+
+message Video {
+	string VideoId = 1;
+	string Url = 2;
+	Channel Channel = 3;
+	SocialInfo SocialInfo = 4;
+	VideoInfo VideoInfo = 5;
+}

@@ -20,25 +20,45 @@ public struct VideoFlatModel : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public VideoFlatModel __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public FlatBuffersModels.SocialInfoFlatModel? SocialInfo { get { int o = __p.__offset(4); return o != 0 ? (FlatBuffersModels.SocialInfoFlatModel?)(new FlatBuffersModels.SocialInfoFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
-  public FlatBuffersModels.VideoInfoFlatModel? VideoInfo { get { int o = __p.__offset(6); return o != 0 ? (FlatBuffersModels.VideoInfoFlatModel?)(new FlatBuffersModels.VideoInfoFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
-  public FlatBuffersModels.ChannelFlatModel? Channel { get { int o = __p.__offset(8); return o != 0 ? (FlatBuffersModels.ChannelFlatModel?)(new FlatBuffersModels.ChannelFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
+  public string VideoId { get { int o = __p.__offset(4); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+#if ENABLE_SPAN_T
+  public Span<byte> GetVideoIdBytes() { return __p.__vector_as_span<byte>(4, 1); }
+#else
+  public ArraySegment<byte>? GetVideoIdBytes() { return __p.__vector_as_arraysegment(4); }
+#endif
+  public byte[] GetVideoIdArray() { return __p.__vector_as_array<byte>(4); }
+  public string Url { get { int o = __p.__offset(6); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+#if ENABLE_SPAN_T
+  public Span<byte> GetUrlBytes() { return __p.__vector_as_span<byte>(6, 1); }
+#else
+  public ArraySegment<byte>? GetUrlBytes() { return __p.__vector_as_arraysegment(6); }
+#endif
+  public byte[] GetUrlArray() { return __p.__vector_as_array<byte>(6); }
+  public FlatBuffersModels.SocialInfoFlatModel? SocialInfo { get { int o = __p.__offset(8); return o != 0 ? (FlatBuffersModels.SocialInfoFlatModel?)(new FlatBuffersModels.SocialInfoFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
+  public FlatBuffersModels.VideoInfoFlatModel? VideoInfo { get { int o = __p.__offset(10); return o != 0 ? (FlatBuffersModels.VideoInfoFlatModel?)(new FlatBuffersModels.VideoInfoFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
+  public FlatBuffersModels.ChannelFlatModel? Channel { get { int o = __p.__offset(12); return o != 0 ? (FlatBuffersModels.ChannelFlatModel?)(new FlatBuffersModels.ChannelFlatModel()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
 
   public static Offset<FlatBuffersModels.VideoFlatModel> CreateVideoFlatModel(FlatBufferBuilder builder,
+      StringOffset video_idOffset = default(StringOffset),
+      StringOffset urlOffset = default(StringOffset),
       Offset<FlatBuffersModels.SocialInfoFlatModel> social_infoOffset = default(Offset<FlatBuffersModels.SocialInfoFlatModel>),
       Offset<FlatBuffersModels.VideoInfoFlatModel> video_infoOffset = default(Offset<FlatBuffersModels.VideoInfoFlatModel>),
       Offset<FlatBuffersModels.ChannelFlatModel> channelOffset = default(Offset<FlatBuffersModels.ChannelFlatModel>)) {
-    builder.StartTable(3);
+    builder.StartTable(5);
     VideoFlatModel.AddChannel(builder, channelOffset);
     VideoFlatModel.AddVideoInfo(builder, video_infoOffset);
     VideoFlatModel.AddSocialInfo(builder, social_infoOffset);
+    VideoFlatModel.AddUrl(builder, urlOffset);
+    VideoFlatModel.AddVideoId(builder, video_idOffset);
     return VideoFlatModel.EndVideoFlatModel(builder);
   }
 
-  public static void StartVideoFlatModel(FlatBufferBuilder builder) { builder.StartTable(3); }
-  public static void AddSocialInfo(FlatBufferBuilder builder, Offset<FlatBuffersModels.SocialInfoFlatModel> socialInfoOffset) { builder.AddOffset(0, socialInfoOffset.Value, 0); }
-  public static void AddVideoInfo(FlatBufferBuilder builder, Offset<FlatBuffersModels.VideoInfoFlatModel> videoInfoOffset) { builder.AddOffset(1, videoInfoOffset.Value, 0); }
-  public static void AddChannel(FlatBufferBuilder builder, Offset<FlatBuffersModels.ChannelFlatModel> channelOffset) { builder.AddOffset(2, channelOffset.Value, 0); }
+  public static void StartVideoFlatModel(FlatBufferBuilder builder) { builder.StartTable(5); }
+  public static void AddVideoId(FlatBufferBuilder builder, StringOffset videoIdOffset) { builder.AddOffset(0, videoIdOffset.Value, 0); }
+  public static void AddUrl(FlatBufferBuilder builder, StringOffset urlOffset) { builder.AddOffset(1, urlOffset.Value, 0); }
+  public static void AddSocialInfo(FlatBufferBuilder builder, Offset<FlatBuffersModels.SocialInfoFlatModel> socialInfoOffset) { builder.AddOffset(2, socialInfoOffset.Value, 0); }
+  public static void AddVideoInfo(FlatBufferBuilder builder, Offset<FlatBuffersModels.VideoInfoFlatModel> videoInfoOffset) { builder.AddOffset(3, videoInfoOffset.Value, 0); }
+  public static void AddChannel(FlatBufferBuilder builder, Offset<FlatBuffersModels.ChannelFlatModel> channelOffset) { builder.AddOffset(4, channelOffset.Value, 0); }
   public static Offset<FlatBuffersModels.VideoFlatModel> EndVideoFlatModel(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<FlatBuffersModels.VideoFlatModel>(o);
@@ -53,9 +73,11 @@ static public class VideoFlatModelVerify
   static public bool Verify(Google.FlatBuffers.Verifier verifier, uint tablePos)
   {
     return verifier.VerifyTableStart(tablePos)
-      && verifier.VerifyTable(tablePos, 4 /*SocialInfo*/, FlatBuffersModels.SocialInfoFlatModelVerify.Verify, false)
-      && verifier.VerifyTable(tablePos, 6 /*VideoInfo*/, FlatBuffersModels.VideoInfoFlatModelVerify.Verify, false)
-      && verifier.VerifyTable(tablePos, 8 /*Channel*/, FlatBuffersModels.ChannelFlatModelVerify.Verify, false)
+      && verifier.VerifyString(tablePos, 4 /*VideoId*/, false)
+      && verifier.VerifyString(tablePos, 6 /*Url*/, false)
+      && verifier.VerifyTable(tablePos, 8 /*SocialInfo*/, FlatBuffersModels.SocialInfoFlatModelVerify.Verify, false)
+      && verifier.VerifyTable(tablePos, 10 /*VideoInfo*/, FlatBuffersModels.VideoInfoFlatModelVerify.Verify, false)
+      && verifier.VerifyTable(tablePos, 12 /*Channel*/, FlatBuffersModels.ChannelFlatModelVerify.Verify, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

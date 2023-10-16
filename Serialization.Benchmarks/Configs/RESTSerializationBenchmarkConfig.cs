@@ -16,9 +16,10 @@ namespace Serialization.Benchmarks.Configs
             Add(DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default));
 
             var baseJob = new Job(Job.MediumRun
-                .WithUnrollFactor(16)
+                .WithUnrollFactor(1)
                 .WithWarmupCount(3)
                 .WithIterationTime(TimeInterval.FromMilliseconds(100))
+                .WithLaunchCount(1)
                 .WithIterationCount(30)
                 .WithInvocationCount(1)
                 .WithId("JOB-REST")

@@ -20,6 +20,7 @@ namespace Serialization.Benchmarks.Configs
                 .WithUnrollFactor(1)
                 .WithWarmupCount(3)
                 .WithIterationTime(TimeInterval.FromMilliseconds(100))
+                .WithLaunchCount(1)
                 .WithIterationCount(30)
                 .WithInvocationCount(1)
                 .WithId("JOB-SINGLE")

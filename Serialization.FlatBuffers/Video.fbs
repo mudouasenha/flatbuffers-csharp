@@ -13,12 +13,12 @@ table SocialInfoFlatModel {
 table ChannelFlatModel {
 	name:string;
 	subscribers:int;
-	channel_id:int;
+	channel_id:string;
 }
 
 
 table VideoInfoFlatModel {
-	duration:int;
+	duration:long;
 	description:string;
 	size:long;
 	qualities: [VideoQualityFlatModel];
@@ -26,6 +26,8 @@ table VideoInfoFlatModel {
 
 
 table VideoFlatModel {
+	video_id:string;
+	url:string;
 	social_info:SocialInfoFlatModel;
 	video_info:VideoInfoFlatModel;
 	channel:ChannelFlatModel;

@@ -28,15 +28,20 @@ public struct ChannelFlatModel : IFlatbufferObject
   public byte[] GetNameArray() { return __p.__vector_as_array<byte>(4); }
   public int Subscribers { get { int o = __p.__offset(6); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
   public bool MutateSubscribers(int subscribers) { int o = __p.__offset(6); if (o != 0) { __p.bb.PutInt(o + __p.bb_pos, subscribers); return true; } else { return false; } }
-  public int ChannelId { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
-  public bool MutateChannelId(int channel_id) { int o = __p.__offset(8); if (o != 0) { __p.bb.PutInt(o + __p.bb_pos, channel_id); return true; } else { return false; } }
+  public string ChannelId { get { int o = __p.__offset(8); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+#if ENABLE_SPAN_T
+  public Span<byte> GetChannelIdBytes() { return __p.__vector_as_span<byte>(8, 1); }
+#else
+  public ArraySegment<byte>? GetChannelIdBytes() { return __p.__vector_as_arraysegment(8); }
+#endif
+  public byte[] GetChannelIdArray() { return __p.__vector_as_array<byte>(8); }
 
   public static Offset<FlatBuffersModels.ChannelFlatModel> CreateChannelFlatModel(FlatBufferBuilder builder,
       StringOffset nameOffset = default(StringOffset),
       int subscribers = 0,
-      int channel_id = 0) {
+      StringOffset channel_idOffset = default(StringOffset)) {
     builder.StartTable(3);
-    ChannelFlatModel.AddChannelId(builder, channel_id);
+    ChannelFlatModel.AddChannelId(builder, channel_idOffset);
     ChannelFlatModel.AddSubscribers(builder, subscribers);
     ChannelFlatModel.AddName(builder, nameOffset);
     return ChannelFlatModel.EndChannelFlatModel(builder);
@@ -45,7 +50,7 @@ public struct ChannelFlatModel : IFlatbufferObject
   public static void StartChannelFlatModel(FlatBufferBuilder builder) { builder.StartTable(3); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
   public static void AddSubscribers(FlatBufferBuilder builder, int subscribers) { builder.AddInt(1, subscribers, 0); }
-  public static void AddChannelId(FlatBufferBuilder builder, int channelId) { builder.AddInt(2, channelId, 0); }
+  public static void AddChannelId(FlatBufferBuilder builder, StringOffset channelIdOffset) { builder.AddOffset(2, channelIdOffset.Value, 0); }
   public static Offset<FlatBuffersModels.ChannelFlatModel> EndChannelFlatModel(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<FlatBuffersModels.ChannelFlatModel>(o);
@@ -60,7 +65,7 @@ static public class ChannelFlatModelVerify
     return verifier.VerifyTableStart(tablePos)
       && verifier.VerifyString(tablePos, 4 /*Name*/, false)
       && verifier.VerifyField(tablePos, 6 /*Subscribers*/, 4 /*int*/, 4, false)
-      && verifier.VerifyField(tablePos, 8 /*ChannelId*/, 4 /*int*/, 4, false)
+      && verifier.VerifyString(tablePos, 8 /*ChannelId*/, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

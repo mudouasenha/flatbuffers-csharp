@@ -1,4 +1,6 @@
-﻿namespace Serialization.Domain.Interfaces
+﻿using Google.Protobuf;
+
+namespace Serialization.Domain.Interfaces
 {
     public interface ISerializationTarget : IEquatable<ISerializationTarget>
     {
@@ -8,8 +10,8 @@
 
         long Deserialize(ISerializer serializer);
 
-        long Serialize(ref byte[] target);
+        void CreateProtobufMessage();
 
-        long Deserialize(ref byte[] target);
+        IMessage GetProtobufMessage();
     }
 }
