@@ -4,6 +4,7 @@ using Google.Protobuf.Collections;
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
+using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
@@ -15,6 +16,9 @@ namespace Serialization.Domain.Entities
     {
         [NonSerialized]
         private IMessage<ProtoObjects.VideoInfo> protoObject;
+
+        [NonSerialized]
+        private thriftObjects.VideoInfo thriftObject;
 
         public VideoInfo() { }
 
@@ -72,6 +76,26 @@ namespace Serialization.Domain.Entities
         public IMessage GetProtobufMessage()
         {
             return protoObject;
+        }
+
+        public TBase GetThriftMessage()
+        {
+            return thriftObject;
+        }
+
+        public void CreateThriftMessage()
+        {
+            var qualities = new List<thriftObjects.VideoQualities>();
+            qualities.AddRange(Qualities.ToArray().Select(x => (thriftObjects.VideoQualities)x));
+
+
+            thriftObject = new thriftObjects.VideoInfo()
+            {
+                Duration = Duration,
+                Description = Description,
+                Size = Size,
+                Qualities = qualities
+            };
         }
     }
 }

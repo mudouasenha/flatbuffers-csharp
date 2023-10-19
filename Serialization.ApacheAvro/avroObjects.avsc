@@ -1,0 +1,106 @@
+[
+  {
+    "type": "record",
+    "name": "avroObjects.Channel",
+    "namespace": "avroObjects",
+    "fields": [
+      {
+        "name": "Name",
+        "type": "string"
+      },
+      {
+        "name": "Subscribers",
+        "type": "int"
+      },
+      {
+        "name": "ChannelId",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "avroObjects.SocialInfo",
+    "namespace": "avroObjects",
+    "fields": [
+      {
+        "name": "Likes",
+        "type": "int"
+      },
+      {
+        "name": "Dislikes",
+        "type": "int"
+      },
+      {
+        "name": "Comments",
+        "type": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      {
+        "name": "Views",
+        "type": "int"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "avroObjects.VideoQualities",
+    "namespace": "avroObjects",
+    "symbols": [ "Undefined", "Lowest", "Low", "Medium", "SD", "HD", "TwoK", "FourK" ]
+  },
+  {
+    "type": "record",
+    "name": "avroObjects.VideoInfo",
+    "namespace": "avroObjects",
+    "fields": [
+      {
+        "name": "Duration",
+        "type": "long"
+      },
+      {
+        "name": "Description",
+        "type": "string"
+      },
+      {
+        "name": "Size",
+        "type": "long"
+      },
+      {
+        "name": "Qualities",
+        "type": {
+          "type": "array",
+          "items": "avroObjects.VideoQualities"
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "avroObjects.Video",
+    "namespace": "avroObjects",
+    "fields": [
+      {
+        "name": "VideoId",
+        "type": "string"
+      },
+      {
+        "name": "Url",
+        "type": "string"
+      },
+      {
+        "name": "Channel",
+        "type": "avroObjects.Channel"
+      },
+      {
+        "name": "SocialInfo",
+        "type": "avroObjects.SocialInfo"
+      },
+      {
+        "name": "VideoInfo",
+        "type": "avroObjects.VideoInfo"
+      }
+    ]
+  }
+]

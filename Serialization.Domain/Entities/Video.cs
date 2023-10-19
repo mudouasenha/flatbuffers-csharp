@@ -3,6 +3,7 @@ using Google.Protobuf.Collections;
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
+using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
@@ -14,6 +15,9 @@ namespace Serialization.Domain.Entities
     {
         [NonSerialized]
         private IMessage<ProtoObjects.Video> protoObject;
+
+        [NonSerialized]
+        private thriftObjects.Video thriftObject;
 
         public Video() { }
 
@@ -95,6 +99,44 @@ namespace Serialization.Domain.Entities
         public IMessage GetProtobufMessage()
         {
             return protoObject;
+        }
+
+        public TBase GetThriftMessage()
+        {
+            return thriftObject;
+        }
+
+        public void CreateThriftMessage()
+        {
+            var qualities = new List<thriftObjects.VideoQualities>();
+            qualities.AddRange(VideoInfo.Qualities.ToArray().Select(x => (thriftObjects.VideoQualities)x));
+
+
+            thriftObject = new thriftObjects.Video()
+            {
+                VideoId = VideoId,
+                Url = Url,
+                Channel = new thriftObjects.Channel()
+                {
+                    ChannelId = Channel.ChannelId,
+                    Name = Channel.Name,
+                    Subscribers = Channel.Subscribers
+                },
+                SocialInfo = new thriftObjects.SocialInfo()
+                {
+                    Dislikes = SocialInfo.Dislikes,
+                    Likes = SocialInfo.Likes,
+                    Views = SocialInfo.Views,
+                    Comments = SocialInfo.Comments.ToList()
+                },
+                VideoInfo = new thriftObjects.VideoInfo()
+                {
+                    Duration = VideoInfo.Duration,
+                    Description = VideoInfo.Description,
+                    Size = VideoInfo.Size,
+                    Qualities = qualities
+                },
+            };
         }
     }
 }

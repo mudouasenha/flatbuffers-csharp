@@ -2,6 +2,7 @@
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
+using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
@@ -13,6 +14,9 @@ namespace Serialization.Domain.Entities
     {
         [NonSerialized]
         private IMessage<ProtoObjects.Channel> protoObject;
+
+        [NonSerialized]
+        private thriftObjects.Channel thriftObject;
 
         public Channel() { }
         public Channel(string name, int subscribers, string channelId)
@@ -60,6 +64,21 @@ namespace Serialization.Domain.Entities
         public IMessage GetProtobufMessage()
         {
             return protoObject;
+        }
+
+        public TBase GetThriftMessage()
+        {
+            return thriftObject;
+        }
+
+        public void CreateThriftMessage()
+        {
+            thriftObject = new thriftObjects.Channel()
+            {
+                ChannelId = ChannelId,
+                Name = Name,
+                Subscribers = Subscribers
+            };
         }
     }
 }
