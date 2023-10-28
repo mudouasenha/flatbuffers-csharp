@@ -7,7 +7,6 @@ using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
-
     [MessagePackObject]
     [Serializable]
     [ProtoContract]
@@ -68,7 +67,6 @@ namespace Serialization.Domain.Entities
             var qualities = new RepeatedField<ProtoObjects.VideoInfo.Types.VideoQualities>();
             qualities.AddRange(VideoInfo.Qualities.ToArray().Select(x => (ProtoObjects.VideoInfo.Types.VideoQualities)x));
 
-
             protoObject = new ProtoObjects.Video()
             {
                 VideoId = VideoId,
@@ -110,7 +108,6 @@ namespace Serialization.Domain.Entities
         {
             var qualities = new List<thriftObjects.VideoQualities>();
             qualities.AddRange(VideoInfo.Qualities.ToArray().Select(x => (thriftObjects.VideoQualities)x));
-
 
             thriftObject = new thriftObjects.Video()
             {

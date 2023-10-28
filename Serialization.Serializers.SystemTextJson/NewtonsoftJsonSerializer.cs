@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using System.Text;
 
@@ -7,11 +6,11 @@ namespace Serialization.Serializers.SystemTextJson
 {
     public class NewtonsoftJsonSerializer : BaseDirectSerializer<MemoryStream>
     {
-        private Newtonsoft.Json.JsonSerializer jsonSerializer;
+        private readonly JsonSerializer jsonSerializer;
 
-        public NewtonsoftJsonSerializer() : base()
+        public NewtonsoftJsonSerializer()
         {
-            jsonSerializer = new Newtonsoft.Json.JsonSerializer();
+            jsonSerializer = new JsonSerializer();
         }
 
         #region Serialization
@@ -39,7 +38,6 @@ namespace Serialization.Serializers.SystemTextJson
 
             // Flush needed for moving the stream position
             jw.Flush();
-
 
             messageSize = stream.Position;
             return stream;
@@ -76,31 +74,6 @@ namespace Serialization.Serializers.SystemTextJson
         public override string ToString()
         {
             return "Newtonsoft.Json";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            if (type == typeof(Video))
-            {
-                result = SerializationResults[typeof(Video)].Result;
-                return true;
-            }
-            if (type == typeof(VideoInfo))
-            {
-                result = SerializationResults[typeof(VideoInfo)].Result;
-                return true;
-            }
-            if (type == typeof(SocialInfo))
-            {
-                result = SerializationResults[typeof(SocialInfo)].Result;
-                return true;
-            }
-            if (type == typeof(Channel))
-            {
-                result = SerializationResults[typeof(Channel)].Result;
-                return true;
-            }
-            throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
         public override Type GetSerializationOutPutType() => typeof(MemoryStream);

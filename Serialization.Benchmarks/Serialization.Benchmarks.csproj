@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Serialiazation.Serializers.Manual\Serialiazation.Serializers.Manual.csproj" />
-    <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
+    <ProjectReference Include="..\Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj" />
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
+    <ProjectReference Include="..\Serialization.Services\Serialization.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,70 +1,55 @@
-﻿using Avro.IO;
-using Confluent.SchemaRegistry;
-using Confluent.SchemaRegistry.Serdes;
-using FlatBuffersModels;
+﻿using FlatBuffersModels;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
+using SolTechnology.Avro;
 
 namespace Serialization.Serializers.ApacheAvro
 {
     public class ApacheAvroSerializer : BaseSerializer<byte[], object>
     {
-        private readonly ISchemaRegistryClient schemaRegistryClient;
-        private AvroSerializerConfig avroSerializerConfig;
-
-        public ApacheAvroSerializer(ISchemaRegistryClient schemaRegistryClient, AvroSerializerConfig avroSerializerConfig = null)
+        protected override object Deserialize<T>(byte[] serializedObject)
         {
-            this.schemaRegistryClient = schemaRegistryClient;
-            this.avroSerializerConfig = avroSerializerConfig ?? new AvroSerializerConfig();
+            T deserializedObject = AvroConvert.Deserialize<T>(serializedObject);
+
+            return deserializedObject;
         }
 
-        #region Serialization
+        protected override object Deserialize(Type type, byte[] serializedObject)
+        {
+            if (type == typeof(Channel))
+            {
+                Channel deserializedObject = AvroConvert.Deserialize(serializedObject, type);
+                return deserializedObject;
+            }
+
+            if (type == typeof(VideoInfo))
+            {
+                VideoInfo deserializedObject = AvroConvert.Deserialize(serializedObject, type);
+                return deserializedObject;
+            }
+
+            if (type == typeof(SocialInfo))
+            {
+                SocialInfo deserializedObject = AvroConvert.Deserialize(serializedObject, type);
+                return deserializedObject;
+            }
+
+            if (type == typeof(Video))
+            {
+                Video deserializedObject = AvroConvert.Deserialize(serializedObject, type);
+                return deserializedObject;
+            }
+
+            throw new NotImplementedException($"Deserialization for type {type} not implemented!");
+        }
 
         protected override byte[] Serialize<T>(T original, out long messageSize) => Serialize(typeof(T), original, out messageSize);
 
-        public override Type GetSerializationOutPutType() => typeof(byte[]);
-
-        //protected override TBase Deserialize<T>(byte[] serializedObject) => Deserialize(typeof(T), serializedObject);
-
-
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
-            var obj = new avroObjects.Channel();
-            using (MemoryStream stream = new MemoryStream())
-            {
-                var config = new AvroSerializerConfig { AutoRegisterSchemas = true, a = MyAvroRecord.SCHEMA$.ToString() };
-                var src = new CachedSchemaRegistryClient(config);
-                var avroSerializer = new AvroSerializer<avroObjects.Channel>(avroObjects.Channel, config);
-                var encoder = new BinaryEncoder(stream);
-                avroSerializer.SerializeAsync(obj, original);
-                messageSize = stream.Length;
-                return stream.ToArray();
-
-            }
-        }
-
-        #endregion
-
-        #region Deserialization
-
-        protected override TBase Deserialize<T>(byte[] bytes)
-        {
-            using (MemoryStream stream = new MemoryStream(bytes))
-            {
-                var avroDeserializer = new AvroSerializer<T>();
-                var decoder = new BinaryDecoder(stream);
-                return avroDeserializer.Deserialize(decoder);
-            }
-        }
-
-        protected override object Deserialize(Type type, byte[] bytes)
-        {
-            using (MemoryStream stream = new MemoryStream(bytes))
-            {
-                var avroDeserializer = AvroSerializer.Create(type);
-                var decoder = new BinaryDecoder(stream);
-                return avroDeserializer.Deserialize(decoder);
-            }
+            byte[] avroObject = AvroConvert.Serialize(original);
+            messageSize = avroObject.Length;
+            return avroObject;
         }
 
         public override bool GetDeserializationResult(Type type, out ISerializationTarget result)
@@ -142,16 +127,8 @@ namespace Serialization.Serializers.ApacheAvro
             throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
-        #endregion
+        public override string ToString() => "Avro";
 
-        public override string ToString()
-        {
-            return "Avro";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            throw new NotImplementedException();
-        }
+        public override Type GetSerializationOutPutType() => typeof(byte[]);
     }
 }

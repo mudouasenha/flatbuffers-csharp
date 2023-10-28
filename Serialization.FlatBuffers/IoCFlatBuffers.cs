@@ -8,5 +8,4 @@ namespace Serialization.Serializers.FlatBuffers
         public static IServiceCollection AddFlatBuffers(this IServiceCollection services) =>
             services.AddScoped<VideoFlatBuffersSerializer>();
     }
-
 }

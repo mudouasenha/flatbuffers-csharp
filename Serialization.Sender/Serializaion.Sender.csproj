@@ -6,20 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<Compile Remove="Benchmark\**" />
-	<Content Remove="Benchmark\**" />
-	<EmbeddedResource Remove="Benchmark\**" />
-	<None Remove="Benchmark\**" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<PackageReference Include="Flurl" Version="3.0.7" />
-	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
 	<ProjectReference Include="..\Serialization.Benchmarks\Serialization.Benchmarks.csproj" />
-	<ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
+	<ProjectReference Include="..\Serialization.Services\Serialization.Services.csproj" />
   </ItemGroup>
 
 </Project>

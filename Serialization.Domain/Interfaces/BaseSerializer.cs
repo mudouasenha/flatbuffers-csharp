@@ -1,4 +1,6 @@
-﻿namespace Serialization.Domain.Interfaces
+﻿using Serialization.Domain.Entities;
+
+namespace Serialization.Domain.Interfaces
 {
     public class SerializationResult<TSerialization>
     {
@@ -77,7 +79,30 @@
 
         public abstract bool GetDeserializationResult(Type type, out ISerializationTarget result);
 
-        public abstract bool GetSerializationResult(Type type, out object result);
+        public bool GetSerializationResult(Type type, out object result)
+        {
+            if (type == typeof(Video))
+            {
+                result = SerializationResults[typeof(Video)].Result;
+                return true;
+            }
+            if (type == typeof(VideoInfo))
+            {
+                result = SerializationResults[typeof(VideoInfo)].Result;
+                return true;
+            }
+            if (type == typeof(SocialInfo))
+            {
+                result = SerializationResults[typeof(SocialInfo)].Result;
+                return true;
+            }
+            if (type == typeof(Channel))
+            {
+                result = SerializationResults[typeof(Channel)].Result;
+                return true;
+            }
+            throw new NotImplementedException($"Conversion for type {type} not implemented!");
+        }
 
         #region Serialization
 
@@ -87,7 +112,6 @@
         #endregion
 
         #region Deserialization
-
 
         protected abstract TDeserialization Deserialize<T>(TSerialization serializedObject) where T : ISerializationTarget;
         protected abstract TDeserialization Deserialize(Type type, TSerialization serializedObject);

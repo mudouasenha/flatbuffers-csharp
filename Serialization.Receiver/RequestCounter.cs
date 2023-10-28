@@ -6,7 +6,7 @@ namespace Serialization.Receiver
     {
         private int requestCount;
         private bool isMonitoring;
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new();
         private readonly ILogger<RequestCounter> logger;
         private readonly ConcurrentQueue<int> requestCounts;
         private readonly Timer monitoringTimer;
@@ -46,6 +46,7 @@ namespace Serialization.Receiver
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             isMonitoring = false;
             monitoringTimer.Dispose();
         }

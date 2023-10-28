@@ -1,17 +1,27 @@
-using Serialization.CrossCutting;
 using Serialization.Receiver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCrossCutting().AddSingleton<IRequestCounter, RequestCounter>().AddLogging().AddSwaggerGen().AddControllers();
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IRequestCounter, RequestCounter>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
+
 app.UseMiddleware<RequestCounterMiddleware>();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();

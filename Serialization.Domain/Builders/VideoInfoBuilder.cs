@@ -16,7 +16,6 @@ namespace Serialization.Domain.Builders
             RuleFor(v => v.Qualities, f => f.Make(f.Random.Number(1, 5), () => f.Random.Enum<VideoQualityFlatModel>()).ToArray());
         }
 
-
         public VideoInfoBuilder WithDescription(string descritpion)
         {
             RuleFor(x => x.Description, descritpion);

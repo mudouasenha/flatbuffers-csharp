@@ -24,7 +24,7 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
-            new ManualSerializer(),
+            new BinaryFormatterSerializer(),
             new ProtobufSerializer()
         };
 

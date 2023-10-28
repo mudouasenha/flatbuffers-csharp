@@ -37,15 +37,7 @@ namespace Serialization.Serializers.MessagePack
 
         #endregion
 
-        public override string ToString()
-        {
-            return "MessagePack-CSharp";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            throw new NotImplementedException();
-        }
+        public override string ToString() => "MessagePack-CSharp";
 
         public override Type GetSerializationOutPutType() => typeof(byte[]);
     }

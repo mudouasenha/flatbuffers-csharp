@@ -8,7 +8,6 @@ using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
-
     [MessagePackObject]
     [Serializable]
     [ProtoContract]
@@ -87,7 +86,6 @@ namespace Serialization.Domain.Entities
         {
             var qualities = new List<thriftObjects.VideoQualities>();
             qualities.AddRange(Qualities.ToArray().Select(x => (thriftObjects.VideoQualities)x));
-
 
             thriftObject = new thriftObjects.VideoInfo()
             {

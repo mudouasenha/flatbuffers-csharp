@@ -24,9 +24,7 @@ namespace Serialization.Benchmarks.Benchmarks
         [Params(2, 4, 8, 16)]
         public int NumThreads { get; set; }
 
-        [Params(64000, 128000, 192000, 256000, 320000, 384000, 448000, 512000, 576000, 640000)]
-        //[Params(128, 512, 4096, 6400, 12800, 32768, 40960, 64000, 102400, 128000)]
-        //[Params(4096, 6400, 32768, 64000, 102400, 262144, 409600, 655360, 1376256, 2097152)]
+        [Params(128_000, 256_000, 384_000, 512_000, 640_000, 768_000, 896_000, 1_024_000, 1_152_000, 1_280_000)]
         public int NumMessages { get; set; }
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
@@ -34,7 +32,7 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
-            new ManualSerializer()
+            new BinaryFormatterSerializer()
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]

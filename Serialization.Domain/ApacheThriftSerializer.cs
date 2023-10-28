@@ -9,7 +9,7 @@ using VideoInfo = Serialization.Domain.Entities.VideoInfo;
 
 namespace Serialization.Domain
 {
-    public class ThriftSerializer : BaseSerializer<byte[], TBase>
+    public class ApacheThriftSerializer : BaseSerializer<byte[], TBase>
     {
         #region Serialization
 
@@ -19,12 +19,11 @@ namespace Serialization.Domain
 
         //protected override TBase Deserialize<T>(byte[] serializedObject) => Deserialize(typeof(T), serializedObject);
 
-
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             var token = new CancellationToken();
-            using MemoryStream memoryStream = new MemoryStream();
-            using TStreamTransport transport = new TStreamTransport(memoryStream, memoryStream, new Thrift.TConfiguration());
+            using MemoryStream memoryStream = new();
+            using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
 
             original.GetThriftMessage();
@@ -43,8 +42,8 @@ namespace Serialization.Domain
         protected override TBase Deserialize<T>(byte[] bytes)
         {
             var token = new CancellationToken();
-            using MemoryStream memoryStream = new MemoryStream(bytes);
-            using TStreamTransport transport = new TStreamTransport(memoryStream, memoryStream, new Thrift.TConfiguration());
+            using MemoryStream memoryStream = new(bytes);
+            using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
             TBase thriftObject = (TBase)Activator.CreateInstance(typeof(T));
             thriftObject.ReadAsync(protocol, token).RunSynchronously();
@@ -54,8 +53,8 @@ namespace Serialization.Domain
         protected override TBase Deserialize(Type type, byte[] bytes)
         {
             var token = new CancellationToken();
-            using MemoryStream memoryStream = new MemoryStream(bytes);
-            using TStreamTransport transport = new TStreamTransport(memoryStream, memoryStream, new Thrift.TConfiguration());
+            using MemoryStream memoryStream = new(bytes);
+            using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
 
             if (type == typeof(Channel))
@@ -166,14 +165,6 @@ namespace Serialization.Domain
 
         #endregion
 
-        public override string ToString()
-        {
-            return "Thrift";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            throw new NotImplementedException();
-        }
+        public override string ToString() => "Thrift";
     }
 }

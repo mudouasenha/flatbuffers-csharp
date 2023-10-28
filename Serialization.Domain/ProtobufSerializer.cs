@@ -141,15 +141,7 @@ namespace Serialization.Domain
             throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
-        public override string ToString()
-        {
-            return "Protobuf";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            throw new NotImplementedException();
-        }
+        public override string ToString() => "Protobuf";
 
         public override Type GetSerializationOutPutType() => typeof(byte[]);
     }

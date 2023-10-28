@@ -6,11 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Serialization.CrossCutting\Serialization.CrossCutting.csproj" />
+    <ProjectReference Include="..\Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj" />
+    <ProjectReference Include="..\Serialization.Services\Serialization.Services.csproj" />
   </ItemGroup>
 
 </Project>

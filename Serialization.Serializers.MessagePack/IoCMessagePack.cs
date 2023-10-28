@@ -8,5 +8,4 @@ namespace Serialization.Serializers.FlatBuffers
         public static IServiceCollection AddMessagePack(this IServiceCollection services) =>
             services.AddScoped<MessagePackCSharpSerializer>();
     }
-
 }

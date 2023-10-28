@@ -14,6 +14,7 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj" />
     <ProjectReference Include="..\Serialization.ApacheAvro\Serialization.Serializers.ApacheAvro.csproj" />
     <ProjectReference Include="..\Serialization.CapnProto\Serialization.Serializers.CapnProto.csproj" />
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />

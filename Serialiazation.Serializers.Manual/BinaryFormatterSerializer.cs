@@ -3,16 +3,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Serialiazation.Serializers.Manual
 {
-    public class ManualSerializer : BaseDirectSerializer<byte[]>
+    public class BinaryFormatterSerializer : BaseDirectSerializer<byte[]>
     {
         #region Serialization
 
         protected override byte[] Serialize<T>(T original, out long messageSize)
         {
             byte[] serializedData;
-            BinaryFormatter formatter = new BinaryFormatter();
+            BinaryFormatter formatter = new();
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (MemoryStream memoryStream = new())
             {
                 formatter.Serialize(memoryStream, original);
                 serializedData = memoryStream.ToArray();
@@ -25,9 +25,9 @@ namespace Serialiazation.Serializers.Manual
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             byte[] serializedData;
-            BinaryFormatter formatter = new BinaryFormatter();
+            BinaryFormatter formatter = new();
 
-            using (MemoryStream memoryStream = new MemoryStream())
+            using (MemoryStream memoryStream = new())
             {
                 formatter.Serialize(memoryStream, original);
                 serializedData = memoryStream.ToArray();
@@ -43,11 +43,11 @@ namespace Serialiazation.Serializers.Manual
 
         protected override ISerializationTarget Deserialize<T>(byte[] bytes)
         {
-            BinaryFormatter formatter = new BinaryFormatter();
+            BinaryFormatter formatter = new();
 
             ISerializationTarget instance = Activator.CreateInstance<T>();
 
-            using (MemoryStream memoryStream = new MemoryStream(bytes))
+            using (MemoryStream memoryStream = new(bytes))
             {
                 instance = (ISerializationTarget)formatter.Deserialize(memoryStream);
             }
@@ -57,11 +57,11 @@ namespace Serialiazation.Serializers.Manual
 
         protected override ISerializationTarget Deserialize(Type type, byte[] bytes)
         {
-            BinaryFormatter formatter = new BinaryFormatter();
+            BinaryFormatter formatter = new();
 
             ISerializationTarget instance = (ISerializationTarget)Activator.CreateInstance(type);
 
-            using (MemoryStream memoryStream = new MemoryStream(bytes))
+            using (MemoryStream memoryStream = new(bytes))
             {
                 instance = (ISerializationTarget)formatter.Deserialize(memoryStream);
             }
@@ -71,15 +71,7 @@ namespace Serialiazation.Serializers.Manual
 
         #endregion
 
-        public override string ToString()
-        {
-            return "BinaryFormatter";
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            throw new NotImplementedException();
-        }
+        public override string ToString() => "BinaryFormatter";
 
         public override Type GetSerializationOutPutType() => typeof(byte[]);
     }

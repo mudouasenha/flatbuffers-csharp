@@ -15,7 +15,6 @@ namespace Serialization.Domain.Builders
             RuleFor(v => v.Comments, f => faker.Make(faker.Random.Number(1, 10), () => faker.Random.String2(5, 300)).ToArray());
         }
 
-
         public SocialInfoBuilder WithDislikes(int dislikes)
         {
             RuleFor(x => x.Dislikes, dislikes);

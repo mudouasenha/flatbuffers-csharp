@@ -6,7 +6,7 @@ namespace Serialization.Services
     {
         private const string OctetStreamContentType = "application/octet-stream";
         private readonly HttpClient _httpClient = new();
-        private const string BaseUrl = "https://localhost:5021/";
+        private const string BaseUrl = "http://localhost:5020/";
 
         public async Task<Stream> GetAsync(string path, byte[] payload)
         {

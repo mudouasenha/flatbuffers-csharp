@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Serialization.Domain.Interfaces;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.SystemTextJson;
 
@@ -11,7 +10,6 @@ namespace Serialization.Services
             services.AddFlatBuffers()
             .AddSystemTextJsonSerializer()
             .AddMessagePack()
-            .AddScoped<VideoService>()
             .AddScoped<WorkloadService>();
     }
 }

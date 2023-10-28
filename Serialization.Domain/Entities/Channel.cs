@@ -6,7 +6,6 @@ using Thrift.Protocol;
 
 namespace Serialization.Domain.Entities
 {
-
     [MessagePackObject]
     [Serializable]
     [ProtoContract]

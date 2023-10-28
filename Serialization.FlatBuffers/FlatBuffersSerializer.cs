@@ -9,7 +9,6 @@ namespace Serialization.Serializers.FlatBuffers
     public class FlatBuffersSerializer : BaseSerializer<byte[], IFlatbufferObject>
     {
         internal static FlatBufferBuilder builder = new(1);
-        private static string Name = "FlatBuffers";
 
         protected override byte[] Serialize<T>(T original, out long messageSize) => Serialize(typeof(T), original, out messageSize);
 
@@ -44,31 +43,6 @@ namespace Serialization.Serializers.FlatBuffers
             if (type == typeof(Channel))
             {
                 result = ChannelFlatBuffersSerializer.FromSerializationModel((ChannelFlatModel)DeserializationResults[typeof(ChannelFlatModel)]);
-                return true;
-            }
-            throw new NotImplementedException($"Conversion for type {type} not implemented!");
-        }
-
-        public override bool GetSerializationResult(Type type, out object result)
-        {
-            if (type == typeof(Video))
-            {
-                result = SerializationResults[typeof(Video)].Result;
-                return true;
-            }
-            if (type == typeof(VideoInfo))
-            {
-                result = SerializationResults[typeof(VideoInfo)].Result;
-                return true;
-            }
-            if (type == typeof(SocialInfo))
-            {
-                result = SerializationResults[typeof(SocialInfo)].Result;
-                return true;
-            }
-            if (type == typeof(Channel))
-            {
-                result = SerializationResults[typeof(Channel)].Result;
                 return true;
             }
             throw new NotImplementedException($"Conversion for type {type} not implemented!");
@@ -109,19 +83,14 @@ namespace Serialization.Serializers.FlatBuffers
 
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
-            switch (type.Name)
+            return type.Name switch
             {
-                case "Video":
-                    return VideoFlatBuffersSerializer.Serialize((Video)original, out messageSize);
-                case "SocialInfo":
-                    return SocialInfoFlatBuffersSerializer.Serialize((SocialInfo)original, out messageSize);
-                case "VideoInfo":
-                    return VideoInfoFlatBuffersSerializer.Serialize((VideoInfo)original, out messageSize);
-                case "Channel":
-                    return ChannelFlatBuffersSerializer.Serialize((Channel)original, out messageSize);
-                default:
-                    throw new NotImplementedException($"Serialization for type {type} not implemented!");
-            }
+                "Video" => VideoFlatBuffersSerializer.Serialize((Video)original, out messageSize),
+                "SocialInfo" => SocialInfoFlatBuffersSerializer.Serialize((SocialInfo)original, out messageSize),
+                "VideoInfo" => VideoInfoFlatBuffersSerializer.Serialize((VideoInfo)original, out messageSize),
+                "Channel" => ChannelFlatBuffersSerializer.Serialize((Channel)original, out messageSize),
+                _ => throw new NotImplementedException($"Serialization for type {type} not implemented!"),
+            };
         }
 
         public override string ToString()

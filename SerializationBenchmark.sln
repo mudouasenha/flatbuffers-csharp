@@ -21,10 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Domain", "1 - Domain", "{9AAF2CE9-650B-4A32-91FE-307003634CB5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - CrossCutting", "4 - CrossCutting", "{F6FAD873-69AD-4DE0-B5B8-C2128B66B77B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.CrossCutting", "Serialization.CrossCutting\Serialization.CrossCutting.csproj", "{F64A5B04-03C7-4AC2-A569-EABF9787DCDC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6 - Benchmarks", "6 - Benchmarks", "{C542B82C-8FD2-4FF8-9E5A-164FBCC7708D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Benchmarks", "Serialization.Benchmarks\Serialization.Benchmarks.csproj", "{39A7C099-57F6-4A3D-8C73-5F24D51AF6C4}"
@@ -41,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Services", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.SystemTextJson", "Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj", "{F11B0E3F-8B01-4222-8A0A-C7081EF4D1DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialiazation.Serializers.Manual", "Serialiazation.Serializers.Manual\Serialiazation.Serializers.Manual.csproj", "{43B7412E-1BA9-409A-8BB5-8F6468FF2F74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.Manual", "Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj", "{43B7412E-1BA9-409A-8BB5-8F6468FF2F74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,10 +69,6 @@ Global
 		{5ED8168C-94B6-4AB6-BBC4-F86B35C11C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED8168C-94B6-4AB6-BBC4-F86B35C11C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ED8168C-94B6-4AB6-BBC4-F86B35C11C31}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F64A5B04-03C7-4AC2-A569-EABF9787DCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F64A5B04-03C7-4AC2-A569-EABF9787DCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F64A5B04-03C7-4AC2-A569-EABF9787DCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F64A5B04-03C7-4AC2-A569-EABF9787DCDC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39A7C099-57F6-4A3D-8C73-5F24D51AF6C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39A7C099-57F6-4A3D-8C73-5F24D51AF6C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39A7C099-57F6-4A3D-8C73-5F24D51AF6C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -116,7 +108,6 @@ Global
 		{E78510EA-1498-4389-B7BD-882413640DBA} = {AF4D2296-457D-41A7-BD4A-2BC63AAD283B}
 		{C7973926-28BF-40B4-91A9-2C1339BED244} = {AF4D2296-457D-41A7-BD4A-2BC63AAD283B}
 		{5ED8168C-94B6-4AB6-BBC4-F86B35C11C31} = {AF4D2296-457D-41A7-BD4A-2BC63AAD283B}
-		{F64A5B04-03C7-4AC2-A569-EABF9787DCDC} = {F6FAD873-69AD-4DE0-B5B8-C2128B66B77B}
 		{39A7C099-57F6-4A3D-8C73-5F24D51AF6C4} = {C542B82C-8FD2-4FF8-9E5A-164FBCC7708D}
 		{FF647363-EFC2-4BEC-A9C6-74B855A3B158} = {A5911BA3-9E90-41C4-B1DF-E821E877A60B}
 		{8212C92B-FC92-482B-8CD8-CC7EB4CB48BD} = {A5911BA3-9E90-41C4-B1DF-E821E877A60B}
