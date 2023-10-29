@@ -26,16 +26,16 @@ namespace Serialization.Domain
             using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
 
-            original.GetThriftMessage();
+            original.CreateThriftMessage();
             var message = original.GetThriftMessage();
-            message.WriteAsync(protocol);
-            transport.FlushAsync(token);
+            message.WriteAsync(protocol).GetAwaiter().GetResult();
+            transport.FlushAsync(token).GetAwaiter().GetResult();
             byte[] serializedData = memoryStream.ToArray();
             messageSize = serializedData.Length;
             return serializedData;
         }
 
-        #endregion
+        #endregion Serialization
 
         #region Deserialization
 
@@ -46,7 +46,7 @@ namespace Serialization.Domain
             using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
             TBase thriftObject = (TBase)Activator.CreateInstance(typeof(T));
-            thriftObject.ReadAsync(protocol, token).RunSynchronously();
+            thriftObject.ReadAsync(protocol, token).GetAwaiter().GetResult();
             return thriftObject;
         }
 
@@ -60,28 +60,28 @@ namespace Serialization.Domain
             if (type == typeof(Channel))
             {
                 var thriftChannel = new thriftObjects.Channel();
-                thriftChannel.ReadAsync(protocol, token).RunSynchronously();
+                thriftChannel.ReadAsync(protocol, token).GetAwaiter().GetResult();
                 return thriftChannel;
             }
 
             if (type == typeof(VideoInfo))
             {
                 var thriftVideoInfo = new thriftObjects.VideoInfo();
-                thriftVideoInfo.ReadAsync(protocol, token).RunSynchronously();
+                thriftVideoInfo.ReadAsync(protocol, token).GetAwaiter().GetResult();
                 return thriftVideoInfo;
             }
 
             if (type == typeof(SocialInfo))
             {
                 var thriftSocialInfo = new thriftObjects.SocialInfo();
-                thriftSocialInfo.ReadAsync(protocol, token).RunSynchronously();
+                thriftSocialInfo.ReadAsync(protocol, token).GetAwaiter().GetResult();
                 return thriftSocialInfo;
             }
 
             if (type == typeof(Video))
             {
                 var thriftVideo = new thriftObjects.Video();
-                thriftVideo.ReadAsync(protocol, token).RunSynchronously();
+                thriftVideo.ReadAsync(protocol, token).GetAwaiter().GetResult();
                 return thriftVideo;
             }
 
@@ -163,7 +163,7 @@ namespace Serialization.Domain
             throw new NotImplementedException($"Conversion for type {type} not implemented!");
         }
 
-        #endregion
+        #endregion Deserialization
 
         public override string ToString() => "Thrift";
     }

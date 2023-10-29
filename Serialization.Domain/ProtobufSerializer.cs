@@ -19,6 +19,7 @@ namespace Serialization.Domain
 
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
+            original.CreateProtobufMessage();
             var message = original.GetProtobufMessage();
             messageSize = message.CalculateSize();
             var bytes = new byte[messageSize];

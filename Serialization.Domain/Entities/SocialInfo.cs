@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Avro.Specific;
+using Google.Protobuf;
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
@@ -17,7 +18,11 @@ namespace Serialization.Domain.Entities
         [NonSerialized]
         private thriftObjects.SocialInfo thriftObject;
 
-        public SocialInfo() { }
+        [NonSerialized]
+        private avroObjects.SocialInfo avroObject;
+
+        public SocialInfo()
+        { }
 
         public SocialInfo(int likes, int dislikes, string[] comments, int views)
         {
@@ -85,6 +90,22 @@ namespace Serialization.Domain.Entities
                 Likes = Likes,
                 Views = Views,
                 Comments = Comments.ToList()
+            };
+        }
+
+        public ISpecificRecord GetAvroMessage()
+        {
+            return avroObject;
+        }
+
+        public void CreateAvroMessage()
+        {
+            avroObject = new avroObjects.SocialInfo()
+            {
+                Dislikes = Dislikes,
+                Likes = Likes,
+                Views = Views,
+                Comments = Comments
             };
         }
     }

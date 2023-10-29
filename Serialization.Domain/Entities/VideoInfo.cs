@@ -1,4 +1,5 @@
-﻿using FlatBuffersModels;
+﻿using Avro.Specific;
+using FlatBuffersModels;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MessagePack;
@@ -19,7 +20,11 @@ namespace Serialization.Domain.Entities
         [NonSerialized]
         private thriftObjects.VideoInfo thriftObject;
 
-        public VideoInfo() { }
+        [NonSerialized]
+        private avroObjects.VideoInfo avroObject;
+
+        public VideoInfo()
+        { }
 
         public VideoInfo(long duration, string description, long size, VideoQualityFlatModel[] qualities)
         {
@@ -88,6 +93,24 @@ namespace Serialization.Domain.Entities
             qualities.AddRange(Qualities.ToArray().Select(x => (thriftObjects.VideoQualities)x));
 
             thriftObject = new thriftObjects.VideoInfo()
+            {
+                Duration = Duration,
+                Description = Description,
+                Size = Size,
+                Qualities = qualities
+            };
+        }
+
+        public ISpecificRecord GetAvroMessage()
+        {
+            return avroObject;
+        }
+
+        public void CreateAvroMessage()
+        {
+            var qualities = Qualities.Select(x => (avroObjects.VideoQualities)x).ToArray();
+
+            avroObject = new avroObjects.VideoInfo()
             {
                 Duration = Duration,
                 Description = Description,

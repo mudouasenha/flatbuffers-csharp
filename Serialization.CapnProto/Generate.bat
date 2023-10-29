@@ -1,2 +1,2 @@
-capnp.exe -I=.\ --csharp_out=.\ .\protoObjects.proto
+capnp compile -ocsharp .\capnpObjects.capnp
 PAUSE

@@ -6,6 +6,7 @@ namespace Serialization.CrossCutting
     public static class CrossCuttingServiceRegister
     {
         public static IServiceCollection AddCrossCutting(this IServiceCollection services) =>
-            services.AddServices();
+            services.AddServices()
+            .AddLogging();
     }
 }

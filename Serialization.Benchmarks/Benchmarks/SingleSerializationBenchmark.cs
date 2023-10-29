@@ -1,12 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Serialiazation.Serializers.Manual;
 using Serialization.Benchmarks.Abstractions;
-using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
+using Serialization.Serializers.ApacheAvro;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
@@ -21,11 +17,14 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer(),
-            new NewtonsoftJsonSerializer(),
-            new BinaryFormatterSerializer(),
-            new ProtobufSerializer()
+            //new FlatBuffersSerializer(),
+            //new MessagePackCSharpSerializer(),
+            //new NewtonsoftJsonSerializer(),
+            //new BinaryFormatterSerializer(),
+            //new ProtobufSerializer(),
+            //new ApacheThriftSerializer(),
+            new ApacheAvroSerializer(),
+            //new CapnProtoSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -47,12 +46,12 @@ namespace Serialization.Benchmarks.Benchmarks
             Serialize();
         }
 
-        [Benchmark]
-        public void RoundTripTime()
-        {
-            Serializer.BenchmarkSerialize(Target.GetType(), Target);
-            Serializer.BenchmarkDeserialize(Target.GetType(), Target);
-        }
+        //[Benchmark]
+        //public void RoundTripTime()
+        //{
+        //    Serializer.BenchmarkSerialize(Target.GetType(), Target);
+        //    Serializer.BenchmarkDeserialize(Target.GetType(), Target);
+        //}
 
         [Benchmark]
         public long Serialize() => Serializer.BenchmarkSerialize(Target.GetType(), Target);

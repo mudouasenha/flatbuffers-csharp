@@ -10,7 +10,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj" />
+    <ProjectReference Include="..\Serialization.ApacheAvro\Serialization.Serializers.ApacheAvro.csproj" />
+    <ProjectReference Include="..\Serialization.CapnProto\Serialization.Serializers.CapnProto.csproj" />
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
+    <ProjectReference Include="..\Serialization.FlatBuffers\Serialization.Serializers.FlatBuffers.csproj" />
+    <ProjectReference Include="..\Serialization.ProtocolBuffers\Serialization.Serializers.ProtocolBuffers.csproj" />
+    <ProjectReference Include="..\Serialization.Serializers.ApacheThrift\Serialization.Serializers.ApacheThrift.csproj" />
+    <ProjectReference Include="..\Serialization.Serializers.MessagePack\Serialization.Serializers.MessagePack.csproj" />
+    <ProjectReference Include="..\Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj" />
     <ProjectReference Include="..\Serialization.Services\Serialization.Services.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Avro.Specific;
+using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MessagePack;
 using ProtoBuf;
@@ -18,7 +19,11 @@ namespace Serialization.Domain.Entities
         [NonSerialized]
         private thriftObjects.Video thriftObject;
 
-        public Video() { }
+        [NonSerialized]
+        private avroObjects.Video avroObject;
+
+        public Video()
+        { }
 
         public Video(string videoId, string url, SocialInfo socialInfo, Channel channel, VideoInfo videoInfo)
         {
@@ -127,6 +132,42 @@ namespace Serialization.Domain.Entities
                     Comments = SocialInfo.Comments.ToList()
                 },
                 VideoInfo = new thriftObjects.VideoInfo()
+                {
+                    Duration = VideoInfo.Duration,
+                    Description = VideoInfo.Description,
+                    Size = VideoInfo.Size,
+                    Qualities = qualities
+                },
+            };
+        }
+
+        public ISpecificRecord GetAvroMessage()
+        {
+            return avroObject;
+        }
+
+        public void CreateAvroMessage()
+        {
+            var qualities = VideoInfo.Qualities.Select(x => (avroObjects.VideoQualities)x).ToArray();
+
+            avroObject = new avroObjects.Video()
+            {
+                VideoId = VideoId,
+                Url = Url,
+                Channel = new avroObjects.Channel()
+                {
+                    ChannelId = Channel.ChannelId,
+                    Name = Channel.Name,
+                    Subscribers = Channel.Subscribers
+                },
+                SocialInfo = new avroObjects.SocialInfo()
+                {
+                    Dislikes = SocialInfo.Dislikes,
+                    Likes = SocialInfo.Likes,
+                    Views = SocialInfo.Views,
+                    Comments = SocialInfo.Comments.ToList()
+                },
+                VideoInfo = new avroObjects.VideoInfo()
                 {
                     Duration = VideoInfo.Duration,
                     Description = VideoInfo.Description,

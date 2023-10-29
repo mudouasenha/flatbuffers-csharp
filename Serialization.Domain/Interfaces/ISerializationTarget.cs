@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Avro.Specific;
+using Google.Protobuf;
 using Thrift.Protocol;
 
 namespace Serialization.Domain.Interfaces
@@ -19,8 +20,8 @@ namespace Serialization.Domain.Interfaces
 
         void CreateThriftMessage();
 
-        //ISpecificRecord GetAvroMessage();
+        ISpecificRecord GetAvroMessage();
 
-        //void CreateAvroMessage();
+        void CreateAvroMessage();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Avro.Specific;
+using Google.Protobuf;
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
@@ -17,7 +18,12 @@ namespace Serialization.Domain.Entities
         [NonSerialized]
         private thriftObjects.Channel thriftObject;
 
-        public Channel() { }
+        [NonSerialized]
+        private avroObjects.Channel avroObject;
+
+        public Channel()
+        { }
+
         public Channel(string name, int subscribers, string channelId)
         {
             Name = name;
@@ -73,6 +79,21 @@ namespace Serialization.Domain.Entities
         public void CreateThriftMessage()
         {
             thriftObject = new thriftObjects.Channel()
+            {
+                ChannelId = ChannelId,
+                Name = Name,
+                Subscribers = Subscribers
+            };
+        }
+
+        public ISpecificRecord GetAvroMessage()
+        {
+            return avroObject;
+        }
+
+        public void CreateAvroMessage()
+        {
+            avroObject = new avroObjects.Channel()
             {
                 ChannelId = ChannelId,
                 Name = Name,
