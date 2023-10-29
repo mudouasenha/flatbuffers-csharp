@@ -1,18 +1,20 @@
 ﻿using FlatBuffersModels;
 using Google.FlatBuffers;
 using Serialization.Domain.Entities;
+using Serialization.Domain.Entities.Enums;
 
 namespace Serialization.Serializers.FlatBuffers.SerializationHelpers
 {
     public class VideoInfoFlatBuffersSerializer
     {
-        public static VideoInfo FromSerializationModel(VideoInfoFlatModel serialized) => new(serialized.Duration, serialized.Description, serialized.Size, serialized.GetQualitiesArray());
+        public static VideoInfo FromSerializationModel(VideoInfoFlatModel serialized) => new(serialized.Duration, serialized.Description, serialized.Size, serialized.GetQualitiesArray().Select(x => (VideoQualities)x).ToArray());
 
         public static byte[] Serialize(VideoInfo entity, out long messageSize)
         {
             var builder = new FlatBufferBuilder(1024);
             var descriptionOffSet = builder.CreateString(entity.Description);
-            var qualitiesVector = VideoInfoFlatModel.CreateQualitiesVector(builder, entity.Qualities);
+            var qualities = entity.Qualities.Select(x => (VideoQualityFlatModel)x).ToArray();
+            var qualitiesVector = VideoInfoFlatModel.CreateQualitiesVector(builder, qualities);
 
             VideoInfoFlatModel.StartVideoInfoFlatModel(builder);
             VideoInfoFlatModel.AddDescription(builder, descriptionOffSet);

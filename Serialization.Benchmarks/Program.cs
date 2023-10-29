@@ -1,20 +1,21 @@
-﻿using Microsoft.Extensions.Hosting;
-using Serialization.Domain.Builders;
-using Serialization.Serializers.ApacheAvro;
+﻿using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Hosting;
+using Serialization.Benchmarks.Benchmarks;
+using Serialization.Benchmarks.Configs;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-Thread.Sleep(TimeSpan.FromSeconds(10));
+//Thread.Sleep(TimeSpan.FromSeconds(10));
 
-//var config = new SingleSerializationBenchmarkConfig();
-//BenchmarkRunner.Run<SingleSerializationBenchmark>(config);
+var config = new MultipleSerializationBenchmarkConfig();
+BenchmarkRunner.Run<MultipleSerializationBenchmark>(config);
 
 var host = builder.Build();
 
-var ser = new ApacheAvroSerializer();
-var obj = new ChannelBuilder().Generate();
-ser.BenchmarkSerialize(obj.GetType(), obj);
-ser.BenchmarkDeserialize(obj.GetType(), obj);
+//var ser = new ApacheAvroSerializer();
+//var obj = new VideoInfoBuilder().Generate();
+//ser.BenchmarkSerialize(obj.GetType(), obj);
+//ser.BenchmarkDeserialize(obj.GetType(), obj);
 
 //var myService = new WorkloadService();
 

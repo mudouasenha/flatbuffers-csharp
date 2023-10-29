@@ -1,9 +1,9 @@
 ﻿using Avro.Specific;
-using FlatBuffersModels;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MessagePack;
 using ProtoBuf;
+using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
 using Thrift.Protocol;
 
@@ -26,7 +26,7 @@ namespace Serialization.Domain.Entities
         public VideoInfo()
         { }
 
-        public VideoInfo(long duration, string description, long size, VideoQualityFlatModel[] qualities)
+        public VideoInfo(long duration, string description, long size, VideoQualities[] qualities)
         {
             Duration = duration;
             Description = description;
@@ -48,7 +48,7 @@ namespace Serialization.Domain.Entities
 
         [Key(3)]
         [ProtoMember(4)]
-        public VideoQualityFlatModel[] Qualities { get; set; }
+        public VideoQualities[] Qualities { get; set; }
 
         public long Serialize(ISerializer serializer) => serializer.BenchmarkSerialize(this);
 

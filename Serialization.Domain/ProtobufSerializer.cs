@@ -1,5 +1,5 @@
-﻿using FlatBuffersModels;
-using Google.Protobuf;
+﻿using Google.Protobuf;
+using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
 using Channel = Serialization.Domain.Entities.Channel;
 using SocialInfo = Serialization.Domain.Entities.SocialInfo;
@@ -27,7 +27,7 @@ namespace Serialization.Domain
             return bytes;
         }
 
-        #endregion
+        #endregion Serialization
 
         #region Deserialization
 
@@ -65,7 +65,7 @@ namespace Serialization.Domain
             throw new NotImplementedException($"Deserialization for type {type} not implemented!");
         }
 
-        #endregion
+        #endregion Deserialization
 
         public override bool GetDeserializationResult(Type type, out ISerializationTarget result)
         {
@@ -91,7 +91,7 @@ namespace Serialization.Domain
                     Duration = (long)videoInfo.Duration,
                     Size = (long)videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualityFlatModel[])videoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                 };
                 return true;
             }
@@ -126,7 +126,7 @@ namespace Serialization.Domain
                     {
                         Description = video.VideoInfo.Description,
                         Duration = (long)video.VideoInfo.Duration,
-                        Qualities = (VideoQualityFlatModel[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                     },
                     SocialInfo = new SocialInfo()
                     {

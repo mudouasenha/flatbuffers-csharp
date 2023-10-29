@@ -1,7 +1,7 @@
 ﻿using AutoBogus;
 using Bogus;
-using FlatBuffersModels;
 using Serialization.Domain.Entities;
+using Serialization.Domain.Entities.Enums;
 
 namespace Serialization.Domain.Builders
 {
@@ -13,7 +13,7 @@ namespace Serialization.Domain.Builders
             RuleFor(v => v.Description, f => faker.Random.String2(50, 1000));
             RuleFor(v => v.Duration, f => faker.Random.Long(0, 864_000_000));
             RuleFor(v => v.Size, f => faker.Random.Long(0, 1099511627776));
-            RuleFor(v => v.Qualities, f => f.Make(f.Random.Number(1, 5), () => f.Random.Enum<VideoQualityFlatModel>()).ToArray());
+            RuleFor(v => v.Qualities, f => f.Make(f.Random.Number(1, 5), () => f.Random.Enum<VideoQualities>()).ToArray());
         }
 
         public VideoInfoBuilder WithDescription(string descritpion)
@@ -34,7 +34,7 @@ namespace Serialization.Domain.Builders
             return this;
         }
 
-        public VideoInfoBuilder WithComments(VideoQualityFlatModel[] qualities)
+        public VideoInfoBuilder WithComments(VideoQualities[] qualities)
         {
             RuleFor(x => x.Qualities, qualities);
             return this;

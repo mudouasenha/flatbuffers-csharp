@@ -1,4 +1,4 @@
-﻿using FlatBuffersModels;
+﻿using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
 using Thrift.Protocol;
 using Thrift.Transport.Client;
@@ -112,7 +112,7 @@ namespace Serialization.Domain
                     Duration = videoInfo.Duration,
                     Size = videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualityFlatModel[])videoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                 };
                 return true;
             }
@@ -147,7 +147,7 @@ namespace Serialization.Domain
                     {
                         Description = video.VideoInfo.Description,
                         Duration = video.VideoInfo.Duration,
-                        Qualities = (VideoQualityFlatModel[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                     },
                     SocialInfo = new SocialInfo()
                     {

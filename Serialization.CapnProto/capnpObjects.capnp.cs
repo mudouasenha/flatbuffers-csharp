@@ -310,6 +310,7 @@ namespace CapnpGen
         [System.CodeDom.Compiler.GeneratedCode("capnpc-csharp", "1.3.0.0"), TypeId(0xecd6dfc7223566e7UL)]
         public enum VideoQuality : ushort
         {
+            undefined,
             lowest,
             low,
             medium,

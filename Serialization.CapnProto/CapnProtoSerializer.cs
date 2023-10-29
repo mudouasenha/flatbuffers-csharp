@@ -1,6 +1,6 @@
 ﻿using Capnp;
-using FlatBuffersModels;
 using Serialization.Domain.Entities;
+using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
 using static CapnpGen.VideoInfo;
 
@@ -226,7 +226,7 @@ namespace Serialization.Serializers.CapnProto
                     Duration = (long)videoInfo.Duration,
                     Size = (long)videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualityFlatModel[])videoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                 };
                 return true;
             }
@@ -261,7 +261,7 @@ namespace Serialization.Serializers.CapnProto
                     {
                         Description = video.VideoInfo.Description,
                         Duration = (long)video.VideoInfo.Duration,
-                        Qualities = (VideoQualityFlatModel[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualityFlatModel)x)
+                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
                     },
                     SocialInfo = new SocialInfo()
                     {

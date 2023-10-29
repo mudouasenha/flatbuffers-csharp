@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Services", "2 - Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Services", "Serialization.Services\Serialization.Services.csproj", "{68D3C428-410D-4EEA-B241-A5C9AB436FC2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.SystemTextJson", "Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj", "{F11B0E3F-8B01-4222-8A0A-C7081EF4D1DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.Newtonsoft", "Serialization.Serializers.SystemTextJson\Serialization.Serializers.Newtonsoft.csproj", "{F11B0E3F-8B01-4222-8A0A-C7081EF4D1DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialization.Serializers.Manual", "Serialiazation.Serializers.Manual\Serialization.Serializers.Manual.csproj", "{43B7412E-1BA9-409A-8BB5-8F6468FF2F74}"
 EndProject

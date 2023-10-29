@@ -1,8 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Serialiazation.Serializers.Manual;
+using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
 using Serialization.Serializers.SystemTextJson;
@@ -32,7 +35,11 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
-            new BinaryFormatterSerializer()
+            new BinaryFormatterSerializer(),
+            new ProtobufSerializer(),
+            new ApacheThriftSerializer(),
+            new ApacheAvroSerializer(),
+            new CapnProtoSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -83,7 +90,6 @@ namespace Serialization.Benchmarks.Benchmarks
 
             return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
         }
-
 
         [Benchmark]
         public long SerializeParallelMakespan()
@@ -154,7 +160,6 @@ namespace Serialization.Benchmarks.Benchmarks
             if (count % itemCount != 0) throw new ArgumentException("count must be a multiple of 64");
 
             int loopCount = count <= itemCount ? 1 : count / itemCount;
-
 
             if (Target is VideoInfo) subList.AddRange(new VideoInfoBuilder().Generate(itemCount));
             else if (Target is Channel) subList.AddRange(new ChannelBuilder().Generate(itemCount));

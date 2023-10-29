@@ -105,7 +105,7 @@ namespace Serialization.Domain.Entities
                 Dislikes = Dislikes,
                 Likes = Likes,
                 Views = Views,
-                Comments = Comments
+                Comments = Comments.ToList()
             };
         }
     }

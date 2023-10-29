@@ -1,8 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Serialiazation.Serializers.Manual;
 using Serialization.Benchmarks.Abstractions;
+using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
+using Serialization.Serializers.FlatBuffers;
+using Serialization.Serializers.MessagePack;
+using Serialization.Serializers.SystemTextJson;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
@@ -17,14 +23,14 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            //new FlatBuffersSerializer(),
-            //new MessagePackCSharpSerializer(),
-            //new NewtonsoftJsonSerializer(),
-            //new BinaryFormatterSerializer(),
-            //new ProtobufSerializer(),
-            //new ApacheThriftSerializer(),
+            new FlatBuffersSerializer(),
+            new MessagePackCSharpSerializer(),
+            new NewtonsoftJsonSerializer(),
+            new BinaryFormatterSerializer(),
+            new ProtobufSerializer(),
+            new ApacheThriftSerializer(),
             new ApacheAvroSerializer(),
-            //new CapnProtoSerializer(),
+            new CapnProtoSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -37,7 +43,17 @@ namespace Serialization.Benchmarks.Benchmarks
         };
 
         [IterationSetup(Target = nameof(Serialize))]
-        public void SetupSerialize() => Target.CreateProtobufMessage();
+        public void SetupSerialize()
+        {
+            if (Serializer is ProtobufSerializer)
+                Target.CreateProtobufMessage();
+
+            //if (Serializer is ApacheThriftSerializer)
+            //    Target.CreateThriftMessage();
+
+            //if (Serializer is ApacheAvroSerializer)
+            //    Target.CreateAvroMessage();
+        }
 
         [IterationSetup(Target = nameof(Deserialize))]
         public void SetupDeserialize()
@@ -45,13 +61,6 @@ namespace Serialization.Benchmarks.Benchmarks
             SetupSerialize();
             Serialize();
         }
-
-        //[Benchmark]
-        //public void RoundTripTime()
-        //{
-        //    Serializer.BenchmarkSerialize(Target.GetType(), Target);
-        //    Serializer.BenchmarkDeserialize(Target.GetType(), Target);
-        //}
 
         [Benchmark]
         public long Serialize() => Serializer.BenchmarkSerialize(Target.GetType(), Target);

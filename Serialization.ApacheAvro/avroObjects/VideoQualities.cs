@@ -15,13 +15,13 @@ namespace avroObjects
 	
 	public enum VideoQualities
 	{
-		Undefined,
-		Lowest,
-		Low,
-		Medium,
-		SD,
-		HD,
-		TwoK,
-		FourK,
-	}
+        Undefined = 0,
+        Lowest = 144,
+        Low = 360,
+        Medium = 480,
+        SD = 720,
+        HD = 1080,
+        TwoK = 1440,
+        FourK = 2160,
+    }
 }

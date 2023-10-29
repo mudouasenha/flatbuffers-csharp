@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Serialization.ProtocolBuffers\Serialization.Serializers.ProtocolBuffers.csproj" />
     <ProjectReference Include="..\Serialization.Serializers.ApacheThrift\Serialization.Serializers.ApacheThrift.csproj" />
     <ProjectReference Include="..\Serialization.Serializers.MessagePack\Serialization.Serializers.MessagePack.csproj" />
-    <ProjectReference Include="..\Serialization.Serializers.SystemTextJson\Serialization.Serializers.SystemTextJson.csproj" />
+    <ProjectReference Include="..\Serialization.Serializers.SystemTextJson\Serialization.Serializers.Newtonsoft.csproj" />
   </ItemGroup>
 
 </Project>

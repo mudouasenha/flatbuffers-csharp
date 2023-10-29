@@ -22,13 +22,14 @@ struct VideoInfo {
   qualities @3 :List(VideoQuality);
 
   enum VideoQuality {
-	lowest @0;
-	low @1;
-	medium @2;
-	sd @3;
-	hd @4;
-	twoK @5;
-	fourK @6;
+	undefined @0;
+	lowest @1;
+	low @2;
+	medium @3;
+	sd @4;
+	hd @5;
+	twoK @6;
+	fourK @7;
   }
 }
 

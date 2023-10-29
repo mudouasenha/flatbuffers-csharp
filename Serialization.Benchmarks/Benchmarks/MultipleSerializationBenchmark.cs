@@ -1,7 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Serialiazation.Serializers.Manual;
+using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
 using Serialization.Serializers.FlatBuffers;
 using Serialization.Serializers.MessagePack;
 using Serialization.Serializers.SystemTextJson;
@@ -17,7 +21,6 @@ namespace Serialization.Benchmarks.Benchmarks
         //private CsvExporter csvExporter = new();
         //private const string fileName = "Measurements-MultipleSerializationBenchmark.csv";
 
-
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
 
@@ -32,6 +35,11 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
+            new BinaryFormatterSerializer(),
+            new ProtobufSerializer(),
+            new ApacheThriftSerializer(),
+            new ApacheAvroSerializer(),
+            new CapnProtoSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -89,7 +97,6 @@ namespace Serialization.Benchmarks.Benchmarks
         //    }
         //    stopwatch.Stop();
 
-
         //    csvExporter.AddExecutionInfo(execution);
         //    return execution;
         //}
@@ -109,7 +116,6 @@ namespace Serialization.Benchmarks.Benchmarks
             return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
         }
 
-
         [IterationCleanup]
         public void IterationCleanup()
         {
@@ -117,7 +123,6 @@ namespace Serialization.Benchmarks.Benchmarks
             //SerializeSerialWithMeasurements();
             //csvExporter.ExportToCsv(fileName);
         }
-
 
         private void SerializeSerial(List<ISerializationTarget> targets)
         {
@@ -136,7 +141,6 @@ namespace Serialization.Benchmarks.Benchmarks
             if (count % itemCount != 0) throw new ArgumentException("count must be a multiple of 64");
 
             int loopCount = count <= itemCount ? 1 : count / itemCount;
-
 
             if (Target is VideoInfo) subList.AddRange(new VideoInfoBuilder().Generate(itemCount));
             else if (Target is Channel) subList.AddRange(new ChannelBuilder().Generate(itemCount));

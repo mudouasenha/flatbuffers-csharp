@@ -21,7 +21,9 @@ namespace Serialization.Serializers.FlatBuffers.SerializationHelpers
 
             var ch = ChannelFlatModel.CreateChannelFlatModel(builder, channelName, entity.Channel.Subscribers, channelId);
             var si = SocialInfoFlatModel.CreateSocialInfoFlatModel(builder, entity.SocialInfo.Likes, entity.SocialInfo.Dislikes, socialInfoComments, entity.SocialInfo.Views);
-            var vqs = VideoInfoFlatModel.CreateQualitiesVector(builder, entity.VideoInfo.Qualities);
+
+            var qualities = entity.VideoInfo.Qualities.Select(x => (VideoQualityFlatModel)x).ToArray();
+            var vqs = VideoInfoFlatModel.CreateQualitiesVector(builder, qualities);
             var vi = VideoInfoFlatModel.CreateVideoInfoFlatModel(builder, entity.VideoInfo.Duration, videoInfoDescription, entity.VideoInfo.Size, vqs);
 
             VideoFlatModel.StartVideoFlatModel(builder);
