@@ -1,14 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Serialiazation.Serializers.Manual;
 using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
 using Serialization.Serializers.CapnProto;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
 using System.Diagnostics;
 
 namespace Serialization.Benchmarks.Benchmarks
@@ -16,7 +12,7 @@ namespace Serialization.Benchmarks.Benchmarks
     [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn]
     public class ConcurrencySerializationBenchmark //: ISerializableBenchmark
     {
-        public List<ISerializationTarget> TargetList;
+        private List<ISerializationTarget> TargetList;
 
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
@@ -24,21 +20,21 @@ namespace Serialization.Benchmarks.Benchmarks
         [ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        [Params(2, 4, 8, 16)]
+        [Params(/*2, 4, */8 /*, 16*/)]
         public int NumThreads { get; set; }
 
-        [Params(128_000, 256_000, 384_000, 512_000, 640_000, 768_000, 896_000, 1_024_000, 1_152_000, 1_280_000)]
+        [Params(128_000/*, 256_000, 384_000, 512_000, 640_000, 768_000, 896_000, 1_024_000, 1_152_000, 1_280_000*/)]
         public int NumMessages { get; set; }
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer(),
-            new NewtonsoftJsonSerializer(),
-            new BinaryFormatterSerializer(),
-            new ProtobufSerializer(),
-            new ApacheThriftSerializer(),
-            new ApacheAvroSerializer(),
+            //new FlatBuffersSerializer(),
+            //new MessagePackCSharpSerializer(),
+            //new NewtonsoftJsonSerializer(),
+            //new BinaryFormatterSerializer(),
+            //new ProtobufSerializer(),
+            //new ApacheThriftSerializer(),
+            //new ApacheAvroSerializer(),
             new CapnProtoSerializer(),
         };
 
@@ -63,7 +59,13 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             TargetList = new List<ISerializationTarget>();
             TargetList = GenerateSerializationTargets(NumMessages);
-            GenerateProtobufMessages();
+
+            if (Serializer is ProtobufSerializer)
+                GenerateProtobufMessages();
+            if (Serializer is ApacheThriftSerializer)
+                GenerateThriftMessages();
+            if (Serializer is ApacheAvroSerializer)
+                GenerateAvroMessages();
         }
 
         [Benchmark]
@@ -118,6 +120,9 @@ namespace Serialization.Benchmarks.Benchmarks
 
         [IterationCleanup]
         public void IterationCleanup() => Serializer.Cleanup();
+
+        [GlobalCleanup]
+        public void GlobalCleanup() => Serializer.Cleanup();
 
         private static List<List<T>> PartitionList<T>(List<T> list, int partitions)
         {
@@ -177,6 +182,22 @@ namespace Serialization.Benchmarks.Benchmarks
             foreach (var target in TargetList)
             {
                 target.CreateProtobufMessage();
+            }
+        }
+
+        private void GenerateThriftMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateThriftMessage();
+            }
+        }
+
+        private void GenerateAvroMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateAvroMessage();
             }
         }
     }

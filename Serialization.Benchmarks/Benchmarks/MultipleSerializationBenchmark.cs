@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Serialiazation.Serializers.Manual;
 using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
@@ -35,7 +34,7 @@ namespace Serialization.Benchmarks.Benchmarks
             new FlatBuffersSerializer(),
             new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
-            new BinaryFormatterSerializer(),
+            //new BinaryFormatterSerializer(),
             new ProtobufSerializer(),
             new ApacheThriftSerializer(),
             new ApacheAvroSerializer(),

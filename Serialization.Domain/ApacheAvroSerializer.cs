@@ -1,4 +1,5 @@
-﻿using Avro.IO;
+﻿using Avro;
+using Avro.IO;
 using Avro.Specific;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Entities.Enums;
@@ -8,10 +9,10 @@ namespace Serialization.Serializers.ApacheAvro
 {
     public class ApacheAvroSerializer : BaseSerializer<byte[], ISpecificRecord>
     {
-        private readonly string channelSchema = avroObjects.Channel._SCHEMA.ToString();
-        private readonly string videoInfoSchema = avroObjects.VideoInfo._SCHEMA.ToString();
-        private readonly string socialInfoSchema = avroObjects.SocialInfo._SCHEMA.ToString();
-        private readonly string videoSchema = avroObjects.Video._SCHEMA.ToString();
+        private readonly Schema channelSchema = avroObjects.Channel._SCHEMA;
+        private readonly Schema videoInfoSchema = avroObjects.VideoInfo._SCHEMA;
+        private readonly Schema socialInfoSchema = avroObjects.SocialInfo._SCHEMA;
+        private readonly Schema videoSchema = avroObjects.Video._SCHEMA;
 
         protected override ISpecificRecord Deserialize<T>(byte[] serializedObject)
         {
@@ -24,7 +25,7 @@ namespace Serialization.Serializers.ApacheAvro
             {
                 if (type == typeof(Channel))
                 {
-                    SpecificReader<avroObjects.Channel> reader = new SpecificReader<avroObjects.Channel>(avroObjects.Channel._SCHEMA, avroObjects.Channel._SCHEMA);
+                    SpecificReader<avroObjects.Channel> reader = new SpecificReader<avroObjects.Channel>(channelSchema, channelSchema);
                     BinaryDecoder decoder = new BinaryDecoder(inputStream);
 
                     avroObjects.Channel record = reader.Read(null, decoder);
@@ -34,7 +35,7 @@ namespace Serialization.Serializers.ApacheAvro
 
                 if (type == typeof(VideoInfo))
                 {
-                    SpecificReader<avroObjects.VideoInfo> reader = new SpecificReader<avroObjects.VideoInfo>(avroObjects.VideoInfo._SCHEMA, avroObjects.VideoInfo._SCHEMA);
+                    SpecificReader<avroObjects.VideoInfo> reader = new SpecificReader<avroObjects.VideoInfo>(videoInfoSchema, videoInfoSchema);
                     BinaryDecoder decoder = new BinaryDecoder(inputStream);
 
                     avroObjects.VideoInfo record = reader.Read(null, decoder);
@@ -44,7 +45,7 @@ namespace Serialization.Serializers.ApacheAvro
 
                 if (type == typeof(SocialInfo))
                 {
-                    SpecificReader<avroObjects.SocialInfo> reader = new SpecificReader<avroObjects.SocialInfo>(avroObjects.SocialInfo._SCHEMA, avroObjects.SocialInfo._SCHEMA);
+                    SpecificReader<avroObjects.SocialInfo> reader = new SpecificReader<avroObjects.SocialInfo>(socialInfoSchema, socialInfoSchema);
                     BinaryDecoder decoder = new BinaryDecoder(inputStream);
 
                     avroObjects.SocialInfo record = reader.Read(null, decoder);
@@ -54,7 +55,7 @@ namespace Serialization.Serializers.ApacheAvro
 
                 if (type == typeof(Video))
                 {
-                    SpecificReader<avroObjects.Video> reader = new SpecificReader<avroObjects.Video>(avroObjects.Video._SCHEMA, avroObjects.Video._SCHEMA);
+                    SpecificReader<avroObjects.Video> reader = new SpecificReader<avroObjects.Video>(videoSchema, videoSchema);
                     BinaryDecoder decoder = new BinaryDecoder(inputStream);
 
                     avroObjects.Video record = reader.Read(null, decoder);
