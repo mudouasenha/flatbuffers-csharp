@@ -25,7 +25,7 @@ namespace Serialization.Receiver.Controllers
         {
             try
             {
-                var serializer = serializerType.GetSerializer();
+                ISerializer serializer = serializerType.GetSerializer();
                 var targetType = serializationType.GetTargetType();
 
                 var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
@@ -74,7 +74,7 @@ namespace Serialization.Receiver.Controllers
             }
         }
 
-        [HttpPost()]
+        [HttpPost("serialize")]
         [Consumes("application/octet-stream")]
         [Produces("application/octet-stream")]
         public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] ISerializationTarget serializableObject)
@@ -117,9 +117,9 @@ namespace Serialization.Receiver.Controllers
         }
 
         [HttpPost("monitoring/save-results")]
-        public async Task<IActionResult> RecordCsv([FromQuery] string serializerType)
+        public async Task<IActionResult> RecordCsv([FromQuery] string datetime, [FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads)
         {
-            requestCounterService.SaveToCsv();
+            requestCounterService.SaveToCsv(datetime, serializerType, serializationType, numThreads);
             return Ok();
         }
 

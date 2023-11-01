@@ -14,6 +14,18 @@
             }
         }
 
+        public void ExportMeasurementsRESTReceiver(string filePath, IReadOnlyCollection<MeasurementRestReceiver> measurements, ExecutionInfo info)
+        {
+            using var writer = new StreamWriter(filePath, true);
+            if (!File.Exists(filePath)) writer.WriteLine("Target,Serializer,NumMessages,NumThreads,Timestamp,Requests");
+
+            foreach (var measurement in measurements)
+            {
+                var line = $"{EscapeCsvField(info.Target)},{EscapeCsvField(info.Serializer)},{info.NumMessages},{info.NumThreads},{measurement.Timestamp},{measurement.Requests}";
+                writer.WriteLine(line);
+            }
+        }
+
         public void ExportMeasurementsRESTReceiver(string filePath, IReadOnlyCollection<MeasurementRestReceiver> measurements)
         {
             using var writer = new StreamWriter(filePath, true);

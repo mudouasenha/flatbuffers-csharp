@@ -8,14 +8,16 @@ namespace Serialization.Receiver.Services
         private static RequestCounterService _instance;
         private readonly object _lock = new();
         private int counter = 0;
+        private string ParamsString;
         private readonly Timer timer;
         private readonly Timer csvTimer;
+        private ExecutionInfo executionInfo;
         private List<MeasurementRestReceiver> countsPerSecond = new();
 
         public RequestCounterService()
         {
             timer = new Timer(RecordCountsPerSecond, null, 1000, 1000);
-            csvTimer = new Timer(SaveToCsv, null, 10000, 10000);
+            // csvTimer = new Timer(SaveToCsv, null, 10000, 10000);
         }
 
         //public static RequestCounterService Instance
@@ -60,8 +62,10 @@ namespace Serialization.Receiver.Services
             SaveToCsv(this);
         }
 
-        public void SaveToCsv()
+        public void SaveToCsv(string datetime, string serializerType, string serializationType, int numThreads)
         {
+            ParamsString = $"{datetime}";
+            executionInfo = new ExecutionInfo(serializationType, serializerType, 0, numThreads);
             SaveToCsv(this);
         }
 
@@ -69,7 +73,7 @@ namespace Serialization.Receiver.Services
         {
             lock (_lock)
             {
-                _csvExporter.ExportMeasurementsRESTReceiver("Measurements-REST-Receiver-SerializationBenchmark.csv", countsPerSecond);
+                _csvExporter.ExportMeasurementsRESTReceiver($"Measurements-REST-Receiver-SerializationBenchmark{ParamsString}.csv", countsPerSecond, executionInfo);
                 countsPerSecond.Clear();
             }
         }

@@ -4,7 +4,7 @@
     {
         public void IncrementCounter();
 
-        public void SaveToCsv();
+        public void SaveToCsv(string datetime, string serializerType, string serializationType, int numThreads);
 
         public void StartMonitoring();
     }

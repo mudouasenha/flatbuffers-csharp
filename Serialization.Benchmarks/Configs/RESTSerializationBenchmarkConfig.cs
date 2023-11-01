@@ -18,9 +18,9 @@ namespace Serialization.Benchmarks.Configs
             var baseJob = new Job(Job.MediumRun
                 .WithUnrollFactor(1)
                 .WithWarmupCount(3)
-                .WithMinIterationTime(TimeInterval.FromMilliseconds(100))
+                .WithMinIterationTime(TimeInterval.FromMilliseconds(250))
                 .WithLaunchCount(1)
-                .WithIterationCount(30)
+                .WithIterationCount(240)
                 //.WithIterationCount(1)
                 .WithInvocationCount(1)
                 .WithId("JOB-REST")

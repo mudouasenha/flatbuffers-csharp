@@ -16,6 +16,28 @@ namespace Serialization.Services
         private ISerializationTarget[] objects;
         private ISerializer _serializer;
 
+        public async Task SaveServerResultsAsync(string datetime, string serializerType, string serializationType, int numThreads)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5020/" + "receiver/serializer/monitoring/save-results"
+                .SetQueryParam("datetime", datetime)
+                    .SetQueryParam("serializerType", serializerType)
+                    .SetQueryParam("serializationType", serializationType)
+                .SetQueryParam("numThreads", numThreads));
+
+            var response = await _httpClient.PostAsync(request.RequestUri, null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Clear ok");
+            }
+            else
+            {
+                //var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Clear Not ok");
+            }
+        }
+
         public async Task ClearAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Post, SenderBaseUrl + "sender/workload/clear");
@@ -110,7 +132,7 @@ namespace Serialization.Services
                     {
                         while (_executing)
                         {
-                            Console.WriteLine($"Thread {threadId} started");
+                            //Console.WriteLine($"Thread {threadId} started");
 
                             var result = await _restClient.PostAsync("receiver/serializer"
                                 .SetQueryParam("serializerType", serializer.ToString())

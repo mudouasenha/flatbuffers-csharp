@@ -19,6 +19,7 @@ namespace Serialization.Benchmarks.Benchmarks
         private RestClient client = new();
         private ExecutionInfo executionInfo;
         private CsvExporter csvExporter = new();
+        private string BenchmarkDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
         private const string fileName = "Measurements-REST-Client-SerializationBenchmark.csv";
         private readonly long epochTicks = new DateTime(1970, 1, 1).Ticks;
 
@@ -30,7 +31,7 @@ namespace Serialization.Benchmarks.Benchmarks
         [ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        [Params(64, 128, 192, 256, 320, 384, 448, 512, 576, 640)]
+        [Params(64, 128, 192, 256, 320/*, 384, 448, 512, 576, 640*/)]
         public int NumThreads { get; set; }
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
@@ -95,8 +96,9 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             csvExporter.ExportMeasurementsREST(fileName, executionInfo);
             await parallelService.ClearAsync();
+            await parallelService.SaveServerResultsAsync(BenchmarkDateTime, Serializer.ToString(), Target.GetType().Name, NumThreads);
             Serializer.Cleanup();
-            Thread.Sleep(3000);
+            Thread.Sleep(500);
         }
     }
 }
