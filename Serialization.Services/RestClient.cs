@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 
 namespace Serialization.Services
 {
@@ -35,7 +36,7 @@ namespace Serialization.Services
         {
             var request = new HttpRequestMessage(HttpMethod.Post, BaseUrl + path);
             request.Content = new ByteArrayContent(payload);
-            request.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(OctetStreamContentType);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(OctetStreamContentType);
 
             var response = await _httpClient.SendAsync(request);
 
@@ -58,10 +59,7 @@ namespace Serialization.Services
             var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             var result = await response.Content.ReadAsStreamAsync();
 
-
             return Encoding.UTF8.GetBytes(result.ToString());
         }
-
-
     }
 }

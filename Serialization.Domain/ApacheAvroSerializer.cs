@@ -69,7 +69,6 @@ namespace Serialization.Serializers.ApacheAvro
 
         protected override byte[] Serialize<T>(T original, out long messageSize)
         {
-            original.CreateAvroMessage();
             var avroMsg = original.GetAvroMessage();
             avroMsg.GetType();
 
@@ -88,7 +87,6 @@ namespace Serialization.Serializers.ApacheAvro
 
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
-            original.CreateAvroMessage();
             var avroMsg = original.GetAvroMessage();
             avroMsg.GetType();
 
@@ -124,12 +122,13 @@ namespace Serialization.Serializers.ApacheAvro
             if (type == typeof(VideoInfo))
             {
                 var videoInfo = (avroObjects.VideoInfo)intermediateResult;
+                var qualities = Enum.GetValues<VideoQualities>();
                 result = new VideoInfo()
                 {
                     Duration = videoInfo.Duration,
                     Size = videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                    Qualities = videoInfo.Qualities.ToArray().Select(x => qualities[(int)x]).ToArray(),
                 };
                 return true;
             }
@@ -150,6 +149,7 @@ namespace Serialization.Serializers.ApacheAvro
             if (type == typeof(Video))
             {
                 var video = (avroObjects.Video)intermediateResult;
+                var qualities = Enum.GetValues<VideoQualities>();
                 result = new Video()
                 {
                     VideoId = video.VideoId,
@@ -164,7 +164,7 @@ namespace Serialization.Serializers.ApacheAvro
                     {
                         Description = video.VideoInfo.Description,
                         Duration = video.VideoInfo.Duration,
-                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                        Qualities = video.VideoInfo.Qualities.ToArray().Select(x => qualities[(int)x]).ToArray()
                     },
                     SocialInfo = new SocialInfo()
                     {

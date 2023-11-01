@@ -226,7 +226,7 @@ namespace Serialization.Serializers.CapnProto
                     Duration = (long)videoInfo.Duration,
                     Size = (long)videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                    Qualities = videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                 };
                 return true;
             }
@@ -261,7 +261,7 @@ namespace Serialization.Serializers.CapnProto
                     {
                         Description = video.VideoInfo.Description,
                         Duration = (long)video.VideoInfo.Duration,
-                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                        Qualities = video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                     },
                     SocialInfo = new SocialInfo()
                     {

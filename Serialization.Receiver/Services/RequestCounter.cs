@@ -1,6 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using Serialization.Services.CsvExporter;
+using System.Collections.Concurrent;
 
-namespace Serialization.Receiver
+namespace Serialization.Receiver.Services
 {
     public class RequestCounter : IRequestCounter, IDisposable
     {
@@ -10,6 +11,8 @@ namespace Serialization.Receiver
         private readonly ILogger<RequestCounter> logger;
         private readonly ConcurrentQueue<int> requestCounts;
         private readonly Timer monitoringTimer;
+        private readonly long epochTicks = new DateTime(1970, 1, 1).Ticks;
+        private List<Measurement> Measurements = new List<Measurement>();
 
         public RequestCounter(ILogger<RequestCounter> logger)
         {
@@ -41,7 +44,9 @@ namespace Serialization.Receiver
             requestCount = 0;
 
             int requestsPerSecond = GetRequestsPerSecond();
-            logger.LogInformation($"Requests per second: {requestsPerSecond}");
+            long ticks = DateTime.UtcNow.Ticks;
+            Measurements.Add(new Measurement(ticks, requestsPerSecond));
+            logger.LogInformation($"Time: {ticks}, Requests: {requestsPerSecond}");
         }
 
         public void Dispose()

@@ -1,6 +1,8 @@
 ﻿using Flurl;
+using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
+using Serialization.Serializers.ApacheAvro;
 
 namespace Serialization.Services
 {
@@ -11,6 +13,34 @@ namespace Serialization.Services
         private readonly RestClient _restClient = new();
         private const string SenderBaseUrl = "http://localhost:5010/";
         private const int delayMilliseconds = 1000 / 20;
+        private ISerializationTarget[] objects;
+        private ISerializer _serializer;
+
+        public async Task ClearAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, SenderBaseUrl + "sender/workload/clear");
+
+            var response = await _httpClient.PostAsync(request.RequestUri, null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Clear ok");
+            }
+            else
+            {
+                //var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Clear Not ok");
+                throw new Exception();
+            }
+        }
+
+        public void Clear()
+        {
+            _executing = false;
+            if (_serializer != null) _serializer.Cleanup();
+            _serializer = null;
+        }
 
         public async Task DispatchAsync(ISerializer serializer, string serializationType, int numThreads = 100)
         {
@@ -26,11 +56,11 @@ namespace Serialization.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    await Console.Out.WriteLineAsync("Dispatch ok");
+                    Console.WriteLine("Dispatch ok");
                 }
                 else
                 {
-                    await Console.Out.WriteLineAsync("Dispatch Not ok");
+                    Console.WriteLine("Dispatch Not ok");
                     throw new Exception();
                 }
             }
@@ -40,7 +70,7 @@ namespace Serialization.Services
             }
         }
 
-        public async Task RunParallelRestAsync(ISerializer serializer, Type serializationTargetType, int numHosts = 100)
+        public async Task RunParallelRestAsync(ISerializer serializer, Type serializationType, int numThreads = 100)
         {
             if (_executing)
             {
@@ -49,41 +79,46 @@ namespace Serialization.Services
             }
 
             _executing = true;
-            SemaphoreSlim semaphore = new SemaphoreSlim(numHosts);
+            _serializer = serializer;
+            SemaphoreSlim semaphore = new SemaphoreSlim(numThreads);
             List<Task> tasks = new();
 
-            for (int i = 0; i < numHosts; i++)
+            GenerateObjects(serializationType, numThreads);
+            for (int i = 0; i < numThreads; i++)
             {
-                tasks.Add(ProcessSerializationRestAsync(semaphore, i, serializer, serializationTargetType));
+                tasks.Add(ProcessSerializationRestAsync(semaphore, i, _serializer, serializationType.Name));
             }
 
             await Task.WhenAll(tasks);
             Console.WriteLine("All tasks completed.");
         }
 
-        private async Task ProcessSerializationRestAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer, Type serializationTargetType)
+        private async Task ProcessSerializationRestAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer, string serializationType)
         {
             while (_executing)
             {
                 await semaphore.WaitAsync();
+                //var rand = new Random(8).Next();
 
                 try
                 {
-                    while (true)
+                    var obj = objects[threadId];
+                    //var obj = objects[threadId][rand];
+                    GenerateIntermediateIfNeeded(obj, _serializer);
+                    obj.Serialize(_serializer);
+                    if (serializer.GetSerializationResult(obj.GetType(), out var serializationObject))
                     {
-                        //var rand = new Random().Next(10);
-                        //if (rand % 3 == 0) continue;
-
-                        var obj = GenerateObject(serializationTargetType);
-                        obj.Serialize(serializer);
-                        object result;
-
-                        if (serializer.GetSerializationResult(obj.GetType(), out var serializationObject))
+                        while (_executing)
                         {
-                            result = await _restClient.PostAsync($"receiver/serializer", serializationObject);
-                        }
+                            Console.WriteLine($"Thread {threadId} started");
 
-                        await Task.Delay(delayMilliseconds);
+                            var result = await _restClient.PostAsync("receiver/serializer"
+                                .SetQueryParam("serializerType", serializer.ToString())
+                                .SetQueryParam("serializationType", serializationType),
+                                serializationObject);
+
+                            await Task.Delay(delayMilliseconds);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -97,18 +132,39 @@ namespace Serialization.Services
             }
         }
 
-        private ISerializationTarget GenerateObject(Type type)
+        private void GenerateIntermediateIfNeeded(ISerializationTarget obj, ISerializer serializer)
         {
-            return type.Name switch
-            {
-                "Video" => new VideoBuilder().Generate(),
-                "SocialInfo" => new SocialInfoBuilder().Generate(),
-                "VideoInfo" => new VideoInfoBuilder().Generate(),
-                "Channel" => new ChannelBuilder().Generate(),
-                _ => throw new ArgumentException("Unsupported target type"),
-            };
+            if (serializer is ProtobufSerializer)
+                obj.CreateProtobufMessage();
+            if (serializer is ApacheThriftSerializer)
+                obj.CreateThriftMessage();
+            if (serializer is ApacheAvroSerializer)
+                obj.CreateAvroMessage();
+        }
 
-            throw new ArgumentException("Unsupported target type");
+        private void GenerateObjects(Type type, int numThreads)
+        {
+            switch (type.Name)
+            {
+                case "Video":
+                    objects = new VideoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray();
+                    break;
+
+                case "SocialInfo":
+                    objects = new SocialInfoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray();
+                    break;
+
+                case "VideoInfo":
+                    objects = new VideoInfoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray();
+                    break;
+
+                case "Channel":
+                    objects = new ChannelBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray();
+                    break;
+
+                default:
+                    throw new ArgumentException("Unsupported target type");
+            }
         }
     }
 }

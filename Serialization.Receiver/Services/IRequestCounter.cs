@@ -1,4 +1,4 @@
-﻿namespace Serialization.Receiver
+﻿namespace Serialization.Receiver.Services
 {
     public interface IRequestCounter
     {

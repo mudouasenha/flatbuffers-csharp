@@ -48,11 +48,11 @@ namespace Serialization.Benchmarks.Benchmarks
             if (Serializer is ProtobufSerializer)
                 Target.CreateProtobufMessage();
 
-            //if (Serializer is ApacheThriftSerializer)
-            //    Target.CreateThriftMessage();
+            if (Serializer is ApacheThriftSerializer)
+                Target.CreateThriftMessage();
 
-            //if (Serializer is ApacheAvroSerializer)
-            //    Target.CreateAvroMessage();
+            if (Serializer is ApacheAvroSerializer)
+                Target.CreateAvroMessage();
         }
 
         [IterationSetup(Target = nameof(Deserialize))]

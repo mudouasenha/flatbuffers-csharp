@@ -27,22 +27,22 @@ namespace Serialization.Serializers.FlatBuffers
         {
             if (type == typeof(Video))
             {
-                result = VideoFlatBuffersSerializer.FromSerializationModel((VideoFlatModel)DeserializationResults[typeof(VideoFlatModel)]);
+                result = VideoFlatBuffersSerializer.FromSerializationModel((VideoFlatModel)DeserializationResults[typeof(Video)]);
                 return true;
             }
             if (type == typeof(VideoInfo))
             {
-                result = VideoInfoFlatBuffersSerializer.FromSerializationModel((VideoInfoFlatModel)DeserializationResults[typeof(VideoInfoFlatModel)]);
+                result = VideoInfoFlatBuffersSerializer.FromSerializationModel((VideoInfoFlatModel)DeserializationResults[typeof(VideoInfo)]);
                 return true;
             }
             if (type == typeof(SocialInfo))
             {
-                result = SocialInfoFlatBuffersSerializer.FromSerializationModel((SocialInfoFlatModel)DeserializationResults[typeof(SocialInfoFlatModel)]);
+                result = SocialInfoFlatBuffersSerializer.FromSerializationModel((SocialInfoFlatModel)DeserializationResults[typeof(SocialInfo)]);
                 return true;
             }
             if (type == typeof(Channel))
             {
-                result = ChannelFlatBuffersSerializer.FromSerializationModel((ChannelFlatModel)DeserializationResults[typeof(ChannelFlatModel)]);
+                result = ChannelFlatBuffersSerializer.FromSerializationModel((ChannelFlatModel)DeserializationResults[typeof(Channel)]);
                 return true;
             }
             throw new NotImplementedException($"Conversion for type {type} not implemented!");

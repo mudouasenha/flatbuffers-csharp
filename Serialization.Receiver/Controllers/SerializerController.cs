@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serialization.Domain;
 using Serialization.Domain.Interfaces;
+using Serialization.Receiver.Services;
+using Serialization.Serializers.ApacheAvro;
 using Serialization.Services.Extensions;
 
 namespace Serialization.Receiver.Controllers
@@ -8,54 +11,126 @@ namespace Serialization.Receiver.Controllers
     [Route("receiver/serializer")]
     public class SerializerController : ControllerBase
     {
-        public SerializerController()
+        private readonly RequestCounterService requestCounterService;
+
+        public SerializerController(RequestCounterService requestCounterService)
         {
+            this.requestCounterService = requestCounterService;
         }
 
         [HttpPost()]
-        public IActionResult DeserializeAndSerialize([FromQuery] string serializerType, [FromQuery] string originalType, [FromBody] object requestData)
+        [Consumes("application/octet-stream")]
+        [Produces("application/octet-stream")]
+        public async Task<FileContentResult> DeserializeAndSerialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
         {
             try
             {
-                var serializableObject = (ISerializationTarget)requestData;
                 var serializer = serializerType.GetSerializer();
-                var targetType = originalType.GetTargetType();
+                var targetType = serializationType.GetTargetType();
 
-                serializer.BenchmarkDeserialize(targetType, serializableObject);
-                var size = serializableObject.Serialize(serializer);
+                var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
+                long size;
 
-                if (serializer.GetSerializationResult(requestData.GetType(), out var result))
+                serializer.GetDeserializationResult(targetType, out ISerializationTarget serializableObject);
+
+                GenerateIntermediateIfNeeded(serializableObject, serializer);
+
+                size = serializableObject.Serialize(serializer);
+
+                if (serializer.GetSerializationResult(targetType, out var serialized))
                 {
                     Response.ContentType = "application/octet-stream";
                     Response.Headers.Add("Content-Length", size.ToString());
 
-                    return Ok(new FileContentResult((byte[])result, "application/octet-stream"));
+                    requestCounterService.IncrementCounter();
+                    return File((byte[])serialized, "application/octet-stream");
                 }
-                return BadRequest();
+
+                return null;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+            }
 
-                return Problem();
+            return null;
+        }
+
+        [HttpPost("deserialize")]
+        [Consumes("application/octet-stream")]
+        [Produces("application/octet-stream")]
+        public async Task Deserialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
+        {
+            try
+            {
+                var serializer = serializerType.GetSerializer();
+                var targetType = serializationType.GetTargetType();
+
+                var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
-        //[HttpPost()]
-        //public IActionResult Test()
-        //{
-        //    try
-        //    {
+        [HttpPost()]
+        [Consumes("application/octet-stream")]
+        [Produces("application/octet-stream")]
+        public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] ISerializationTarget serializableObject)
+        {
+            try
+            {
+                var serializer = serializerType.GetSerializer();
+                var targetType = serializationType.GetTargetType();
 
-        //        return BadRequest();
+                long size;
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.ToString());
+                GenerateIntermediateIfNeeded(serializableObject, serializer);
 
-        //        return Problem();
-        //    }
-        //}
+                size = serializableObject.Serialize(serializer);
+
+                if (serializer.GetSerializationResult(targetType, out var serialized))
+                {
+                    Response.ContentType = "application/octet-stream";
+                    Response.Headers.Add("Content-Length", size.ToString());
+
+                    requestCounterService.IncrementCounter();
+                    return File((byte[])serialized, "application/octet-stream");
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+            return null;
+        }
+
+        [HttpPost("monitoring/start")]
+        public async Task<IActionResult> StartMonitoring([FromQuery] string serializerType)
+        {
+            requestCounterService.StartMonitoring();
+            return Ok();
+        }
+
+        [HttpPost("monitoring/save-results")]
+        public async Task<IActionResult> RecordCsv([FromQuery] string serializerType)
+        {
+            requestCounterService.SaveToCsv();
+            return Ok();
+        }
+
+        private void GenerateIntermediateIfNeeded(ISerializationTarget obj, ISerializer serializer)
+        {
+            if (serializer is ProtobufSerializer)
+                obj.CreateProtobufMessage();
+            if (serializer is ApacheThriftSerializer)
+                obj.CreateThriftMessage();
+            if (serializer is ApacheAvroSerializer)
+                obj.CreateAvroMessage();
+        }
     }
 }

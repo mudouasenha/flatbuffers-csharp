@@ -19,7 +19,6 @@ namespace Serialization.Domain
 
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
-            original.CreateProtobufMessage();
             var message = original.GetProtobufMessage();
             messageSize = message.CalculateSize();
             var bytes = new byte[messageSize];
@@ -91,7 +90,7 @@ namespace Serialization.Domain
                     Duration = (long)videoInfo.Duration,
                     Size = (long)videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                    Qualities = videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                 };
                 return true;
             }
@@ -126,7 +125,7 @@ namespace Serialization.Domain
                     {
                         Description = video.VideoInfo.Description,
                         Duration = (long)video.VideoInfo.Duration,
-                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                     },
                     SocialInfo = new SocialInfo()
                     {

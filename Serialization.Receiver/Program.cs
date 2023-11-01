@@ -1,16 +1,25 @@
-using Serialization.Receiver;
+using Serialization.Receiver.Formatters;
+using Serialization.Receiver.Services;
+using Serialization.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddSingleton<IRequestCounter, RequestCounter>();
+builder.Services.AddServices();
+builder.Services.AddSingleton<RequestCounterService>();
+builder.Services.AddControllers(options =>
+{
+    options.InputFormatters.Add(new ByteArrayInputFormatter());
+    //options.OutputFormatters.Insert(0, new ByteArrayOutputFormatter());
+}
+);
+// builder.Services.AddSingleton<IRequestCounter, RequestCounter>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -19,7 +28,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<RequestCounterMiddleware>();
+//app.UseMiddleware<RequestCounterMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

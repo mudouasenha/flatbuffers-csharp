@@ -9,7 +9,6 @@ namespace Serialization.Services
         public static IServiceCollection AddServices(this IServiceCollection services) =>
             services.AddFlatBuffers()
             .AddSystemTextJsonSerializer()
-            .AddMessagePack()
-            .AddScoped<WorkloadService>();
+            .AddMessagePack();
     }
 }

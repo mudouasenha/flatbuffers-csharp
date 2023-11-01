@@ -4,10 +4,6 @@ using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
-using Serialization.Serializers.CapnProto;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
 using System.Diagnostics;
 
 namespace Serialization.Benchmarks.Benchmarks
@@ -31,14 +27,14 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer(),
-            new NewtonsoftJsonSerializer(),
+            //new FlatBuffersSerializer(),
+            //new MessagePackCSharpSerializer(),
+            //new NewtonsoftJsonSerializer(),
             //new BinaryFormatterSerializer(),
             new ProtobufSerializer(),
-            new ApacheThriftSerializer(),
-            new ApacheAvroSerializer(),
-            new CapnProtoSerializer(),
+            //new ApacheThriftSerializer(),
+            //new ApacheAvroSerializer(),
+            //new CapnProtoSerializer(),
         };
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
@@ -62,7 +58,13 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             TargetList = new List<ISerializationTarget>();
             TargetList = GenerateSerializationTargets(NumMessages);
-            GenerateProtobufMessages();
+
+            if (Serializer is ProtobufSerializer)
+                GenerateProtobufMessages();
+            if (Serializer is ApacheThriftSerializer)
+                GenerateThriftMessages();
+            if (Serializer is ApacheAvroSerializer)
+                GenerateAvroMessages();
         }
 
         [Benchmark]
@@ -79,26 +81,6 @@ namespace Serialization.Benchmarks.Benchmarks
 
             return (long)stopwatch.ElapsedTicks / Stopwatch.Frequency;
         }
-
-        ////[Benchmark]
-        //public ExecutionInfo SerializeSerialWithMeasurements()
-        //{
-        //    var stopwatch = Stopwatch.StartNew();
-        //    var execution = new ExecutionInfo(Target.ToString(), Serializer.ToString(), NumMessages, 0);
-
-        //    foreach (var message in TargetList)
-        //    {
-        //        var stopwatch1 = Stopwatch.StartNew();
-        //        var size = Serializer.BenchmarkSerialize(message.GetType(), message);
-        //        stopwatch1.Stop();
-        //        var result = new Measurement(stopwatch.Elapsed.Ticks, size);
-        //        execution.Measurements.Add(result);
-        //    }
-        //    stopwatch.Stop();
-
-        //    csvExporter.AddExecutionInfo(execution);
-        //    return execution;
-        //}
 
         [Benchmark]
         public long SerializeSerialMakespan()
@@ -131,6 +113,26 @@ namespace Serialization.Benchmarks.Benchmarks
             }
         }
 
+        ////[Benchmark]
+        //public ExecutionInfo SerializeSerialWithMeasurements()
+        //{
+        //    var stopwatch = Stopwatch.StartNew();
+        //    var execution = new ExecutionInfo(Target.ToString(), Serializer.ToString(), NumMessages, 0);
+
+        //    foreach (var message in TargetList)
+        //    {
+        //        var stopwatch1 = Stopwatch.StartNew();
+        //        var size = Serializer.BenchmarkSerialize(message.GetType(), message);
+        //        stopwatch1.Stop();
+        //        var result = new Measurement(stopwatch.Elapsed.Ticks, size);
+        //        execution.Measurements.Add(result);
+        //    }
+        //    stopwatch.Stop();
+
+        //    csvExporter.AddExecutionInfo(execution);
+        //    return execution;
+        //}
+
         private List<ISerializationTarget> GenerateSerializationTargets(int count)
         {
             var targets = new List<ISerializationTarget>(count);
@@ -157,6 +159,22 @@ namespace Serialization.Benchmarks.Benchmarks
             foreach (var target in TargetList)
             {
                 target.CreateProtobufMessage();
+            }
+        }
+
+        private void GenerateThriftMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateThriftMessage();
+            }
+        }
+
+        private void GenerateAvroMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateAvroMessage();
             }
         }
     }

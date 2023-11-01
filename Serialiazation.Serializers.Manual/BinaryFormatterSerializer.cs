@@ -3,6 +3,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Serialiazation.Serializers.Manual
 {
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
+
     public class BinaryFormatterSerializer : BaseDirectSerializer<byte[]>
     {
         #region Serialization
@@ -37,7 +40,7 @@ namespace Serialiazation.Serializers.Manual
             return serializedData;
         }
 
-        #endregion
+        #endregion Serialization
 
         #region Deserialization
 
@@ -69,7 +72,7 @@ namespace Serialiazation.Serializers.Manual
             return instance;
         }
 
-        #endregion
+        #endregion Deserialization
 
         public override string ToString() => "BinaryFormatter";
 

@@ -26,7 +26,6 @@ namespace Serialization.Domain
             using TStreamTransport transport = new(memoryStream, memoryStream, new Thrift.TConfiguration());
             var protocol = new TCompactProtocol(transport);
 
-            original.CreateThriftMessage();
             var message = original.GetThriftMessage();
             message.WriteAsync(protocol).GetAwaiter().GetResult();
             transport.FlushAsync(token).GetAwaiter().GetResult();
@@ -112,7 +111,7 @@ namespace Serialization.Domain
                     Duration = videoInfo.Duration,
                     Size = videoInfo.Size,
                     Description = videoInfo.Description,
-                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                    Qualities = (VideoQualities[])videoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                 };
                 return true;
             }
@@ -147,7 +146,7 @@ namespace Serialization.Domain
                     {
                         Description = video.VideoInfo.Description,
                         Duration = video.VideoInfo.Duration,
-                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x)
+                        Qualities = (VideoQualities[])video.VideoInfo.Qualities.ToArray().Select(x => (VideoQualities)x).ToArray()
                     },
                     SocialInfo = new SocialInfo()
                     {

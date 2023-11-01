@@ -15,7 +15,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
 	<PackageReference Include="MessagePack" Version="2.5.129" />
 	<PackageReference Include="protobuf-net.Core" Version="3.2.30" />
-	<PackageReference Include="Apache.Avro" Version="1.11.3" />
 	<PackageReference Include="AvroConvert" Version="3.4.0" />
 	<PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" Version="2.2.0" />
   </ItemGroup>

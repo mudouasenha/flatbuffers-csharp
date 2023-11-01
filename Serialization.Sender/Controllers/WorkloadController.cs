@@ -9,7 +9,12 @@ namespace Serializaion.Sender.Controllers
     [Route("sender/workload")]
     public class WorkloadController : ControllerBase
     {
-        private readonly WorkloadService _workloadService = new();
+        private readonly WorkloadService _workloadService;
+
+        public WorkloadController(WorkloadService workloadService)
+        {
+            _workloadService = workloadService;
+        }
 
         [HttpPost]
         public IActionResult Workload([FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads = 10)
@@ -22,6 +27,23 @@ namespace Serializaion.Sender.Controllers
                 _workloadService.RunParallelRestAsync(serializer, targetType, numThreads);
 
                 return Ok($"Parallel Processing Async Service for {nameof(Workload)} initiated");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+
+                return Problem();
+            }
+        }
+
+        [HttpPost("clear")]
+        public IActionResult Clear()
+        {
+            try
+            {
+                _workloadService.Clear();
+
+                return Ok($"Parallel Processing Cleared");
             }
             catch (Exception ex)
             {

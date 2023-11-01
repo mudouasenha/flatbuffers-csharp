@@ -16,6 +16,7 @@ namespace Serialization.Domain.Interfaces
 
     public abstract class BaseSerializer<TSerialization, TDeserialization> : ISerializer
     {
+        private readonly object lockObject = new object();
         protected readonly Dictionary<Type, SerializationResult<TSerialization>> SerializationResults;
         protected readonly Dictionary<Type, TDeserialization> DeserializationResults;
 
@@ -65,6 +66,74 @@ namespace Serialization.Domain.Interfaces
         }
 
         /// <inheritdoc />
+        public Type BenchmarkDeserialize(Type type, object serialized)
+        {
+            var copy = Deserialize(type, (TSerialization)serialized);
+            DeserializationResults[type] = copy;
+
+            return copy.GetType();
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkSerializeThreadSafe<T>(T original) where T : ISerializationTarget
+        {
+            var result = Serialize(original, out long messageSize);
+            lock (lockObject)
+            {
+                SerializationResults[typeof(T)] = new SerializationResult<TSerialization>(result, messageSize);
+            }
+            return messageSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkSerializeThreadSafe(Type type, ISerializationTarget original)
+        {
+            var result = Serialize(type, original, out long messageSize);
+            lock (lockObject)
+            {
+                SerializationResults[type] = new SerializationResult<TSerialization>(result, messageSize);
+            }
+            return messageSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkDeserializeThreadSafe<T>(T original) where T : ISerializationTarget
+        {
+            var type = typeof(T);
+            SerializationResult<TSerialization> target = null;
+            lock (lockObject)
+            {
+                target = SerializationResults[type];
+            }
+            var copy = Deserialize<T>(target.Result);
+            lock (lockObject)
+            {
+                DeserializationResults[type] = copy;
+            }
+
+            return target.ByteSize;
+        }
+
+        /// <inheritdoc />
+        public long BenchmarkDeserializeThreadSafe(Type type, ISerializationTarget original)
+        {
+            SerializationResult<TSerialization> target = null;
+            lock (lockObject)
+            {
+                target = SerializationResults[type];
+            }
+
+            var copy = Deserialize(type, target.Result);
+
+            lock (lockObject)
+            {
+                DeserializationResults[type] = copy;
+            }
+
+            return target.ByteSize;
+        }
+
+        /// <inheritdoc />
         public bool Validate(Type type, ISerializationTarget original)
         {
             if (GetDeserializationResult(type, out ISerializationTarget result))
@@ -107,16 +176,18 @@ namespace Serialization.Domain.Interfaces
         #region Serialization
 
         protected abstract TSerialization Serialize<T>(T original, out long messageSize) where T : ISerializationTarget;
+
         protected abstract TSerialization Serialize(Type type, ISerializationTarget original, out long messageSize);
 
-        #endregion
+        #endregion Serialization
 
         #region Deserialization
 
         protected abstract TDeserialization Deserialize<T>(TSerialization serializedObject) where T : ISerializationTarget;
+
         protected abstract TDeserialization Deserialize(Type type, TSerialization serializedObject);
 
-        #endregion
+        #endregion Deserialization
 
         /// <inheritdoc />
         public virtual void Cleanup()
