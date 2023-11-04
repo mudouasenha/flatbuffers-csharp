@@ -22,7 +22,7 @@ namespace Serializaion.Sender.Controllers
             try
             {
                 var serializer = serializerType.GetSerializer();
-                var targetType = serializationType.GetTargetType();
+                var targetType = !string.IsNullOrEmpty(serializationType) ? serializationType.GetTargetType() : null;
 
                 _workloadService.RunParallelRestAsync(serializer, targetType, numThreads);
 

@@ -4,14 +4,16 @@ namespace Serialization.Services.CsvExporter
 {
     public class ExecutionInfo
     {
-        public ExecutionInfo(string target, string serializer, int numMessages, int numThreads)
+        public ExecutionInfo(string target, string serializer, int numMessages, int numThreads, string method = "")
         {
             Target = target;
             Serializer = serializer;
             NumMessages = numMessages;
             NumThreads = numThreads;
+            Method = method;
         }
 
+        public string Method { get; set; }
         public string Target { get; set; }
         public string Serializer { get; set; }
         public int NumMessages { get; set; }
@@ -34,25 +36,25 @@ namespace Serialization.Services.CsvExporter
 
     public record MeasurementRest
     {
-        public MeasurementRest(long ticks)
+        public MeasurementRest(long latency, long timestamp, string method)
         {
-            Latency = ticks / Stopwatch.Frequency * 1000000000;
-            Timestamp = DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond;
+            Method = method;
+            Latency = latency;
+            Timestamp = timestamp;
         }
-
-        public double Latency { get; set; }
+        public string Method { get; set; }
+        public long Latency { get; set; }
         public long Timestamp { get; set; }
     }
 
     public record MeasurementRestReceiver
     {
-        public MeasurementRestReceiver(int requests)
+        public MeasurementRestReceiver(int requests, long timestamp)
         {
-            Timestamp = DateTime.UtcNow.Ticks / TimeSpan.TicksPerSecond;
+            Timestamp = timestamp;
             Requests = requests;
         }
-
-        public double Timestamp { get; set; }
+        public long Timestamp { get; set; }
         public int Requests { get; set; }
 
         public override string ToString() => $"Timestamp: {Timestamp};    Requests/s: {Requests}";

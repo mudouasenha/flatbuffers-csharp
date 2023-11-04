@@ -37,7 +37,6 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
             new VideoInfoBuilder().Generate(),
             new ChannelBuilder().Generate()
         };
@@ -53,6 +52,9 @@ namespace Serialization.Benchmarks.Benchmarks
 
             if (Serializer is ApacheAvroSerializer)
                 Target.CreateAvroMessage();
+
+            if (Serializer is CapnProtoSerializer)
+                Target.CreateCapnProtoMessage();
         }
 
         [IterationSetup(Target = nameof(Deserialize))]

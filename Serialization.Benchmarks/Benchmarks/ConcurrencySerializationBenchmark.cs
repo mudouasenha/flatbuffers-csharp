@@ -5,8 +5,6 @@ using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
 using Serialization.Serializers.CapnProto;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
 using Serialization.Serializers.SystemTextJson;
 using System.Diagnostics;
 
@@ -31,13 +29,13 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer(),
+            //new FlatBuffersSerializer(),
+            //new MessagePackCSharpSerializer(),
             new NewtonsoftJsonSerializer(),
             //new BinaryFormatterSerializer(),
-            new ProtobufSerializer(),
-            new ApacheThriftSerializer(),
-            new ApacheAvroSerializer(),
+            //new ProtobufSerializer(),
+            //new ApacheThriftSerializer(),
+            //new ApacheAvroSerializer(),
             new CapnProtoSerializer(),
         };
 
@@ -45,7 +43,6 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
             new VideoInfoBuilder().Generate(),
             new ChannelBuilder().Generate()
         };
@@ -69,6 +66,8 @@ namespace Serialization.Benchmarks.Benchmarks
                 GenerateThriftMessages();
             if (Serializer is ApacheAvroSerializer)
                 GenerateAvroMessages();
+            if (Serializer is CapnProtoSerializer)
+                GenerateCapnProtoMessages();
         }
 
         [Benchmark]
@@ -201,6 +200,14 @@ namespace Serialization.Benchmarks.Benchmarks
             foreach (var target in TargetList)
             {
                 target.CreateAvroMessage();
+            }
+        }
+
+        private void GenerateCapnProtoMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateCapnProtoMessage();
             }
         }
     }

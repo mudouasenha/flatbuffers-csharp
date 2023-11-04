@@ -1,10 +1,12 @@
 ﻿using Avro.Specific;
+using Capnp;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MessagePack;
 using ProtoBuf;
 using Serialization.Domain.Interfaces;
 using Thrift.Protocol;
+using static CapnpGen.VideoInfo;
 
 namespace Serialization.Domain.Entities
 {
@@ -21,6 +23,9 @@ namespace Serialization.Domain.Entities
 
         [NonSerialized]
         private avroObjects.Video avroObject;
+
+        [NonSerialized]
+        private CapnpGen.Video capnpObject;
 
         public Video()
         { }
@@ -174,6 +179,40 @@ namespace Serialization.Domain.Entities
                     Size = VideoInfo.Size,
                     Qualities = qualities
                 },
+            };
+        }
+
+        public ICapnpSerializable GetCapnProtoMessage()
+        {
+            return capnpObject;
+        }
+
+        public void CreateCapnProtoMessage()
+        {
+            capnpObject = new CapnpGen.Video()
+            {
+                Url = Url,
+                VideoId = VideoId,
+                Channel = new CapnpGen.Channel()
+                {
+                    ChannelId = Channel.ChannelId,
+                    Name = Channel.Name,
+                    Subscribers = (uint)Channel.Subscribers
+                },
+                SocialInfo = new CapnpGen.SocialInfo()
+                {
+                    Comments = SocialInfo.Comments.ToArray(),
+                    Dislikes = (uint)SocialInfo.Dislikes,
+                    Likes = (uint)SocialInfo.Likes,
+                    Views = (uint)SocialInfo.Views
+                },
+                VideoInfo = new CapnpGen.VideoInfo()
+                {
+                    Description = VideoInfo.Description,
+                    Duration = (ulong)VideoInfo.Duration,
+                    Qualities = new List<VideoQuality>(VideoInfo.Qualities.Select(x => (VideoQuality)x).ToList()),
+                    Size = (ulong)VideoInfo.Size,
+                }
             };
         }
     }

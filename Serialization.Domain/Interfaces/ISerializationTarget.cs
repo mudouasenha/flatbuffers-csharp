@@ -1,4 +1,5 @@
 ﻿using Avro.Specific;
+using Capnp;
 using Google.Protobuf;
 using Thrift.Protocol;
 
@@ -23,5 +24,9 @@ namespace Serialization.Domain.Interfaces
         ISpecificRecord GetAvroMessage();
 
         void CreateAvroMessage();
+
+        ICapnpSerializable GetCapnProtoMessage();
+
+        void CreateCapnProtoMessage();
     }
 }

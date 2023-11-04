@@ -2,7 +2,6 @@
 using Serialization.Domain.Entities;
 using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
-using static CapnpGen.VideoInfo;
 
 namespace Serialization.Serializers.CapnProto
 {
@@ -92,17 +91,11 @@ namespace Serialization.Serializers.CapnProto
         protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
             var messageBuilder = MessageBuilder.Create();
+            var intermediateResult = original.GetCapnProtoMessage();
 
             if (type == typeof(Channel))
             {
-                var originalChannel = (Channel)original;
-                var channel = new CapnpGen.Channel()
-                {
-                    ChannelId = originalChannel.ChannelId,
-                    Name = originalChannel.Name,
-                    Subscribers = (uint)originalChannel.Subscribers
-                };
-
+                var channel = (CapnpGen.Channel)intermediateResult;
                 var root = messageBuilder.BuildRoot<CapnpGen.Channel.WRITER>();
                 channel.serialize(root);
                 var mems = new MemoryStream();
@@ -113,17 +106,9 @@ namespace Serialization.Serializers.CapnProto
 
                 return serializedObject;
             }
-
             if (type == typeof(VideoInfo))
             {
-                var originalVideoInfo = (VideoInfo)original;
-                var videoInfo = new CapnpGen.VideoInfo()
-                {
-                    Description = originalVideoInfo.Description,
-                    Duration = (ulong)originalVideoInfo.Duration,
-                    Qualities = new List<VideoQuality>(originalVideoInfo.Qualities.Select(x => (VideoQuality)x).ToList()),
-                    Size = (ulong)originalVideoInfo.Size,
-                };
+                var videoInfo = (CapnpGen.VideoInfo)intermediateResult;
                 var root = messageBuilder.BuildRoot<CapnpGen.VideoInfo.WRITER>();
                 videoInfo.serialize(root);
                 var mems = new MemoryStream();
@@ -137,14 +122,7 @@ namespace Serialization.Serializers.CapnProto
 
             if (type == typeof(SocialInfo))
             {
-                var originalSocialInfo = (SocialInfo)original;
-                var socialInfo = new CapnpGen.SocialInfo()
-                {
-                    Comments = originalSocialInfo.Comments.ToArray(),
-                    Dislikes = (uint)originalSocialInfo.Dislikes,
-                    Likes = (uint)originalSocialInfo.Likes,
-                    Views = (uint)originalSocialInfo.Views
-                };
+                var socialInfo = (CapnpGen.SocialInfo)intermediateResult;
                 var root = messageBuilder.BuildRoot<CapnpGen.SocialInfo.WRITER>();
                 socialInfo.serialize(root);
                 var mems = new MemoryStream();
@@ -158,32 +136,7 @@ namespace Serialization.Serializers.CapnProto
 
             if (type == typeof(Video))
             {
-                var originalVideo = (Video)original;
-                var video = new CapnpGen.Video()
-                {
-                    Url = originalVideo.Url,
-                    VideoId = originalVideo.VideoId,
-                    Channel = new CapnpGen.Channel()
-                    {
-                        ChannelId = originalVideo.Channel.ChannelId,
-                        Name = originalVideo.Channel.Name,
-                        Subscribers = (uint)originalVideo.Channel.Subscribers
-                    },
-                    SocialInfo = new CapnpGen.SocialInfo()
-                    {
-                        Comments = originalVideo.SocialInfo.Comments.ToArray(),
-                        Dislikes = (uint)originalVideo.SocialInfo.Dislikes,
-                        Likes = (uint)originalVideo.SocialInfo.Likes,
-                        Views = (uint)originalVideo.SocialInfo.Views
-                    },
-                    VideoInfo = new CapnpGen.VideoInfo()
-                    {
-                        Description = originalVideo.VideoInfo.Description,
-                        Duration = (ulong)originalVideo.VideoInfo.Duration,
-                        Qualities = new List<VideoQuality>(originalVideo.VideoInfo.Qualities.Select(x => (VideoQuality)x).ToList()),
-                        Size = (ulong)originalVideo.VideoInfo.Size,
-                    }
-                };
+                var video = (CapnpGen.Video)intermediateResult;
                 var root = messageBuilder.BuildRoot<CapnpGen.Video.WRITER>();
                 video.serialize(root);
                 var mems = new MemoryStream();

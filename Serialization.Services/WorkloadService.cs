@@ -3,6 +3,7 @@ using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
 
 namespace Serialization.Services
 {
@@ -11,18 +12,19 @@ namespace Serialization.Services
         private bool _executing;
         private readonly HttpClient _httpClient = new();
         private readonly RestClient _restClient = new();
-        private const string SenderBaseUrl = "http://localhost:5010/";
+        private const string SenderBaseUrl = "http://127.0.0.1:5010/";
         private const int delayMilliseconds = 1000 / 20;
         private ISerializationTarget[] objects;
         private ISerializer _serializer;
 
-        public async Task SaveServerResultsAsync(string datetime, string serializerType, string serializationType, int numThreads)
+        public async Task SaveServerResultsAsync(string datetime, string serializerType, string serializationType, int numThreads, string method)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5020/" + "receiver/serializer/monitoring/save-results"
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://127.0.0.1:5020/" + "receiver/serializer/monitoring/save-results"
                 .SetQueryParam("datetime", datetime)
-                    .SetQueryParam("serializerType", serializerType)
-                    .SetQueryParam("serializationType", serializationType)
-                .SetQueryParam("numThreads", numThreads));
+                .SetQueryParam("serializerType", serializerType)
+                .SetQueryParam("serializationType", serializationType)
+                .SetQueryParam("numThreads", numThreads)
+                .SetQueryParam("method", method));
 
             var response = await _httpClient.PostAsync(request.RequestUri, null);
 
@@ -59,6 +61,7 @@ namespace Serialization.Services
 
         public void Clear()
         {
+            Console.WriteLine($"Starting Cleanup, {DateTime.Now}");
             _executing = false;
             if (_serializer != null) _serializer.Cleanup();
             _serializer = null;
@@ -92,7 +95,7 @@ namespace Serialization.Services
             }
         }
 
-        public async Task RunParallelRestAsync(ISerializer serializer, Type serializationType, int numThreads = 100)
+        public async Task RunParallelRestAsync(ISerializer serializer, Type serializationType = null, int numThreads = 100)
         {
             if (_executing)
             {
@@ -102,20 +105,22 @@ namespace Serialization.Services
 
             _executing = true;
             _serializer = serializer;
-            SemaphoreSlim semaphore = new SemaphoreSlim(numThreads);
+            SemaphoreSlim semaphore = new SemaphoreSlim(10);
             List<Task> tasks = new();
 
-            GenerateObjects(serializationType, numThreads);
+            var type = serializationType?.Name ?? string.Empty;
+            GenerateObjects(type, numThreads);
+
             for (int i = 0; i < numThreads; i++)
             {
-                tasks.Add(ProcessSerializationRestAsync(semaphore, i, _serializer, serializationType.Name));
+                tasks.Add(ProcessSerializationRestAsync(semaphore, i, _serializer));
             }
 
             await Task.WhenAll(tasks);
-            Console.WriteLine("All tasks completed.");
+            Console.WriteLine($"All tasks completed, {DateTime.Now}");
         }
 
-        private async Task ProcessSerializationRestAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer, string serializationType)
+        private async Task ProcessSerializationRestAsync(SemaphoreSlim semaphore, int threadId, ISerializer serializer)
         {
             while (_executing)
             {
@@ -124,6 +129,8 @@ namespace Serialization.Services
 
                 try
                 {
+                    var client = new RestClient();
+
                     var obj = objects[threadId];
                     //var obj = objects[threadId][rand];
                     GenerateIntermediateIfNeeded(obj, _serializer);
@@ -132,12 +139,12 @@ namespace Serialization.Services
                     {
                         while (_executing)
                         {
-                            //Console.WriteLine($"Thread {threadId} started");
-
-                            var result = await _restClient.PostAsync("receiver/serializer"
+                            var result = await client.PostAsync("receiver/serializer/deserialize"
                                 .SetQueryParam("serializerType", serializer.ToString())
-                                .SetQueryParam("serializationType", serializationType),
+                                .SetQueryParam("serializationType", obj.GetType().Name),
                                 serializationObject);
+
+                            //await Console.Out.WriteLineAsync("Here");
 
                             await Task.Delay(delayMilliseconds);
                         }
@@ -154,6 +161,11 @@ namespace Serialization.Services
             }
         }
 
+        //private async Task RoundTripTimeAsync(RestClient client, ) => await client.PostAsync("receiver/serializer/deserialize"
+        //                        .SetQueryParam("serializerType", serializer.ToString())
+        //                        .SetQueryParam("serializationType", obj.GetType().Name),
+        //                        serializationObject);
+
         private void GenerateIntermediateIfNeeded(ISerializationTarget obj, ISerializer serializer)
         {
             if (serializer is ProtobufSerializer)
@@ -162,11 +174,27 @@ namespace Serialization.Services
                 obj.CreateThriftMessage();
             if (serializer is ApacheAvroSerializer)
                 obj.CreateAvroMessage();
+            if (serializer is CapnProtoSerializer)
+                obj.CreateCapnProtoMessage();
         }
 
-        private void GenerateObjects(Type type, int numThreads)
+        private void GenerateObjects(string type, int numThreads)
         {
-            switch (type.Name)
+            void GenerateRandomTargets()
+            {
+                var random = new Random().Next(4);
+
+                objects = random switch
+                {
+                    0 => new ChannelBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray(),
+                    1 => new SocialInfoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray(),
+                    2 => new VideoInfoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray(),
+                    3 => new VideoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray(),
+                    _ => new ChannelBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray(),
+                };
+            }
+
+            switch (type)
             {
                 case "Video":
                     objects = new VideoBuilder().Generate(numThreads).Cast<ISerializationTarget>().ToArray();
@@ -185,7 +213,8 @@ namespace Serialization.Services
                     break;
 
                 default:
-                    throw new ArgumentException("Unsupported target type");
+                    GenerateRandomTargets();
+                    break;
             }
         }
     }

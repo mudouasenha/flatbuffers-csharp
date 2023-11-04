@@ -19,9 +19,9 @@ namespace Serialization.Benchmarks.Configs
             var baseJob = new Job(Job.MediumRun
                 .WithUnrollFactor(1)
                 .WithWarmupCount(3)
-                .WithIterationTime(TimeInterval.FromMilliseconds(100))
+                .WithMinIterationTime(TimeInterval.FromMilliseconds(100))
                 .WithLaunchCount(1)
-                .WithIterationCount(30)
+                .WithIterationCount(60)
                 .WithInvocationCount(1)
                 .WithId("JOB-SINGLE")
                 .WithRuntime(CoreRuntime.Core60)
@@ -36,5 +36,3 @@ namespace Serialization.Benchmarks.Configs
         }
     }
 }
-
-

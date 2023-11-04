@@ -4,6 +4,8 @@ using Serialization.Domain.Builders;
 using Serialization.Domain.Entities;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
+using Serialization.Serializers.SystemTextJson;
 using System.Diagnostics;
 
 namespace Serialization.Benchmarks.Benchmarks
@@ -29,9 +31,9 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             //new FlatBuffersSerializer(),
             //new MessagePackCSharpSerializer(),
-            //new NewtonsoftJsonSerializer(),
+            new NewtonsoftJsonSerializer(),
             //new BinaryFormatterSerializer(),
-            new ProtobufSerializer(),
+            //new ProtobufSerializer(),
             //new ApacheThriftSerializer(),
             //new ApacheAvroSerializer(),
             //new CapnProtoSerializer(),
@@ -41,7 +43,6 @@ namespace Serialization.Benchmarks.Benchmarks
         {
             new VideoBuilder().Generate(),
             new SocialInfoBuilder().Generate(),
-            //new SocialInfoBuilder().WithSeveralComments(1000, 1000).Generate(),
             new VideoInfoBuilder().Generate(),
             new ChannelBuilder().Generate()
         };
@@ -65,6 +66,8 @@ namespace Serialization.Benchmarks.Benchmarks
                 GenerateThriftMessages();
             if (Serializer is ApacheAvroSerializer)
                 GenerateAvroMessages();
+            if (Serializer is CapnProtoSerializer)
+                GenerateCapnProtoMessages();
         }
 
         [Benchmark]
@@ -175,6 +178,14 @@ namespace Serialization.Benchmarks.Benchmarks
             foreach (var target in TargetList)
             {
                 target.CreateAvroMessage();
+            }
+        }
+
+        private void GenerateCapnProtoMessages()
+        {
+            foreach (var target in TargetList)
+            {
+                target.CreateCapnProtoMessage();
             }
         }
     }

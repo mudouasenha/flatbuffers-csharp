@@ -1,4 +1,5 @@
 ﻿using Avro.Specific;
+using Capnp;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using MessagePack;
@@ -6,6 +7,7 @@ using ProtoBuf;
 using Serialization.Domain.Entities.Enums;
 using Serialization.Domain.Interfaces;
 using Thrift.Protocol;
+using static CapnpGen.VideoInfo;
 
 namespace Serialization.Domain.Entities
 {
@@ -22,6 +24,9 @@ namespace Serialization.Domain.Entities
 
         [NonSerialized]
         private avroObjects.VideoInfo avroObject;
+
+        [NonSerialized]
+        private CapnpGen.VideoInfo capnpObject;
 
         public VideoInfo()
         { }
@@ -116,6 +121,22 @@ namespace Serialization.Domain.Entities
                 Description = Description,
                 Size = Size,
                 Qualities = qualities
+            };
+        }
+
+        public ICapnpSerializable GetCapnProtoMessage()
+        {
+            return capnpObject;
+        }
+
+        public void CreateCapnProtoMessage()
+        {
+            capnpObject = new CapnpGen.VideoInfo()
+            {
+                Description = Description,
+                Duration = (ulong)Duration,
+                Qualities = new List<VideoQuality>(Qualities.Select(x => (VideoQuality)x).ToList()),
+                Size = (ulong)Size,
             };
         }
     }

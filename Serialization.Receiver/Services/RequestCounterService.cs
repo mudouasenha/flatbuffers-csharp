@@ -50,9 +50,9 @@ namespace Serialization.Receiver.Services
         {
             lock (_lock)
             {
-                var measurement = new MeasurementRestReceiver(counter);
+                var measurement = new MeasurementRestReceiver(counter, DateTimeOffset.Now.ToUnixTimeMilliseconds());
                 countsPerSecond.Add(measurement);
-                Console.WriteLine(measurement.ToString());
+                //Console.WriteLine(measurement.ToString());
                 counter = 0;
             }
         }
@@ -62,10 +62,10 @@ namespace Serialization.Receiver.Services
             SaveToCsv(this);
         }
 
-        public void SaveToCsv(string datetime, string serializerType, string serializationType, int numThreads)
+        public void SaveToCsv(string datetime, string serializerType, string serializationType, int numThreads, string method)
         {
             ParamsString = $"{datetime}";
-            executionInfo = new ExecutionInfo(serializationType, serializerType, 0, numThreads);
+            executionInfo = new ExecutionInfo(serializationType, serializerType, 0, numThreads, method);
             SaveToCsv(this);
         }
 
@@ -73,7 +73,7 @@ namespace Serialization.Receiver.Services
         {
             lock (_lock)
             {
-                _csvExporter.ExportMeasurementsRESTReceiver($"Measurements-REST-Receiver-SerializationBenchmark{ParamsString}.csv", countsPerSecond, executionInfo);
+                _csvExporter.ExportMeasurementsRESTReceiver($"Measurements-REST-Server-SerializationBenchmark.csv", countsPerSecond, executionInfo);
                 countsPerSecond.Clear();
             }
         }

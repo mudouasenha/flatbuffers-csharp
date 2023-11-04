@@ -17,10 +17,12 @@
 	<PackageReference Include="protobuf-net.Core" Version="3.2.30" />
 	<PackageReference Include="AvroConvert" Version="3.4.0" />
 	<PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" Version="2.2.0" />
+	<PackageReference Include="Capnp.Net.Runtime" Version="1.3.118" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Serialization.ApacheAvro\Serialization.Serializers.ApacheAvro.csproj" />
+    <ProjectReference Include="..\Serialization.CapnProto\Serialization.Serializers.CapnProto.csproj" />
     <ProjectReference Include="..\Serialization.ProtocolBuffers\Serialization.Serializers.ProtocolBuffers.csproj" />
 	<ProjectReference Include="..\Serialization.Serializers.ApacheThrift\Serialization.Serializers.ApacheThrift.csproj" />
   </ItemGroup>

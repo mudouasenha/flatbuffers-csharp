@@ -1,4 +1,5 @@
 ﻿using Avro.Specific;
+using Capnp;
 using Google.Protobuf;
 using MessagePack;
 using ProtoBuf;
@@ -20,6 +21,9 @@ namespace Serialization.Domain.Entities
 
         [NonSerialized]
         private avroObjects.SocialInfo avroObject;
+
+        [NonSerialized]
+        private CapnpGen.SocialInfo capnpObject;
 
         public SocialInfo()
         { }
@@ -106,6 +110,22 @@ namespace Serialization.Domain.Entities
                 Likes = Likes,
                 Views = Views,
                 Comments = Comments.ToList()
+            };
+        }
+
+        public ICapnpSerializable GetCapnProtoMessage()
+        {
+            return capnpObject;
+        }
+
+        public void CreateCapnProtoMessage()
+        {
+            capnpObject = new CapnpGen.SocialInfo()
+            {
+                Comments = Comments.ToArray(),
+                Dislikes = (uint)Dislikes,
+                Likes = (uint)Likes,
+                Views = (uint)Views
             };
         }
     }

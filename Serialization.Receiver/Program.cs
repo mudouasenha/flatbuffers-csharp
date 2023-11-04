@@ -1,8 +1,15 @@
 using Serialization.Receiver.Formatters;
 using Serialization.Receiver.Services;
 using Serialization.Services;
+using System.Net;
 
+ServicePointManager.DefaultConnectionLimit = 5000;
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxConcurrentConnections = 10000;
+});
 
 builder.Services.AddServices();
 builder.Services.AddSingleton<RequestCounterService>();

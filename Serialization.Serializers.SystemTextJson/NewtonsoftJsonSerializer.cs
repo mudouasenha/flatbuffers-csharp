@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Serialization.Serializers.SystemTextJson
 {
-    public class NewtonsoftJsonSerializer : BaseDirectSerializer<MemoryStream>
+    public class NewtonsoftJsonSerializer : BaseDirectSerializer<byte[]>
     {
         private readonly JsonSerializer jsonSerializer;
 
@@ -15,61 +15,39 @@ namespace Serialization.Serializers.SystemTextJson
 
         #region Serialization
 
-        protected override MemoryStream Serialize<T>(T original, out long messageSize)
+        protected override byte[] Serialize<T>(T original, out long messageSize)
         {
-            var stream = new MemoryStream();
-            using var tw = new StreamWriter(stream, Encoding.UTF8, 4096, true);
-            using var jw = new JsonTextWriter(tw);
-            jsonSerializer.Serialize(jw, original);
-
-            // Flush needed for moving the stream position
-            jw.Flush();
-
-            messageSize = stream.Position;
-            return stream;
+            var json = JsonConvert.SerializeObject(original);
+            byte[] data = Encoding.UTF8.GetBytes(json);
+            messageSize = data.Length;
+            return data;
         }
 
-        protected override MemoryStream Serialize(Type type, ISerializationTarget original, out long messageSize)
+        protected override byte[] Serialize(Type type, ISerializationTarget original, out long messageSize)
         {
-            var stream = new MemoryStream();
-            using var tw = new StreamWriter(stream, Encoding.UTF8, 4096, true);
-            using var jw = new JsonTextWriter(tw);
-            jsonSerializer.Serialize(jw, original, type);
-
-            // Flush needed for moving the stream position
-            jw.Flush();
-
-            messageSize = stream.Position;
-            return stream;
+            var json = JsonConvert.SerializeObject(original);
+            byte[] data = Encoding.UTF8.GetBytes(json);
+            messageSize = data.Length;
+            return data;
         }
 
-        #endregion
+        #endregion Serialization
 
         #region Deserialization
 
-        protected override ISerializationTarget Deserialize<T>(MemoryStream stream)
+        protected override ISerializationTarget Deserialize<T>(byte[] data)
         {
-            T copy;
-            stream.Position = 0;
-            using var tr = new StreamReader(stream, Encoding.UTF8, false, 4096, true);
-            using var jr = new JsonTextReader(tr);
-            copy = jsonSerializer.Deserialize<T>(jr);
-
-            return copy;
+            string json = Encoding.UTF8.GetString(data);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
-        protected override ISerializationTarget Deserialize(Type type, MemoryStream stream)
+        protected override ISerializationTarget Deserialize(Type type, byte[] data)
         {
-            object copy;
-            stream.Position = 0;
-            using var tr = new StreamReader(stream, Encoding.UTF8, false, 4096, true);
-            using var jr = new JsonTextReader(tr);
-            copy = jsonSerializer.Deserialize(jr, type);
-
-            return (ISerializationTarget)copy;
+            string json = Encoding.UTF8.GetString(data);
+            return (ISerializationTarget)JsonConvert.DeserializeObject(json, type);
         }
 
-        #endregion
+        #endregion Deserialization
 
         public override string ToString()
         {

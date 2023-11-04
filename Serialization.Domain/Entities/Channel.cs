@@ -1,4 +1,5 @@
 ﻿using Avro.Specific;
+using Capnp;
 using Google.Protobuf;
 using MessagePack;
 using ProtoBuf;
@@ -20,6 +21,9 @@ namespace Serialization.Domain.Entities
 
         [NonSerialized]
         private avroObjects.Channel avroObject;
+
+        [NonSerialized]
+        private ICapnpSerializable capnpObject;
 
         public Channel()
         { }
@@ -98,6 +102,21 @@ namespace Serialization.Domain.Entities
                 ChannelId = ChannelId,
                 Name = Name,
                 Subscribers = Subscribers
+            };
+        }
+
+        public ICapnpSerializable GetCapnProtoMessage()
+        {
+            return capnpObject;
+        }
+
+        public void CreateCapnProtoMessage()
+        {
+            capnpObject = new CapnpGen.Channel()
+            {
+                ChannelId = ChannelId,
+                Name = Name,
+                Subscribers = (uint)Subscribers
             };
         }
     }

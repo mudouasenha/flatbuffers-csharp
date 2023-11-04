@@ -3,7 +3,9 @@ using Serialization.Domain;
 using Serialization.Domain.Interfaces;
 using Serialization.Receiver.Services;
 using Serialization.Serializers.ApacheAvro;
+using Serialization.Serializers.CapnProto;
 using Serialization.Services.Extensions;
+using System.Diagnostics;
 
 namespace Serialization.Receiver.Controllers
 {
@@ -18,10 +20,10 @@ namespace Serialization.Receiver.Controllers
             this.requestCounterService = requestCounterService;
         }
 
-        [HttpPost()]
+        [HttpPost]
         [Consumes("application/octet-stream")]
         [Produces("application/octet-stream")]
-        public async Task<FileContentResult> DeserializeAndSerialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
+        public FileContentResult DeserializeAndSerialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
         {
             try
             {
@@ -56,22 +58,28 @@ namespace Serialization.Receiver.Controllers
             return null;
         }
 
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            //requestCounterService.IncrementCounter();
+            Console.WriteLine($"here, {DateTime.Now}");
+            return Ok();
+        }
+
         [HttpPost("deserialize")]
-        [Consumes("application/octet-stream")]
-        [Produces("application/octet-stream")]
         public async Task Deserialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
         {
-            try
+            await Task.Run(() =>
             {
+                Stopwatch sw = Stopwatch.StartNew();
                 var serializer = serializerType.GetSerializer();
                 var targetType = serializationType.GetTargetType();
 
                 var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+                requestCounterService.IncrementCounter();
+                sw.Stop();
+                Console.WriteLine(sw.Elapsed.TotalMilliseconds * 1000000);
+            });
         }
 
         [HttpPost("serialize")]
@@ -79,31 +87,22 @@ namespace Serialization.Receiver.Controllers
         [Produces("application/octet-stream")]
         public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] ISerializationTarget serializableObject)
         {
-            try
+            var serializer = serializerType.GetSerializer();
+            var targetType = serializationType.GetTargetType();
+
+            long size;
+
+            GenerateIntermediateIfNeeded(serializableObject, serializer);
+
+            size = serializableObject.Serialize(serializer);
+
+            if (serializer.GetSerializationResult(targetType, out var serialized))
             {
-                var serializer = serializerType.GetSerializer();
-                var targetType = serializationType.GetTargetType();
+                Response.ContentType = "application/octet-stream";
+                Response.Headers.Add("Content-Length", size.ToString());
 
-                long size;
-
-                GenerateIntermediateIfNeeded(serializableObject, serializer);
-
-                size = serializableObject.Serialize(serializer);
-
-                if (serializer.GetSerializationResult(targetType, out var serialized))
-                {
-                    Response.ContentType = "application/octet-stream";
-                    Response.Headers.Add("Content-Length", size.ToString());
-
-                    requestCounterService.IncrementCounter();
-                    return File((byte[])serialized, "application/octet-stream");
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+                requestCounterService.IncrementCounter();
+                return File((byte[])serialized, "application/octet-stream");
             }
 
             return null;
@@ -117,9 +116,9 @@ namespace Serialization.Receiver.Controllers
         }
 
         [HttpPost("monitoring/save-results")]
-        public async Task<IActionResult> RecordCsv([FromQuery] string datetime, [FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads)
+        public async Task<IActionResult> RecordCsv([FromQuery] string datetime, [FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads, [FromQuery] string method)
         {
-            requestCounterService.SaveToCsv(datetime, serializerType, serializationType, numThreads);
+            requestCounterService.SaveToCsv(datetime, serializerType, serializationType, numThreads, method);
             return Ok();
         }
 
@@ -131,6 +130,8 @@ namespace Serialization.Receiver.Controllers
                 obj.CreateThriftMessage();
             if (serializer is ApacheAvroSerializer)
                 obj.CreateAvroMessage();
+            if (serializer is CapnProtoSerializer)
+                obj.CreateCapnProtoMessage();
         }
     }
 }

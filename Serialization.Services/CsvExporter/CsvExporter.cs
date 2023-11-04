@@ -5,11 +5,11 @@
         public void ExportMeasurementsREST(string filePath, ExecutionInfo info)
         {
             using var writer = new StreamWriter(filePath, true);
-            if (!File.Exists(filePath)) writer.WriteLine("Target,Serializer,NumMessages,NumThreads,Timestamp,Latency");
+            if (!File.Exists(filePath)) writer.WriteLine("Target,Method,Serializer,NumMessages,NumThreads,Timestamp,Latency");
 
             foreach (var measurement in info.Measurements)
             {
-                var line = $"{EscapeCsvField(info.Target)},{EscapeCsvField(info.Serializer)},{info.NumMessages},{info.NumThreads},{measurement.Timestamp},{measurement.Latency}";
+                var line = $"{EscapeCsvField(info.Target)},{EscapeCsvField(measurement.Method)},{EscapeCsvField(info.Serializer)},{info.NumMessages},{info.NumThreads},{measurement.Timestamp},{measurement.Latency}";
                 writer.WriteLine(line);
             }
         }
@@ -39,6 +39,6 @@
             }
         }
 
-        private string EscapeCsvField(string field) => field.Contains(',') ? $"\"{field}\"" : field;
+        private string EscapeCsvField(string field) => !string.IsNullOrEmpty(field) && field.Contains(',') ? $"\"{field}\"" : field;
     }
 }
