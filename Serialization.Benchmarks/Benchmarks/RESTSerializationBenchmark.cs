@@ -19,7 +19,6 @@ namespace Serialization.Benchmarks.Benchmarks
     {
         private RestClient client = new();
         private ExecutionInfo executionInfo;
-        private CsvExporter csvExporter = new();
         private static string BenchmarkDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
         private const string fileName = "Measurements-REST-Client-SerializationBenchmark.csv";
         private readonly long epochTicks = new DateTime(1970, 1, 1).Ticks;
@@ -29,7 +28,7 @@ namespace Serialization.Benchmarks.Benchmarks
         [ParamsSource(nameof(Serializers))]
         public ISerializer Serializer { get; set; }
 
-        [ParamsSource(nameof(Targets))]
+        //[ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
         [Params(64, 128/*, 192/*, 256, 320/*, 384, 448, 512, 576, 640*/)]
@@ -49,7 +48,6 @@ namespace Serialization.Benchmarks.Benchmarks
 
         public IEnumerable<ISerializationTarget> Targets => new ISerializationTarget[]
         {
-            GenerateRandomTarget()
         };
 
         private ISerializationTarget GenerateRandomTarget()
@@ -68,13 +66,15 @@ namespace Serialization.Benchmarks.Benchmarks
         [GlobalSetup]
         public async Task GlobalSetup()
         {
-            await parallelService.DispatchAsync(Serializer, null, NumThreads);
+            //await parallelService.DispatchAsync(Serializer, null, NumThreads);
             executionInfo = new ExecutionInfo(Target.ToString(), Serializer.ToString(), 0, NumThreads);
         }
 
         [IterationSetup(Target = nameof(Latency_RTT))]
         public void IterationSetup()
         {
+            Target = GenerateRandomTarget();
+
             if (Serializer is ProtobufSerializer)
                 Target.CreateProtobufMessage();
             if (Serializer is ApacheThriftSerializer)
@@ -107,9 +107,9 @@ namespace Serialization.Benchmarks.Benchmarks
         [GlobalCleanup]
         public async Task GlobalCleanup()
         {
-            csvExporter.ExportMeasurementsREST(fileName, executionInfo);
-            await parallelService.ClearAsync();
-            await parallelService.SaveServerResultsAsync(BenchmarkDateTime, Serializer.ToString(), Target.GetType().Name, NumThreads, null);
+            CsvExporter.ExportMeasurementsREST(fileName, executionInfo);
+            //await parallelService.ClearAsync();
+            //await parallelService.SaveServerResultsAsync(BenchmarkDateTime, Serializer.ToString(), Target.GetType().Name, NumThreads, null);
             Serializer.Cleanup();
             await Task.Delay(500);
         }

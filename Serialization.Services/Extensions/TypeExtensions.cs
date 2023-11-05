@@ -11,15 +11,15 @@ namespace Serialization.Services.Extensions
 {
     public static class TypeExtensions
     {
-        public static ISerializer GetSerializer(this string type)
+        public static (ISerializer serializer, short key) GetSerializer(this string type)
         {
-            if (type == "FlatBuffers") return new FlatBuffersSerializer();
-            if (type == "Avro") return new ApacheAvroSerializer();
-            if (type == "Thrift") return new ApacheThriftSerializer();
-            if (type == "MessagePack-CSharp") return new MessagePackCSharpSerializer();
-            if (type == "CapnProto") return new CapnProtoSerializer();
-            if (type == "Newtonsoft.Json") return new NewtonsoftJsonSerializer();
-            if (type == "Protobuf") return new ProtobufSerializer();
+            if (type == "FlatBuffers") return (new FlatBuffersSerializer(), 2);
+            if (type == "Avro") return (new ApacheAvroSerializer(), 0);
+            if (type == "Thrift") return (new ApacheThriftSerializer(), 6);
+            if (type == "MessagePack-CSharp") return (new MessagePackCSharpSerializer(), 3);
+            if (type == "CapnProto") return (new CapnProtoSerializer(), 1);
+            if (type == "Newtonsoft.Json") return (new NewtonsoftJsonSerializer(), 4);
+            if (type == "Protobuf") return (new ProtobufSerializer(), 5);
             //if (typeToCheck == "BinaryFormatterSerializer") return new BinaryFormatterSerializer();
 
             throw new ArgumentException("Unsupported target type");

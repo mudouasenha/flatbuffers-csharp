@@ -10,19 +10,27 @@ namespace Serialization.Receiver.Services
 {
     public static class SerializerFactory
     {
-        private static readonly Dictionary<string, ISerializer> Serializers = new Dictionary<string, ISerializer>
-    {
-        { "FlatBuffers", new FlatBuffersSerializer() },
-        { "Avro", new ApacheAvroSerializer() },
-        { "Thrift", new ApacheThriftSerializer() },
-        { "MessagePack-CSharp", new MessagePackCSharpSerializer() },
-        { "CapnProto", new CapnProtoSerializer() },
-        { "Newtonsoft.Json", new NewtonsoftJsonSerializer() },
-        { "Protobuf", new ProtobufSerializer() },
+        private static readonly FlatBuffersSerializer flatBuffers = new FlatBuffersSerializer();
+        private static readonly ApacheAvroSerializer avro = new ApacheAvroSerializer();
+        private static readonly ApacheThriftSerializer thrift = new ApacheThriftSerializer();
+        private static readonly MessagePackCSharpSerializer messagePack = new MessagePackCSharpSerializer();
+        private static readonly CapnProtoSerializer capnproto = new CapnProtoSerializer();
+        private static readonly NewtonsoftJsonSerializer newtonsoft = new NewtonsoftJsonSerializer();
+        private static readonly ProtobufSerializer protobuf = new ProtobufSerializer();
+
+        private static readonly Dictionary<string, (ISerializer serializer, short key)> Serializers = new()
+        {
+        { "FlatBuffers", (flatBuffers, 2) },
+        { "Avro", (avro, 0) },
+        { "Thrift", (thrift, 6) },
+        { "MessagePack-CSharp", (messagePack, 3) },
+        { "CapnProto", (capnproto, 1) },
+        { "Newtonsoft.Json", (newtonsoft, 4) },
+        { "Protobuf", (protobuf, 5) },
         // Adicione outros tipos e implementações aqui
     };
 
-        public static ISerializer GetSerializer(string type)
+        public static (ISerializer serializer, short key) GetSerializer(string type)
         {
             if (Serializers.TryGetValue(type, out var serializer))
             {

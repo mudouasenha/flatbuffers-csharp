@@ -6,6 +6,10 @@
 
         long BenchmarkSerialize(Type type, ISerializationTarget original);
 
+        (long size, object serialized) SerializeAndReturn<T>(T original) where T : ISerializationTarget;
+
+        (long size, object serialized) SerializeAndReturn(Type type, ISerializationTarget original);
+
         long BenchmarkDeserialize<T>(T original) where T : ISerializationTarget;
 
         long BenchmarkDeserialize(Type type, ISerializationTarget original);

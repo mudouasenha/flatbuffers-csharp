@@ -1,4 +1,24 @@
-﻿{
+{
+  "profiles": {
+    "Serialization.Receiver": {
+      "commandName": "Project",
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://127.0.0.1:5020"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchUrl": "http://127.0.0.1:5020/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://127.0.0.1:5020"
+      },
+      "distributionName": ""
+    }
+  },
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -6,18 +26,6 @@
     "iisExpress": {
       "applicationUrl": "http://127.0.0.1:8955",
       "sslPort": 44388
-    }
-  },
-  "profiles": {
-    "Serialization.Receiver": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "launchUrl": "swagger",
-      "applicationUrl": "http://127.0.0.1:5020",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
     }
   }
 }

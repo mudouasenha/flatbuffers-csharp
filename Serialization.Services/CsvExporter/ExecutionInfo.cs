@@ -2,6 +2,30 @@
 
 namespace Serialization.Services.CsvExporter
 {
+    public static class SerializersDictionary
+    {
+        public static Dictionary<short, string> Serializers { get; set; } = new Dictionary<short, string>()
+        {
+            { 0, "Avro" },
+            { 1, "CapnProto" },
+            { 2, "FlatBuffers" },
+            { 3, "MessagePack-CSharp" },
+            { 4, "Newtonnsoft.Json" },
+            { 5, "Protobuf" },
+            { 6, "Thrift" },
+            { 7, "BinaryFormatter" },
+        };
+
+        public static string GetStringFromKey(short key)
+        {
+            if (Serializers.TryGetValue(key, out string value))
+            {
+                return value;
+            }
+            return "Key not found";
+        }
+    }
+
     public class ExecutionInfo
     {
         public ExecutionInfo(string target, string serializer, int numMessages, int numThreads, string method = "")
@@ -49,11 +73,15 @@ namespace Serialization.Services.CsvExporter
 
     public record MeasurementRestReceiver
     {
-        public MeasurementRestReceiver(int requests, long timestamp)
+        public MeasurementRestReceiver(int requests, long timestamp, string method, short serializerKey)
         {
             Timestamp = timestamp;
             Requests = requests;
+            Method = method;
+            Serializer = SerializersDictionary.GetStringFromKey(serializerKey);
         }
+        public string Serializer { get; set; }
+        public string Method { get; set; }
         public long Timestamp { get; set; }
         public int Requests { get; set; }
 

@@ -2,9 +2,9 @@
 {
     public interface IRequestCounterService
     {
-        public void IncrementCounter();
+        public void IncrementCounter(short serializer, bool? serialize = null);
 
-        public void SaveToCsv(string datetime, string serializerType, string serializationType, int numThreads, string method);
+        public void SaveToCsv(string serializerType, string serializationType, int numThreads, string method);
 
         public void StartMonitoring();
     }

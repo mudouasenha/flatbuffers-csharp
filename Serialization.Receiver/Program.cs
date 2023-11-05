@@ -9,14 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.Limits.MaxConcurrentConnections = 10000;
-});
+})
+    .UseKestrel(options => options.Limits.MaxConcurrentUpgradedConnections = null);
 
 builder.Services.AddServices();
 builder.Services.AddSingleton<RequestCounterService>();
 builder.Services.AddControllers(options =>
 {
+    options.MaxIAsyncEnumerableBufferLimit = 1000;
     options.InputFormatters.Add(new ByteArrayInputFormatter());
-    //options.OutputFormatters.Insert(0, new ByteArrayOutputFormatter());
+    options.OutputFormatters.Insert(0, new ByteArrayOutputFormatter());
 }
 );
 // builder.Services.AddSingleton<IRequestCounter, RequestCounter>();

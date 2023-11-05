@@ -21,7 +21,7 @@ namespace Serializaion.Sender.Controllers
         {
             try
             {
-                var serializer = serializerType.GetSerializer();
+                (var serializer, short _) = serializerType.GetSerializer();
                 var targetType = !string.IsNullOrEmpty(serializationType) ? serializationType.GetTargetType() : null;
 
                 _workloadService.RunParallelRestAsync(serializer, targetType, numThreads);

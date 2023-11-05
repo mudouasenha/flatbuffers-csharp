@@ -198,6 +198,25 @@ namespace Serialization.Domain.Interfaces
 
         public abstract Type GetSerializationOutPutType();
 
+        public (long size, object serialized) SerializeAndReturn<T>(T original) where T : ISerializationTarget
+        {
+            var result = Serialize(original, out long messageSize);
+            return (messageSize, result);
+        }
+
+        public (long size, object serialized) SerializeAndReturn(Type type, ISerializationTarget original)
+        {
+            var result = Serialize(type, original, out long messageSize);
+            return (messageSize, result);
+        }
+
+        public ISerializationTarget DeserializeAndReturn(Type type, object serialized)
+        {
+            var copy = Deserialize(type, (TSerialization)serialized);
+            GetDeserializationResult(type, out ISerializationTarget result);
+            return result;
+        }
+
         //public bool GetSerializationResult<T>(Type type, out T result) where T : class => GetSerializationResult(type, out result);
     }
 

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="LoadTests\sample_tests.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="LoadTests\sample_tests.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.9" />
     <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />

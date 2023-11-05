@@ -27,7 +27,7 @@ namespace Serialization.Receiver.Controllers
         {
             try
             {
-                ISerializer serializer = serializerType.GetSerializer();
+                (ISerializer serializer, short key) = serializerType.GetSerializer();
                 var targetType = serializationType.GetTargetType();
 
                 var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
@@ -44,7 +44,7 @@ namespace Serialization.Receiver.Controllers
                     Response.ContentType = "application/octet-stream";
                     Response.Headers.Add("Content-Length", size.ToString());
 
-                    requestCounterService.IncrementCounter();
+                    requestCounterService.IncrementCounter(key);
                     return File((byte[])serialized, "application/octet-stream");
                 }
 
@@ -59,10 +59,20 @@ namespace Serialization.Receiver.Controllers
         }
 
         [HttpGet("test")]
-        public IActionResult Test()
+        [Consumes("application/octet-stream")]
+        [Produces("application/octet-stream")]
+        public async Task<IActionResult> Test()
         {
-            //requestCounterService.IncrementCounter();
-            Console.WriteLine($"here, {DateTime.Now}");
+            await Task.Run(() =>
+            {
+                short serializerKey = (short)new Random().Next(8);
+                requestCounterService.IncrementCounter(serializerKey);
+                requestCounterService.IncrementCounter(serializerKey, true);
+                requestCounterService.IncrementCounter(serializerKey, false);
+                //Console.WriteLine($"here, {DateTime.Now}");
+                return Ok();
+            });
+
             return Ok();
         }
 
@@ -72,11 +82,11 @@ namespace Serialization.Receiver.Controllers
             await Task.Run(() =>
             {
                 Stopwatch sw = Stopwatch.StartNew();
-                var serializer = serializerType.GetSerializer();
+                (var serializer, short key) = serializerType.GetSerializer();
                 var targetType = serializationType.GetTargetType();
 
                 var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
-                requestCounterService.IncrementCounter();
+                requestCounterService.IncrementCounter(key, false);
                 sw.Stop();
                 Console.WriteLine(sw.Elapsed.TotalMilliseconds * 1000000);
             });
@@ -87,7 +97,7 @@ namespace Serialization.Receiver.Controllers
         [Produces("application/octet-stream")]
         public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] ISerializationTarget serializableObject)
         {
-            var serializer = serializerType.GetSerializer();
+            (var serializer, short key) = serializerType.GetSerializer();
             var targetType = serializationType.GetTargetType();
 
             long size;
@@ -101,7 +111,7 @@ namespace Serialization.Receiver.Controllers
                 Response.ContentType = "application/octet-stream";
                 Response.Headers.Add("Content-Length", size.ToString());
 
-                requestCounterService.IncrementCounter();
+                requestCounterService.IncrementCounter(key, true);
                 return File((byte[])serialized, "application/octet-stream");
             }
 
@@ -116,9 +126,9 @@ namespace Serialization.Receiver.Controllers
         }
 
         [HttpPost("monitoring/save-results")]
-        public async Task<IActionResult> RecordCsv([FromQuery] string datetime, [FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads, [FromQuery] string method)
+        public async Task<IActionResult> RecordCsv([FromQuery] string serializerType, [FromQuery] string serializationType, [FromQuery] int numThreads, [FromQuery] string method)
         {
-            requestCounterService.SaveToCsv(datetime, serializerType, serializationType, numThreads, method);
+            requestCounterService.SaveToCsv(serializerType, serializationType, numThreads, method);
             return Ok();
         }
 

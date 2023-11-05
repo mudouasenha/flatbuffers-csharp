@@ -1,8 +1,8 @@
 ﻿namespace Serialization.Services.CsvExporter
 {
-    public class CsvExporter
+    public static class CsvExporter
     {
-        public void ExportMeasurementsREST(string filePath, ExecutionInfo info)
+        public static void ExportMeasurementsREST(string filePath, ExecutionInfo info)
         {
             using var writer = new StreamWriter(filePath, true);
             if (!File.Exists(filePath)) writer.WriteLine("Target,Method,Serializer,NumMessages,NumThreads,Timestamp,Latency");
@@ -14,31 +14,24 @@
             }
         }
 
-        public void ExportMeasurementsRESTReceiver(string filePath, IReadOnlyCollection<MeasurementRestReceiver> measurements, ExecutionInfo info)
+        public static void ExportMeasurementsRESTReceiver(string filePath, IReadOnlyCollection<MeasurementRestReceiver> measurements, ExecutionInfo info)
         {
-            using var writer = new StreamWriter(filePath, true);
-            if (!File.Exists(filePath)) writer.WriteLine("Target,Serializer,NumMessages,NumThreads,Timestamp,Requests");
-
-            foreach (var measurement in measurements)
+            if (!File.Exists(filePath))
             {
-                var line = $"{EscapeCsvField(info.Target)},{EscapeCsvField(info.Serializer)},{info.NumMessages},{info.NumThreads},{measurement.Timestamp},{measurement.Requests}";
-                writer.WriteLine(line);
+                using var writer = new StreamWriter(filePath, false);
+                writer.WriteLine("Target,Serializer,Method,NumMessages,NumThreads,Timestamp,Requests");
+            }
+
+            using (var writer = new StreamWriter(filePath, true))
+            {
+                foreach (var measurement in measurements)
+                {
+                    var line = $"{EscapeCsvField(info.Target)},{EscapeCsvField(measurement.Serializer)},{EscapeCsvField(measurement.Method)},{info.NumMessages},{info.NumThreads},{measurement.Timestamp},{measurement.Requests}";
+                    writer.WriteLine(line);
+                }
             }
         }
 
-        public void ExportMeasurementsRESTReceiver(string filePath, IReadOnlyCollection<MeasurementRestReceiver> measurements)
-        {
-            using var writer = new StreamWriter(filePath, true);
-
-            if (!File.Exists(filePath)) writer.WriteLine("Timestamp,Requests");
-
-            foreach (var measurement in measurements)
-            {
-                var line = $"{measurement.Timestamp},{measurement.Requests}";
-                writer.WriteLine(line);
-            }
-        }
-
-        private string EscapeCsvField(string field) => !string.IsNullOrEmpty(field) && field.Contains(',') ? $"\"{field}\"" : field;
+        private static string EscapeCsvField(string field) => !string.IsNullOrEmpty(field) && field.Contains(',') ? $"\"{field}\"" : field;
     }
 }
