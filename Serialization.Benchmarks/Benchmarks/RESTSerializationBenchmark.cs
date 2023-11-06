@@ -5,9 +5,6 @@ using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
 using Serialization.Serializers.CapnProto;
-using Serialization.Serializers.FlatBuffers;
-using Serialization.Serializers.MessagePack;
-using Serialization.Serializers.SystemTextJson;
 using Serialization.Services;
 using Serialization.Services.CsvExporter;
 using System.Diagnostics;
@@ -31,18 +28,18 @@ namespace Serialization.Benchmarks.Benchmarks
         //[ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        [Params(64, 128/*, 192/*, 256, 320/*, 384, 448, 512, 576, 640*/)]
+        [Params(50, 100, 200, 300, 400/*, 192/*, 256, 320/*, 384, 448, 512, 576, 640*/)]
         public int NumThreads { get; set; }
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
         {
-            new FlatBuffersSerializer(),
-            new MessagePackCSharpSerializer(),
-            new NewtonsoftJsonSerializer(),
-            //new BinaryFormatterSerializer(),
-            new ProtobufSerializer(),
-            new ApacheThriftSerializer(),
-            new ApacheAvroSerializer(),
+            //new FlatBuffersSerializer(),
+            //new MessagePackCSharpSerializer(),
+            //new NewtonsoftJsonSerializer(),
+            ////new BinaryFormatterSerializer(),
+            //new ProtobufSerializer(),
+            //new ApacheThriftSerializer(),
+            //new ApacheAvroSerializer(),
             new CapnProtoSerializer(),
         };
 
@@ -67,10 +64,13 @@ namespace Serialization.Benchmarks.Benchmarks
         public async Task GlobalSetup()
         {
             //await parallelService.DispatchAsync(Serializer, null, NumThreads);
-            executionInfo = new ExecutionInfo(Target.ToString(), Serializer.ToString(), 0, NumThreads);
+            executionInfo = new ExecutionInfo("Mixed", Serializer.ToString(), 0, NumThreads);
+            Console.WriteLine("Aguardando a inicialização do próximo teste.");
+            Console.ReadKey();
+            Console.WriteLine("Teste seguinte inicializado.");
         }
 
-        [IterationSetup(Target = nameof(Latency_RTT))]
+        [IterationSetup(Target = nameof(SerializeAndDeserialize))]
         public void IterationSetup()
         {
             Target = GenerateRandomTarget();
@@ -88,7 +88,7 @@ namespace Serialization.Benchmarks.Benchmarks
         }
 
         [Benchmark]
-        public void Latency_RTT()
+        public void SerializeAndDeserialize()
         {
             if (Serializer.GetSerializationResult(Target.GetType(), out var serializedTarget))
             {
@@ -97,7 +97,7 @@ namespace Serialization.Benchmarks.Benchmarks
                                 .SetQueryParam("serializerType", Serializer.ToString())
                                 .SetQueryParam("serializationType", Target.GetType().Name), serializedTarget).GetAwaiter().GetResult();
                 stopwatch.Stop();
-                var result = new MeasurementRest(stopwatch.ElapsedMilliseconds, DateTimeOffset.Now.ToUnixTimeMilliseconds(), nameof(Latency_RTT));
+                var result = new MeasurementRest(stopwatch.ElapsedMilliseconds, DateTimeOffset.Now.ToUnixTimeMilliseconds(), nameof(SerializeAndDeserialize));
                 executionInfo.Measurements.Add(result);
             }
         }
@@ -108,7 +108,6 @@ namespace Serialization.Benchmarks.Benchmarks
         public async Task GlobalCleanup()
         {
             CsvExporter.ExportMeasurementsREST(fileName, executionInfo);
-            //await parallelService.ClearAsync();
             //await parallelService.SaveServerResultsAsync(BenchmarkDateTime, Serializer.ToString(), Target.GetType().Name, NumThreads, null);
             Serializer.Cleanup();
             await Task.Delay(500);

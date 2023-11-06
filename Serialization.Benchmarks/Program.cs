@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Hosting;
+using Serialization.Benchmarks.Benchmarks;
+using Serialization.Benchmarks.Configs;
 using Serialization.Services;
-using System.Text.Json;
-using static Serialization.Services.WorkloadService;
 
 //ServicePointManager.DefaultConnectionLimit = 5000;
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
@@ -16,11 +17,11 @@ builder.Services.AddServices();
 
 //var config = new MultipleSerializationBenchmarkConfig();
 //var config2 = new ConcurrencySerializationBenchmarkConfig();
-//var config3 = new RESTSerializationBenchmarkConfig();
+var config3 = new RESTSerializationBenchmarkConfig();
 
 //BenchmarkRunner.Run<MultipleSerializationBenchmark>(config);
 //BenchmarkRunner.Run<ConcurrencySerializationBenchmark>(config2);
-//BenchmarkRunner.Run<RESTSerializationBenchmark>(config3);
+BenchmarkRunner.Run<RESTSerializationBenchmark>(config3);
 
 //BenchmarkRunner.Run<MultipleSerializationBenchmark>(config);
 
@@ -31,46 +32,33 @@ var host = builder.Build();
 //ser.BenchmarkSerialize(obj.GetType(), obj);
 //ser.BenchmarkDeserialize(obj.GetType(), obj);
 
-var myService = new WorkloadService();
+//var myService = new WorkloadService();
 
-List<RequestMessage> flatBuffers = myService.GenerateRequests("FlatBuffers", 1000);
-List<RequestMessage> avro = myService.GenerateRequests("Avro", 1000);
-List<RequestMessage> thrift = myService.GenerateRequests("Thrift", 1000);
-List<RequestMessage> messagePack = myService.GenerateRequests("MessagePack-CSharp", 1000);
-List<RequestMessage> capnProto = myService.GenerateRequests("CapnProto", 1000);
-List<RequestMessage> newtonsoft = myService.GenerateRequests("Newtonsoft.Json", 1000);
-List<RequestMessage> protobuf = myService.GenerateRequests("Protobuf", 1000);
+//List<RequestMessage> flatBuffers = myService.GenerateRequests("FlatBuffers", 1000);
+//List<RequestMessage> avro = myService.GenerateRequests("Avro", 1000);
+//List<RequestMessage> thrift = myService.GenerateRequests("Thrift", 1000);
+//List<RequestMessage> messagePack = myService.GenerateRequests("MessagePack-CSharp", 1000);
+//List<RequestMessage> capnProto = myService.GenerateRequests("CapnProto", 1000);
+//List<RequestMessage> newtonsoft = myService.GenerateRequests("Newtonsoft.Json", 1000);
+//List<RequestMessage> protobuf = myService.GenerateRequests("Protobuf", 1000);
 
-string json = JsonSerializer.Serialize(flatBuffers);
-File.WriteAllText("flatbuffers.json", json);
+//string json = JsonSerializer.Serialize(flatBuffers);
+//File.WriteAllText("flatbuffers.json", json);
 
-string avroJson = JsonSerializer.Serialize(avro);
-File.WriteAllText("avro.json", avroJson);
+//string avroJson = JsonSerializer.Serialize(avro);
+//File.WriteAllText("avro.json", avroJson);
 
-string thriftJson = JsonSerializer.Serialize(thrift);
-File.WriteAllText("thrift.json", thriftJson);
+//string thriftJson = JsonSerializer.Serialize(thrift);
+//File.WriteAllText("thrift.json", thriftJson);
 
-string messagePackJson = JsonSerializer.Serialize(messagePack);
-File.WriteAllText("messagePack.json", messagePackJson);
+//string messagePackJson = JsonSerializer.Serialize(messagePack);
+//File.WriteAllText("messagePack.json", messagePackJson);
 
-string capnProtoJson = JsonSerializer.Serialize(capnProto);
-File.WriteAllText("capnProto.json", capnProtoJson);
+//string capnProtoJson = JsonSerializer.Serialize(capnProto);
+//File.WriteAllText("capnProto.json", capnProtoJson);
 
-string newtonsoftJson = JsonSerializer.Serialize(newtonsoft);
-File.WriteAllText("newtonsoftJson.json", newtonsoftJson);
+//string newtonsoftJson = JsonSerializer.Serialize(newtonsoft);
+//File.WriteAllText("newtonsoftJson.json", newtonsoftJson);
 
-string protobufJson = JsonSerializer.Serialize(protobuf);
-File.WriteAllText("protobuf.json", protobufJson);
-//await myService.DispatchAsync(
-//    new FlatBuffersSerializer(),
-//    new ChannelBuilder().Generate().GetType().ToString(),
-//    24);
-
-//Console.WriteLine("Starting Processing");
-//await myService.DispatchAsync(
-//    new FlatBuffersSerializer(),
-//    new ChannelBuilder().Generate().ToString(),
-//    100);
-
-//await myService.Initialize();
-//host.Run();
+//string protobufJson = JsonSerializer.Serialize(protobuf);
+//File.WriteAllText("protobuf.json", protobufJson);

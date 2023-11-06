@@ -10,7 +10,7 @@ namespace Serialization.Services.CsvExporter
             { 1, "CapnProto" },
             { 2, "FlatBuffers" },
             { 3, "MessagePack-CSharp" },
-            { 4, "Newtonnsoft.Json" },
+            { 4, "Newtonsoft.Json" },
             { 5, "Protobuf" },
             { 6, "Thrift" },
             { 7, "BinaryFormatter" },

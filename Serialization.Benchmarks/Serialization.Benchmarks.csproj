@@ -8,11 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="LoadTests\sample_tests.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="LoadTests\sample_tests.js" />
+    <Compile Remove="LoadTests\**" />
+    <EmbeddedResource Remove="LoadTests\**" />
+    <None Remove="LoadTests\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,5 +24,6 @@
     <ProjectReference Include="..\Serialization.Domain\Serialization.Domain.csproj" />
     <ProjectReference Include="..\Serialization.Services\Serialization.Services.csproj" />
   </ItemGroup>
+	
 
 </Project>

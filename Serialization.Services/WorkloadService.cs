@@ -104,6 +104,8 @@ namespace Serialization.Services
 
             public string Headers { get; set; }
 
+            public string BinaryFilePath { get; set; }
+
             public string Body { get; set; }
 
             public string Url { get; set; }
@@ -190,7 +192,24 @@ namespace Serialization.Services
                     if (requestToSave.ContentType == "application/octet-stream")
                     {
                         var bytes = temp.Content.ReadAsByteArrayAsync().Result;
-                        requestToSave.Body = Encoding.UTF8.GetString(bytes);
+                        //requestToSave.BinaryBody = bytes;// Convert.ToBase64String(bytes);
+                        requestToSave.Body = BitConverter.ToString(bytes);
+
+                        if (!Directory.Exists(serializerType))
+                        {
+                            Directory.CreateDirectory(serializerType);
+                        }
+
+                        // Specify the file path within the directory
+                        string filePath = Path.Combine(serializerType, $"{i}.bin");
+                        requestToSave.BinaryFilePath = filePath;
+                        //MemoryStream stream = new MemoryStream();
+
+                        BinaryWriter bw = new BinaryWriter(File.Open(filePath, FileMode.Create));
+
+                        bw.Write(bytes);
+
+                        //File.WriteAllBytes(requestToSave.BinaryFilePath, bytes);
                     }
                     else requestToSave.Body = JsonConvert.SerializeObject(temp.Content.ReadAsStringAsync().Result);
 

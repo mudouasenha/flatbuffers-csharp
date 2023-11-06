@@ -25,37 +25,30 @@ namespace Serialization.Receiver.Controllers
         [Produces("application/octet-stream")]
         public FileContentResult DeserializeAndSerialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] byte[] requestData)
         {
-            try
+
+            (ISerializer serializer, short key) = serializerType.GetSerializer();
+            requestCounterService.IncrementCounter(key);
+            var targetType = serializationType.GetTargetType();
+
+            var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
+            long size;
+            object serialized;
+
+            serializer.GetDeserializationResult(targetType, out ISerializationTarget serializableObject);
+
+            GenerateIntermediateIfNeeded(serializableObject, serializer);
+
+            size = serializableObject.Serialize(serializer);
+
+            if (serializer.GetSerializationResult(targetType, out serialized))
             {
-                (ISerializer serializer, short key) = serializerType.GetSerializer();
-                var targetType = serializationType.GetTargetType();
-
-                var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
-                long size;
-
-                serializer.GetDeserializationResult(targetType, out ISerializationTarget serializableObject);
-
-                GenerateIntermediateIfNeeded(serializableObject, serializer);
-
-                size = serializableObject.Serialize(serializer);
-
-                if (serializer.GetSerializationResult(targetType, out var serialized))
-                {
-                    Response.ContentType = "application/octet-stream";
-                    Response.Headers.Add("Content-Length", size.ToString());
-
-                    requestCounterService.IncrementCounter(key);
-                    return File((byte[])serialized, "application/octet-stream");
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
             }
 
-            return null;
+            Response.ContentType = "application/octet-stream";
+            Response.Headers.Add("Content-Length", size.ToString());
+
+            //requestCounterService.IncrementCounter(key);
+            return new FileContentResult((byte[])serialized, "application/octet-stream");
         }
 
         [HttpGet("test")]
@@ -83,37 +76,43 @@ namespace Serialization.Receiver.Controllers
             {
                 Stopwatch sw = Stopwatch.StartNew();
                 (var serializer, short key) = serializerType.GetSerializer();
+                requestCounterService.IncrementCounter(key, false);
                 var targetType = serializationType.GetTargetType();
 
                 var deserializationType = serializer.BenchmarkDeserialize(targetType, requestData);
-                requestCounterService.IncrementCounter(key, false);
+                //requestCounterService.IncrementCounter(key, false);
                 sw.Stop();
                 Console.WriteLine(sw.Elapsed.TotalMilliseconds * 1000000);
             });
         }
 
         [HttpPost("serialize")]
-        [Consumes("application/octet-stream")]
+        [Consumes("application/json")]
         [Produces("application/octet-stream")]
-        public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] ISerializationTarget serializableObject)
+        public async Task<FileContentResult> Serialize([FromQuery] string serializerType, [FromQuery] string serializationType, [FromBody] object serializableObject)
         {
+
             (var serializer, short key) = serializerType.GetSerializer();
+            requestCounterService.IncrementCounter(key, true);
             var targetType = serializationType.GetTargetType();
 
             long size;
+            object serialized;
+            ISerializationTarget serializable = (ISerializationTarget)serializableObject;
 
-            GenerateIntermediateIfNeeded(serializableObject, serializer);
+            GenerateIntermediateIfNeeded(serializable, serializer);
 
-            size = serializableObject.Serialize(serializer);
+            size = serializable.Serialize(serializer);
 
-            if (serializer.GetSerializationResult(targetType, out var serialized))
+            if (serializer.GetSerializationResult(targetType, out serialized))
             {
-                Response.ContentType = "application/octet-stream";
-                Response.Headers.Add("Content-Length", size.ToString());
-
-                requestCounterService.IncrementCounter(key, true);
-                return File((byte[])serialized, "application/octet-stream");
             }
+
+            Response.ContentType = "application/octet-stream";
+            Response.Headers.Add("Content-Length", size.ToString());
+
+            //requestCounterService.IncrementCounter(key, true);
+            return File((byte[])serialized, "application/octet-stream");
 
             return null;
         }
