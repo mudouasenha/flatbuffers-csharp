@@ -1,22 +1,25 @@
-﻿import {
-    optionsLatency,
+﻿import { b64decode } from "k6/encoding";
+import {
+    optionsGeneral,
     sendDeserialize,
     sendSerialize,
     sendSerializeAndDeserialize,
     setupInternal,
-    teardownInternal,
+    teardownInternal
 } from "./utils.js";
 
 const API_BASEURL = "http://127.0.0.1:5020/receiver/serializer";
 const serializer = "Thrift";
 const requests = JSON.parse(open("./thrift.json"));
-for (const request of requests) {
-    if (request.BinaryFilePath != null) request.file = open(request.BinaryFilePath, "b");
-}
+requests.forEach(
+    (request) => request.ContentType == "application/octet-stream" && (request.file = new Uint8Array(b64decode(request.Body)))
+);
 
 /*export let options = optionsGeneral;*/
 
-export let options = optionsLatency;
+// export let options = optionsLatency;
+
+export let options = optionsGeneral;
 
 export function sendDeserializeWrapper() {
     sendDeserialize(requests);

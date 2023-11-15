@@ -1,11 +1,8 @@
-﻿using BenchmarkDotNet.Analysers;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Diagnosers;
+﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
-using Perfolizer.Horology;
 
 namespace Serialization.Benchmarks.Configs
 {
@@ -15,13 +12,14 @@ namespace Serialization.Benchmarks.Configs
         {
             Add(DefaultConfig.Instance.WithSummaryStyle(SummaryStyle.Default));
 
-            var baseJob = new Job(Job.MediumRun
+            var baseJob = new Job(Job.ShortRun
+                .WithStrategy(BenchmarkDotNet.Engines.RunStrategy.ColdStart)
                 .WithUnrollFactor(1)
-                .WithWarmupCount(3)
-                .WithMinIterationTime(TimeInterval.FromMilliseconds(250))
+                .WithWarmupCount(0)
+                .WithEvaluateOverhead(false)
+                //.WithMinIterationTime(TimeInterval.FromMilliseconds(800))
                 .WithLaunchCount(1)
-                .WithIterationCount(240)
-                .WithRuntime()
+                .WithIterationCount(1)
                 //.WithIterationCount(100)
                 .WithInvocationCount(1)
                 .WithId("JOB-REST")
@@ -30,8 +28,8 @@ namespace Serialization.Benchmarks.Configs
 
             AddJob(baseJob);
 
-            AddAnalyser(EnvironmentAnalyser.Default);
-            AddDiagnoser(MemoryDiagnoser.Default);
+            //AddAnalyser(EnvironmentAnalyser.Default);
+            //AddDiagnoser(MemoryDiagnoser.Default);
             ConfigHelper.AddDefaultColumns(this);
         }
     }

@@ -1,13 +1,14 @@
 ﻿using Flurl;
-using Newtonsoft.Json;
 using Serialization.Domain;
 using Serialization.Domain.Builders;
 using Serialization.Domain.Interfaces;
 using Serialization.Serializers.ApacheAvro;
 using Serialization.Serializers.CapnProto;
 using Serialization.Services.Extensions;
+using Serialization.Services.Models;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 
 namespace Serialization.Services
 {
@@ -98,19 +99,36 @@ namespace Serialization.Services
             }
         }
 
-        public class RequestMessage
+        public void GenerateAllRequests()
         {
-            public string Method { get; set; }
+            List<RequestMessage> flatBuffers = GenerateRequests("FlatBuffers", 64);
+            List<RequestMessage> avro = GenerateRequests("Avro", 64);
+            List<RequestMessage> thrift = GenerateRequests("Thrift", 64);
+            List<RequestMessage> messagePack = GenerateRequests("MessagePack-CSharp", 64);
+            List<RequestMessage> capnProto = GenerateRequests("CapnProto", 64);
+            List<RequestMessage> newtonsoft = GenerateRequests("Newtonsoft.Json", 64);
+            List<RequestMessage> protobuf = GenerateRequests("Protobuf", 64);
 
-            public string Headers { get; set; }
+            string json = JsonSerializer.Serialize(flatBuffers);
+            File.WriteAllText("flatbuffers.json", json);
 
-            public string BinaryFilePath { get; set; }
+            string avroJson = JsonSerializer.Serialize(avro);
+            File.WriteAllText("avro.json", avroJson);
 
-            public string Body { get; set; }
+            string thriftJson = JsonSerializer.Serialize(thrift);
+            File.WriteAllText("thrift.json", thriftJson);
 
-            public string Url { get; set; }
+            string messagePackJson = JsonSerializer.Serialize(messagePack);
+            File.WriteAllText("messagePack.json", messagePackJson);
 
-            public string ContentType { get; set; }
+            string capnProtoJson = JsonSerializer.Serialize(capnProto);
+            File.WriteAllText("capnProto.json", capnProtoJson);
+
+            string newtonsoftJson = JsonSerializer.Serialize(newtonsoft);
+            File.WriteAllText("newtonsoftJson.json", newtonsoftJson);
+
+            string protobufJson = JsonSerializer.Serialize(protobuf);
+            File.WriteAllText("protobuf.json", protobufJson);
         }
 
         public List<RequestMessage> GenerateRequests(string serializerType, int numMessages)
@@ -126,6 +144,7 @@ namespace Serialization.Services
                 for (int i = 0; i < numMessages; i++)
                 {
                     RequestMessage requestToSave;
+                    byte[] bytesToSave = null;
                     HttpRequestMessage temp = null;
 
                     if (method == 0) // SerializeAndDeserialize
@@ -142,6 +161,8 @@ namespace Serialization.Services
                             var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                             request.Content = new ByteArrayContent((byte[])serializationObject);
                             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+                            bytesToSave = (byte[])serializationObject;
 
                             temp = request;
                         }
@@ -161,15 +182,16 @@ namespace Serialization.Services
                             request.Content = new ByteArrayContent((byte[])serializationObject);
                             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
 
+                            bytesToSave = (byte[])serializationObject;
                             temp = request;
                         }
                     }
                     if (method == 2) // Serialize
                     {
                         ISerializationTarget obj = objects[i];
-                        string jsonContent = JsonConvert.SerializeObject(obj);
+                        string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
 
-                        var requestUrl = "http://127.0.0.1:5020/receiver/serializer/serialize"
+                        var requestUrl = $"http://127.0.0.1:5020/receiver/serializer/serialize/{obj.ToString().ToLower()}"
                                 .SetQueryParam("serializerType", serializer.ToString())
                                 .SetQueryParam("serializationType", obj.GetType().Name);
 
@@ -191,27 +213,21 @@ namespace Serialization.Services
 
                     if (requestToSave.ContentType == "application/octet-stream")
                     {
-                        var bytes = temp.Content.ReadAsByteArrayAsync().Result;
-                        //requestToSave.BinaryBody = bytes;// Convert.ToBase64String(bytes);
-                        requestToSave.Body = BitConverter.ToString(bytes);
+                        if (!Directory.Exists(serializerType)) Directory.CreateDirectory(serializerType);
 
-                        if (!Directory.Exists(serializerType))
-                        {
-                            Directory.CreateDirectory(serializerType);
-                        }
+                        requestToSave.Body = Convert.ToBase64String(bytesToSave);
+                        //requestToSave.BinaryFilePath = Path.Combine(serializerType, $"{i}.bin");
+                        requestToSave.ByteSize = bytesToSave.Length;
 
-                        // Specify the file path within the directory
-                        string filePath = Path.Combine(serializerType, $"{i}.bin");
-                        requestToSave.BinaryFilePath = filePath;
-                        //MemoryStream stream = new MemoryStream();
+                        //using (FileStream fileStream = File.Open(requestToSave.BinaryFilePath, FileMode.Create))
+                        //using (BinaryWriter bw = new BinaryWriter(fileStream))
+                        //{
+                        //    bw.Write(bytesToSave);
+                        //}
 
-                        BinaryWriter bw = new BinaryWriter(File.Open(filePath, FileMode.Create));
-
-                        bw.Write(bytes);
-
-                        //File.WriteAllBytes(requestToSave.BinaryFilePath, bytes);
+                        //File.WriteAllBytes(requestToSave.BinaryFilePath, bytesToSave);
                     }
-                    else requestToSave.Body = JsonConvert.SerializeObject(temp.Content.ReadAsStringAsync().Result);
+                    else requestToSave.Body = Newtonsoft.Json.JsonConvert.SerializeObject(temp.Content.ReadAsStringAsync().Result);
 
                     requests.Add(requestToSave);
                 }

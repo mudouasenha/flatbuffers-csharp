@@ -1,5 +1,5 @@
-﻿import http from 'k6/http';
-import { sleep, check, fail } from 'k6';
+﻿import { check, fail, sleep } from 'k6';
+import http from 'k6/http';
 
 export const scenariosGeneral = {
     Serialize: {
@@ -7,49 +7,43 @@ export const scenariosGeneral = {
         executor: 'ramping-vus',
         startTime: '0s',
         stages: [
-            { target: 5, duration: '5s' },
-            { target: 50, duration: '5s' },
-            { target: 100, duration: '5s' },
-            { target: 150, duration: '5s' },
-            { target: 150, duration: '20s' },
             { target: 200, duration: '5s' },
-            { target: 200, duration: '20s' },
-            { target: 0, duration: '20s' },
+            { target: 200, duration: '60s' },
+            { target: 500, duration: '5s' },
+            { target: 500, duration: '60s' },
+            { target: 1000, duration: '5s' },
+            { target: 1000, duration: '60s' },
+            { target: 2000, duration: '10s' },
+            { target: 2000, duration: '60s' },
+            { target: 3000, duration: '15s' },
+            { target: 3000, duration: '60s' },
+            { target: 3500, duration: '15s' },
+            { target: 3500, duration: '60s' },
+            { target: 500, duration: '10s' },
+            { target: 0, duration: '10s' },
         ],
     },
     Deserialize: {
         executor: 'ramping-vus',
-        startTime: '120s',
+        startTime: '475s',
         //startTime: '0s',
         stages: [
-            { target: 5, duration: '5s' },
-            { target: 50, duration: '5s' },
-            { target: 100, duration: '5s' },
-            { target: 150, duration: '5s' },
-            { target: 150, duration: '20s' },
             { target: 200, duration: '5s' },
-            { target: 200, duration: '20s' },
-            { target: 0, duration: '20s' },
-            { target: 0, duration: '5s' },
+            { target: 200, duration: '60s' },
+            { target: 500, duration: '5s' },
+            { target: 500, duration: '60s' },
+            { target: 1000, duration: '5s' },
+            { target: 1000, duration: '60s' },
+            { target: 2000, duration: '10s' },
+            { target: 2000, duration: '60s' },
+            { target: 3000, duration: '15s' },
+            { target: 3000, duration: '60s' },
+            { target: 3500, duration: '15s' },
+            { target: 3500, duration: '60s' },
+            { target: 500, duration: '10s' },
+            { target: 0, duration: '10s' },
         ],
         exec: 'sendDeserializeWrapper'
-    },
-    SerializeAndDeserialize: {
-        executor: 'ramping-vus',
-        startTime: '240s',
-        //startTime: '0s',
-        stages: [
-            { target: 5, duration: '5s' },
-            { target: 50, duration: '5s' },
-            { target: 100, duration: '5s' },
-            { target: 150, duration: '5s' },
-            { target: 150, duration: '20s' },
-            { target: 200, duration: '5s' },
-            { target: 200, duration: '20s' },
-            { target: 0, duration: '20s' },
-            { target: 0, duration: '5s' },
-        ],
-        exec: 'sendSerializeAndDeserializeWrapper'
     }
 };
 
@@ -59,28 +53,28 @@ export const scenariosTest = {
         startTime: '0s',
         stages: [
             { target: 1, duration: '0s' },
-            { target: 1, duration: '10s' },
-            { target: 0, duration: '5s' },
+            { target: 1, duration: '1s' },
+            { target: 0, duration: '0s' },
         ],
         exec: 'sendSerializeAndDeserializeWrapper'
     },
     Serialize: {
         exec: 'sendSerializeWrapper',
         executor: 'ramping-vus',
-        startTime: '30s',
+        startTime: '0s',
         stages: [
             { target: 1, duration: '0s' },
-            { target: 1, duration: '10s' },
-            { target: 0, duration: '5s' },
+            { target: 1, duration: '1s' },
+            { target: 0, duration: '0s' },
         ],
     },
     Deserialize: {
         executor: 'ramping-vus',
-        startTime: '60s',
+        startTime: '0s',
         stages: [
             { target: 1, duration: '0s' },
-            { target: 1, duration: '10s' },
-            { target: 0, duration: '5s' },
+            { target: 1, duration: '1s' },
+            { target: 0, duration: '0s' },
         ],
         exec: 'sendDeserializeWrapper'
     },
@@ -169,29 +163,6 @@ export const optionsLatency = {
     scenarios: scenariosLatency,
 };
 
-function decodeBase64ToByteArray(base64String) {
-    const rawString = unescape(encodeURIComponent(base64String));
-    const byteArray = new Uint8Array(rawString.length);
-
-    for (let i = 0; i < rawString.length; i++) {
-        byteArray[i] = rawString.charCodeAt(i);
-    }
-
-    return byteArray;
-}
-
-function hexStringToByteArray(hexString) {
-    // Remove any spaces and convert to uppercase
-    hexString = hexString.replace(/\s/g, '').toUpperCase();
-
-    var byteArray = [];
-    for (var i = 0; i < hexString.length; i += 2) {
-        byteArray.push(parseInt(hexString.substr(i, 2), 16));
-    }
-
-    return new Uint8Array(byteArray); // Use Uint8Array for binary data
-}
-
 export function teardownInternal(serializer, baseUrl) {
     const response = http.post(`${baseUrl}/monitoring/save-results?serializerType=${serializer}&serializationType=Mixed&numThreads=0&method=Serialize`);
     console.log('TearDown HTTP Request Status Code:', response.status);
@@ -223,10 +194,8 @@ export function sendSerialize(requests) {
 
     const headers = { 'Content-Type': 'application/json' };
 
-    const response = http.post(request.Url, JSON.stringify(request.Body), { headers: headers });
-
-    //console.log(response)
-
+    const response = http.post(request.Url, JSON.parse(request.Body), { headers: headers });
+    //console.log(response.status)
     sleep(.1);
 }
 
@@ -236,18 +205,10 @@ export function sendDeserialize(requests) {
 
     const request = filteredRequests[randomIndex];
 
-    //const byteArray = hexStringToByteArray(request.Body);
-
-    const data = {
-        field: "requestData",
-        file: http.file(request.file)
-    }
-
     const params = { headers: { 'Content-Type': 'application/octet-stream' } };
 
-    const response = http.post(request.Url, data, params);
-
-    //console.log(response)
+    const response = http.post(request.Url, request.file, params);
+    //console.log(response.status)
 
     sleep(.1);
 }
@@ -257,17 +218,17 @@ export function sendSerializeAndDeserialize(requests) {
     const randomIndex = Math.floor(Math.random() * filteredRequests.length);
 
     const request = filteredRequests[randomIndex];
-    //const byteArray = hexStringToByteArray(request.Body);
-
-    const data = {
-        field: "requestData",
-        file: http.file(request.file)
-    }
 
     const params = { headers: { 'Content-Type': 'application/octet-stream' } };
 
-    const response = http.post(request.Url, data, params);
-    //console.log(response)
-
+    const response = http.post(request.Url, request.file, params);
+    //console.log(response.status)
     sleep(.1);
+}
+
+export function generateRequests(serializerType) {
+    const numMessages = 1;
+
+    const response = http.post(`http://127.0.0.1:5020/receiver/serializer/generate-requests?serializerType=${serializerType}&numMessages=${numMessages}`);
+    console.log(response)
 }

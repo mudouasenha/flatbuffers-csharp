@@ -60,14 +60,14 @@ namespace Serialization.Services.CsvExporter
 
     public record MeasurementRest
     {
-        public MeasurementRest(long latency, long timestamp, string method)
+        public MeasurementRest(double ticks, long timestamp, string method)
         {
             Method = method;
-            Latency = latency;
+            Latency = (ticks / Stopwatch.Frequency) * 1000000000;
             Timestamp = timestamp;
         }
         public string Method { get; set; }
-        public long Latency { get; set; }
+        public double Latency { get; set; }
         public long Timestamp { get; set; }
     }
 

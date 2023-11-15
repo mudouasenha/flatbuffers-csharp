@@ -8,13 +8,16 @@ using Serialization.Serializers.CapnProto;
 using Serialization.Services;
 using Serialization.Services.CsvExporter;
 using System.Diagnostics;
+using System.Text;
 
 namespace Serialization.Benchmarks.Benchmarks
 {
+    //[SimpleJob(RunStrategy.ColdStart, launchCount: 1, warmupCount: 0, iterationCount: 1, invocationCount: 1, id: "QuickJob")]
     [MinColumn, MaxColumn, AllStatisticsColumn, RankColumn] //, PerfCollectProfiler, EtwProfiler]
     public class RESTSerializationBenchmark
     {
         private RestClient client = new();
+        private readonly HttpClient httpClient = new();
         private ExecutionInfo executionInfo;
         private static string BenchmarkDateTime = DateTime.Now.ToString("yyyyMMddHHmmss");
         private const string fileName = "Measurements-REST-Client-SerializationBenchmark.csv";
@@ -28,7 +31,7 @@ namespace Serialization.Benchmarks.Benchmarks
         //[ParamsSource(nameof(Targets))]
         public ISerializationTarget Target { get; set; }
 
-        [Params(50, 100, 200, 300, 400/*, 192/*, 256, 320/*, 384, 448, 512, 576, 640*/)]
+        [Params(200, 500, 1000, 2000, 3000, 3500)]
         public int NumThreads { get; set; }
 
         public IEnumerable<ISerializer> Serializers => new ISerializer[]
@@ -61,16 +64,16 @@ namespace Serialization.Benchmarks.Benchmarks
         }
 
         [GlobalSetup]
-        public async Task GlobalSetup()
+        public void GlobalSetup()
         {
             //await parallelService.DispatchAsync(Serializer, null, NumThreads);
             executionInfo = new ExecutionInfo("Mixed", Serializer.ToString(), 0, NumThreads);
             Console.WriteLine("Aguardando a inicialização do próximo teste.");
-            Console.ReadKey();
+            //Console.ReadKey();
             Console.WriteLine("Teste seguinte inicializado.");
         }
 
-        [IterationSetup(Target = nameof(SerializeAndDeserialize))]
+        //[IterationSetup(Target = nameof(SerializeAndDeserialize))]
         public void IterationSetup()
         {
             Target = GenerateRandomTarget();
@@ -88,21 +91,74 @@ namespace Serialization.Benchmarks.Benchmarks
         }
 
         [Benchmark]
-        public void SerializeAndDeserialize()
+        public async Task Serialize()
         {
-            if (Serializer.GetSerializationResult(Target.GetType(), out var serializedTarget))
+            var majorStopwatch = new Stopwatch();
+            majorStopwatch.Start();
+
+            while (majorStopwatch.Elapsed.TotalSeconds < 15)
             {
-                var stopwatch = Stopwatch.StartNew();
-                var response = client.PostAsync("receiver/serializer"
+                IterationSetup();
+
+                if (Serializer.GetSerializationResult(Target.GetType(), out var serializedTarget))
+                {
+                    var requestUrl = $"http://127.0.0.1:5020/receiver/serializer/serialize/{Target.ToString().ToLower()}"
                                 .SetQueryParam("serializerType", Serializer.ToString())
-                                .SetQueryParam("serializationType", Target.GetType().Name), serializedTarget).GetAwaiter().GetResult();
-                stopwatch.Stop();
-                var result = new MeasurementRest(stopwatch.ElapsedMilliseconds, DateTimeOffset.Now.ToUnixTimeMilliseconds(), nameof(SerializeAndDeserialize));
-                executionInfo.Measurements.Add(result);
+                                .SetQueryParam("serializationType", Target.GetType().Name);
+
+                    string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(Target);
+
+                    var request = new HttpRequestMessage(HttpMethod.Post, requestUrl)
+                    {
+                        Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+                    };
+
+                    var stopwatch = Stopwatch.StartNew();
+                    var response = httpClient.SendAsync(request).GetAwaiter().GetResult();
+
+                    stopwatch.Stop();
+
+                    var result = new MeasurementRest(stopwatch.ElapsedMilliseconds, DateTimeOffset.Now.ToUnixTimeMilliseconds(), nameof(Serialize));
+
+                    executionInfo.Measurements.Add(result);
+                }
+
+                // Wait for 1 second before the next iteration
+                await Task.Delay(1000);
             }
+
+            majorStopwatch.Stop();
         }
 
-        public long Serialize() => Target.Serialize(Serializer);
+        [Benchmark]
+        public async Task Deserialize()
+        {
+            var majorStopwatch = new Stopwatch();
+            majorStopwatch.Start();
+
+            while (majorStopwatch.Elapsed.TotalSeconds < 15)
+            {
+                IterationSetup();
+
+                if (Serializer.GetSerializationResult(Target.GetType(), out var serializedTarget))
+                {
+                    var stopwatch = Stopwatch.StartNew();
+                    var response = client.PostAsync("receiver/serializer/deserialize"
+                                    .SetQueryParam("serializerType", Serializer.ToString())
+                                    .SetQueryParam("serializationType", Target.GetType().Name), serializedTarget).GetAwaiter().GetResult();
+                    stopwatch.Stop();
+                    var result = new MeasurementRest(stopwatch.ElapsedMilliseconds, DateTimeOffset.Now.ToUnixTimeMilliseconds(), nameof(Deserialize));
+                    executionInfo.Measurements.Add(result);
+                }
+
+                // Wait for 1 second before the next iteration
+                await Task.Delay(1000);
+            }
+
+            majorStopwatch.Stop();
+        }
+
+        //public long Serialize() => Target.Serialize(Serializer);
 
         [GlobalCleanup]
         public async Task GlobalCleanup()
